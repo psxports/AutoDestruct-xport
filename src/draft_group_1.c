@@ -186,11 +186,11 @@ uint32 sub_8005B47C(uint32 a1)
 }
 
 // FUNCTION_MARKER sub_80044618
-uint64 sub_80044618(uint32 a1, uint32 a2)
+uint64 sub_80044618(void)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint64 value; uint32 output; (void)a1; (void)a2;
+    uint64 value; uint32 output;
     if (r_u32(0x800A7BF4u) == 0u && r_u32(0x800A9864u) == 1u && r_u32(0x800A9760u) == 1u) return draft_scratch_result(native_stack_mark, (uint64)(0x100000001ull));
     output = draft_scratch_adapter(16u);
     sub_800698C8(output, (uint64)r_u32(0x800A8928u) | ((uint64)r_u32(0x800A892Cu) << 32));
@@ -640,7 +640,7 @@ uint32 sub_800428B0(void)
         uint32 mode = 0u, state;
         sub_800697BC();
         if (r_u32(0x800A6EC4u) == 0u && r_u32(0x800A87F4u) == 0u) {
-            sub_80044618(0u, 0u);
+            sub_80044618();
             if ((sub_800389DC() << 16) != 0u) {
                 if (r_u32(0x800A6EC8u) == 1u) draft_call_adapter(0x80038964u, 0xFFFFu);
                 w_u32(0x800A6EC8u, 0u); draft1_reset_deadline();
@@ -724,7 +724,8 @@ uint32 sub_8001A110(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
             if (draft1_visible_points(points, 3u)) {
                 uint32 first_uv = r_u32(source - 8u), second_uv = r_u32(source - 4u), rgb[3];
                 draft_gte_command_adapter(0xF80416u);
-                if (grid == 0u) { grid = draft_scratch_adapter(48u); colors = draft_scratch_adapter(24u); projected = draft_scratch_adapter(12u); }
+                // Subdivision appends vertices and colors through index eleven
+                if (grid == 0u) { grid = draft_scratch_adapter(96u); colors = draft_scratch_adapter(48u); projected = draft_scratch_adapter(12u); }
                 draft1_triangle_grid(grid, vertices);
                 w_u32(a5, first_uv & 0xFFFFu); w_u32(a5 + 4u, second_uv & 0xFFFFu); w_u32(a5 + 8u, r_u32(source));
                 for (uint32 component = 0u; component < 2u; ++component) {
@@ -737,7 +738,7 @@ uint32 sub_8001A110(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
                     w_u8(colors + 12u + component, (a + b) >> 1); w_u8(colors + 16u + component, (b + c) >> 1); w_u8(colors + 20u + component, (a + c) >> 1);
                 }
                 // TODO Bind original target 0x8001F008 with its explicit scratch and texture arguments
-                a1 = (uint32)draft_call_adapter(0x8001F008u, projected, a1, a2, a3, a4, a5, grid, first_uv & 0xFFFF0000u, second_uv & 0xFFFF0000u, grid, colors);
+                a1 = (uint32)draft_call_adapter(0x8001F008u, projected, a1, a2, a3, a4, a5, grid, first_uv & 0xFFFF0000u, second_uv & 0xFFFF0000u, a6, colors);
             }
         }
         else if (area >= 0) {
@@ -774,11 +775,11 @@ uint32 sub_80018D44(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
             draft_gte_command_adapter(0x180001u); draft1_vertex(a2 + 8u * r_u16(source - 8u), 0u); points[3] = xport_gte_read_data(14u);
             if (draft1_visible_points(points, 4u)) {
                 xport_gte_write_data(6u, r_u32(source - 12u)); draft_gte_command_adapter(0x108041Bu);
-                if (grid == 0u) { grid = draft_scratch_adapter(72u); projected = draft_scratch_adapter(16u); }
+                // Clipping helpers append five midpoint vertices to the nine-point grid
+                if (grid == 0u) { grid = draft_scratch_adapter(112u); projected = draft_scratch_adapter(16u); }
                 draft1_quad_grid(grid, vertices);
                 for (uint32 index = 0u; index < 4u; ++index) w_u32(projected + index * 4u, points[index]);
-                // TODO Bind original target 0x8001D870 with its explicit subdivision grid
-                a1 = (uint32)draft_call_adapter(0x8001D870u, projected, a1, a2, a3, a4, grid, 4u * a6);
+                a1 = sub_8001D870(projected, a1, a4, grid, a6);
             }
         }
         else if (area >= 0) {
@@ -907,7 +908,8 @@ static uint32 draft1_textured_quads(uint32 cursor, uint32 vertices, uint32 sourc
             if (draft1_visible_points(points, 4u)) {
                 uint32 clut = r_u32(record - 12u) & 0xFFFF0000u, tpage = r_u32(record - 8u) & 0xFFFF0000u;
                 if (unlit == 0u) draft_gte_command_adapter(0xE80413u);
-                if (grid == 0u) { grid = draft_scratch_adapter(72u); projected = draft_scratch_adapter(16u); }
+                // Subdivision appends five midpoint vertices to the nine-point grid
+                if (grid == 0u) { grid = draft_scratch_adapter(112u); projected = draft_scratch_adapter(16u); }
                 draft1_quad_grid(grid, positions); draft1_quad_uv(uv, record);
                 for (uint32 index = 0u; index < 4u; ++index) w_u32(projected + index * 4u, points[index]);
                 if (clipping == 0u) cursor = sub_8001C52C(projected, cursor, vertices, source, ot, uv, grid, clut, tpage, bias);

@@ -1,5 +1,6 @@
 #include <string.h>
 #include "psx.h"
+uint32 sub_800805E0(uint32 environment);
 
 #include "game_scene.h"
 
@@ -932,7 +933,7 @@ uint32 sub_80078DB8(GameCallbackCallContext *context)
         DrawSync(0);
         w_u32(0x800A562Cu, 1u - r_u32(0x800A562Cu));
         page = r_u32(0x800A562Cu);
-        PutDrawEnv((DRAWENV *)psx_addr(0x800A856Cu + ((page << 4u) - page) * 8u, sizeof(DRAWENV)));
+        sub_800805E0(0x800A856Cu + ((page << 4u) - page) * 8u);
         page = r_u32(0x800A562Cu);
         PutDispEnv((DISPENV *)psx_addr(0x800A85C8u + ((page << 4u) - page) * 8u, sizeof(DISPENV)));
         w_u32(0x800A5634u, 0u);

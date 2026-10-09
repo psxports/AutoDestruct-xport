@@ -1408,8 +1408,9 @@ uint64 native_dispatch_group_0(uint32 target,uint32 argument_count,va_list args)
         break;
     }
     case 0x8003315Cu: {
-        native_dispatch_require(target,argument_count,0u);
-        result=(uint64)sub_8003315C();
+        native_dispatch_require(target,argument_count,1u);
+        uint32 p0=va_arg(args,uint32);
+        result=(uint64)sub_8003315C(p0);
         break;
     }
     case 0x800331D8u: {

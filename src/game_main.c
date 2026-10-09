@@ -2,6 +2,7 @@
 #include "psx.h"
 #include "game_scene.h"
 #include "game_entry.h"
+uint32 sub_8007FAAC(uint32 mode);
 
 const uint32 xport_gpu_graph_type_address = 0x80093C84u;
 
@@ -640,7 +641,7 @@ uint32 sub_8003C0C4(GameGeometryCallContext *context)
     w_u32(0x800A98F4u, 0u);
     loaded &= 2u;
     w_u32(0x800A87E4u, loaded);
-    ResetGraph(loaded ? 3 : 0);
+    sub_8007FAAC(loaded ? 3u : 0u);
     display = *context;
     display.stack_pointer = frame;
     display.return_address = 0x8003C0FCu;
@@ -992,8 +993,8 @@ void sub_800394B8(GameMainCallContext *context)
     sub_8003806C(&controller);
     context->caller_s0 = controller.caller_s0;
   }
-  MemCardInit();
-  MemCardStart();
+  MemCardInitPSX();
+  MemCardStartPSX();
   {
       GameSceneCallContext call_context;
       call_context.stack_pointer = context->stack_pointer;

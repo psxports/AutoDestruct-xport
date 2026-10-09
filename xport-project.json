@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "name": "Auto Destruct",
+  "short_name": "AD",
+  "toolset": "C:\\Projects\\xports\\xport\\tools",
+  "coverage_permissions": {
+    "allow_unverified_translation": true,
+    "allow_missing_bios_stubs": true,
+    "allow_missing_sdk_stubs": true
+  },
+  "paths": {
+    "status": "status",
+    "project_tools": "tools",
+    "analysis_database": "status/analysis.sqlite",
+    "native_executable": "bin/AD.exe",
+    "native_working_directory": "bin",
+    "native_solution": "src/platform/win/AD.sln",
+    "native_build": "_build",
+    "ida_exports": "orig/images",
+    "ida_configs": "tools/ida",
+    "sdk_classification": "status/ghidra/classification.json",
+    "disc_image": "iso/Auto Destruct (USA).cue",
+    "music_source": "iso",
+    "music_output": "bin/MUSIC",
+    "original_executable": "orig/SLUS_005.22"
+  },
+  "duckstation": {
+    "host": "127.0.0.1",
+    "gdb_port": 2417,
+    "reserved_gdb_ports": {
+      "audit": 2415,
+      "trace": 2416,
+      "user": 2417
+    },
+    "default_role": "user",
+    "data_directory": "tools/duckstation/data/user",
+    "data_directories": {
+      "audit": "tools/duckstation/data/audit",
+      "trace": "tools/duckstation/data/trace",
+      "user": "tools/duckstation/data/user"
+    }
+  },
+  "stage_pipeline": {
+    "supervisor_protocol": {
+      "schema": 1,
+      "enabled": true,
+      "mode": "enforced",
+      "one_launch": true,
+      "notify_on_revision_only": true,
+      "batch_limits": {
+        "functions": 5,
+        "instructions": 2048,
+        "modules": 2
+      },
+      "acceptance": {
+        "unchanged_model_calls": 0,
+        "interventions_per_failure": 1,
+        "submissions_per_batch": 1,
+        "fast_refreshes_per_batch": 1,
+        "provisional_replays_per_batch": 1,
+        "full_gate_after_provisional_match": true,
+        "max_control_responses": 5,
+        "max_compactions": 2,
+        "deterministic_call_reduction_percent": 90
+      }
+    }
+  },
+  "code_refresh": {
+    "build": {
+      "solution": "src/platform/win/AD.sln",
+      "configuration": "Debug",
+      "platform": "x86",
+      "process_name": "AD.exe"
+    },
+    "tests": [],
+    "artifacts": []
+  },
+  "analysis": {
+    "images": [
+      "SLUS_005.22",
+      "1.EXE"
+    ],
+    "default_image": "1.EXE"
+  },
+  "capabilities": {
+    "redbook_audio": {
+      "enabled": true
+    }
+  }
+}

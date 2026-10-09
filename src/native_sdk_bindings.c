@@ -6,6 +6,15 @@ uint32 sub_8007DE14(void);
 void native_sdk_dispatch_callback(uint32 target, uint32 argument0, uint32 argument1);
 void native_sdk_stream_start(void);
 void native_sdk_stream_stop(void);
+void sub_8008355C(uint32 matrix)
+{
+    uint32 words[5];
+    for (uint32 i = 0u; i < 5u; ++i) words[i] = r_u32(matrix + 4u * i);
+    for (uint32 i = 0u; i < 5u; ++i) xport_gte_write_control(i, words[i]);
+}
+uint32 sub_8007B770(uint32 callback);
+uint32 sub_8007B350(uint32 callback);
+extern void cd_stream_consumer_native(sint32 enabled);
 
 /* Reviewed image-specific SDK state slots */
 const uint32 xport_cd_ready_callback_address = 0x800925C4u;
@@ -26,6 +35,42 @@ static void *native_guest_pointer(uint32 address, size_t bytes)
 }
 
 uint32 sub_8007F438(uint32 mode) { return ChangeClearPAD(mode); }
+uint32 sub_8007FAAC(uint32 mode)
+{
+    uint32 selected = mode & 7u;
+    uint32 graph, interrupt_mask, mask_address = r_u32(0x80093AA0u);
+    FUNCTION_MARKER(0x8007FAACu, "1.EXE");
+    if (selected != 0u && selected != 3u && selected != 5u) {
+        w_u32(0x80093C6Cu, 0u);
+        w_u32(0x80093C68u, 0u);
+        ResetGraph(1);
+        return 0u;
+    }
+    xport_guest_fill(0x80093B64u, 0u, 128u);
+    if (r_u16(0x80092A10u) == 0u)
+        ResetCallbackPSX();
+    interrupt_mask = r_u16(mask_address);
+    w_u16(mask_address, 0u);
+    w_u32(0x80093C6Cu, 0u);
+    w_u32(0x80093C78u, interrupt_mask);
+    w_u32(0x80093C68u, 0u);
+    // The native reset owns the host GPU while guest queue storage stays image-bound
+    ResetGraph(0);
+    if (selected == 0u || selected == 5u) {
+        xport_guest_fill(0x800B3270u, 0u, 256u);
+        xport_guest_fill(0x800BCD08u, 0u, 6144u);
+    }
+    w_u16(mask_address, interrupt_mask);
+    graph = selected == 0u ? r_u32(xport_gpu_graph_type_address) : 0u;
+    w_u8(0x80093B64u, graph);
+    graph &= 0xFFu;
+    w_u8(0x80093B65u, 1u);
+    w_u16(0x80093B68u, r_u32(0x80093BE4u + graph * 4u));
+    w_u16(0x80093B6Au, r_u32(0x80093BF8u + graph * 4u));
+    xport_guest_fill(0x80093B74u, 255u, 92u);
+    xport_guest_fill(0x80093BD0u, 255u, 20u);
+    return graph;
+}
 uint32 sub_8007FF6C(uint32 mode)
 {
     return (uint32)DrawSync((sint32)mode);
@@ -83,6 +128,16 @@ uint32 sub_80080D84(uint32 packet, uint32 rectangle)
     w_u32(packet + 8u, end);
     return end;
 }
+uint32 sub_800805E0(uint32 environment)
+{
+    DRAWENV *draw;
+    FUNCTION_MARKER(0x800805E0u, "1.EXE");
+    draw = (DRAWENV *)psx_addr(environment, 92u);
+    PutDrawEnv(draw);
+    memcpy(psx_addr(0x80093B74u, 92u), draw, 92u);
+    return environment;
+}
+
 uint32 sub_80080800(uint32 destination)
 {
     if (destination != 0u)
@@ -137,7 +192,7 @@ uint32 sub_80080294(uint32 rectangle, uint32 buffer)
     return (uint32)StoreImage(rect, native_guest_pointer(buffer, bytes));
 }
 uint32 sub_80085CC4(void) { return r_u32(0x80093CB8u); }
-uint32 sub_8007D3F0(uint32 destination, uint32 filename) { return CdSearchFile(destination, filename); }
+uint32 sub_8007D3F0(uint32 destination, uint32 filename) { return CdSearchFileGuest(destination, filename); }
 uint32 sub_8007B368(uint32 command, uint32 argument, uint32 result)
 {
     return (uint32)CdControl((uint8)command, native_guest_pointer(argument, 8u), native_guest_pointer(result, 8u));
@@ -176,7 +231,22 @@ uint32 sub_8007B5CC(uint32 command, uint32 argument, uint32 result)
 uint32 sub_8007A7AC(uint32 mode) { return (uint32)CdDiskReady((sint32)mode); }
 extern void cd_bind_guest_dispatch_native(void (*dispatch)(uint32, uint32, uint32));
 uint32 sub_8007D110(void) { cd_bind_guest_dispatch_native(native_sdk_dispatch_callback); return (uint32)CdInit(); }
-uint32 sub_8007D2B4(uint32 mode) { uint32 result = (uint32)CdRead2((sint16)mode); if (result) native_sdk_stream_start(); return result; }
+uint32 sub_8007D2B4(uint32 mode)
+{
+    uint8 parameter = (uint8)mode;
+    uint32 result;
+    CdControl(14u, &parameter, NULL);
+    if (mode & 0x100u) {
+        w_u32(0x800B4888u, (mode & 0x20u) == 0u);
+        sub_8007B770(0x8007EB24u);
+        sub_8007B350(0x8007D348u);
+        native_sdk_stream_start();
+    }
+    result = (uint32)CdControl(27u, NULL, NULL);
+    if (!result && (mode & 0x100u))
+        native_sdk_stream_stop();
+    return result;
+}
 uint32 sub_8007B350(uint32 callback) { return CdReadyCallbackPSX(callback); }
 uint32 sub_8007A438(uint32 sectors, uint32 destination, uint32 mode)
 {
@@ -222,14 +292,6 @@ void sub_80083868(uint32 matrix)
 void sub_80083898(uint32 distance, uint32 projection)
 {
     SetFogNear((sint32)distance, (sint32)projection);
-}
-void SetFogNear(sint32 distance, sint32 projection)
-{
-    uint32 product = 0u - 320u * (uint32)distance;
-    if (projection == 0 || (projection == -1 && product == 0x80000000u))
-        abort();
-    xport_gte_write_control(27u, (uint32)((sint32)product / projection));
-    xport_gte_write_control(28u, 0x01400000u);
 }
 
 uint32 sub_8007ECE0(uint32 callback)
@@ -428,8 +490,16 @@ uint32 sub_8007DE14(void)
     if (final) native_stream_complete();
     return index + 1u;
 }
-void native_sdk_stream_start(void) { native_stream_active = 1u; }
-void native_sdk_stream_stop(void) { native_stream_active = 0u; }
+void native_sdk_stream_start(void)
+{
+    cd_stream_consumer_native(1);
+    native_stream_active = 1u;
+}
+void native_sdk_stream_stop(void)
+{
+    native_stream_active = 0u;
+    cd_stream_consumer_native(0);
+}
 
 
 

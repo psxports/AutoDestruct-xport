@@ -166,6 +166,257 @@ uint64 draft_call_adapter_counted(uint32 argument_count,uint32 target,...)
     if(argument_count>24u){fprintf(stderr,"Native call %08X exceeds 24 arguments\n",target);abort();}
     va_start(args,target);
     switch(target){
+    case 0x800805E0u:
+        native_dispatch_require(target, argument_count, 1u);
+        result = sub_800805E0(va_arg(args, uint32));
+        break;
+    case 0x8007FAACu:
+        native_dispatch_require(target, argument_count, 1u);
+        result = sub_8007FAAC(va_arg(args, uint32));
+        break;
+    case 0x8003F5CCu:
+        native_dispatch_require(target, argument_count, 1u);
+        sub_8003F5CC(va_arg(args, uint32));
+        result = 0u;
+        break;
+    case 0x8003F6D0u:
+        native_dispatch_require(target, argument_count, 1u);
+        result = sub_8003F6D0(va_arg(args, uint32));
+        break;
+    case 0x80040DACu:
+    case 0x80061018u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        result = target == 0x80040DACu ? sub_80040DAC(object) : sub_80061018(object);
+        break;
+    }
+    case 0x80060F6Cu: {
+        uint32 object, model, size;
+        native_dispatch_require(target, argument_count, 3u);
+        object = va_arg(args, uint32);
+        model = va_arg(args, uint32);
+        size = va_arg(args, uint32);
+        result = sub_80060F6C(object, model, size);
+        break;
+    }
+    case 0x80040478u: {
+        uint32 object, ignored;
+        native_dispatch_require(target, argument_count, 2u);
+        object = va_arg(args, uint32);
+        ignored = va_arg(args, uint32);
+        result = sub_80040478(object, ignored);
+        break;
+    }
+    case 0x80040500u:
+    case 0x80040674u:
+    case 0x80040754u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        if (target == 0x80040500u) result = sub_80040500(object);
+        else if (target == 0x80040674u) result = sub_80040674(object);
+        else result = sub_80040754(object);
+        break;
+    }
+    case 0x80040BC4u:
+    case 0x80060E20u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        result = target == 0x80040BC4u ? sub_80040BC4(object) : sub_80060E20(object);
+        break;
+    }
+    case 0x80040B54u:
+        native_dispatch_require(target, argument_count, 1u);
+        result = sub_80040B54(va_arg(args, uint32));
+        break;
+    case 0x80060D20u: {
+        uint32 object, previous;
+        native_dispatch_require(target, argument_count, 2u);
+        object = va_arg(args, uint32);
+        previous = va_arg(args, uint32);
+        result = sub_80060D20(object, previous);
+        break;
+    }
+    case 0x8002E190u: {
+        uint32 object, ignored, other, index;
+        native_dispatch_require(target, argument_count, 4u);
+        object = va_arg(args, uint32);
+        ignored = va_arg(args, uint32);
+        other = va_arg(args, uint32);
+        index = va_arg(args, uint32);
+        result = sub_8002E190(object, ignored, other, index);
+        break;
+    }
+    case 0x8003DB40u: {
+        uint32 object, mode;
+        native_dispatch_require(target, argument_count, 2u);
+        object = va_arg(args, uint32);
+        mode = va_arg(args, uint32);
+        result = sub_8003DB40(object, mode);
+        break;
+    }
+    case 0x8003DC50u:
+        native_dispatch_require(target, argument_count, 1u);
+        result = sub_8003DC50(va_arg(args, uint32));
+        break;
+    case 0x8003FEB4u: {
+        uint32 matrix, scales;
+        native_dispatch_require(target, argument_count, 2u);
+        matrix = va_arg(args, uint32);
+        scales = va_arg(args, uint32);
+        result = sub_8003FEB4(matrix, scales);
+        break;
+    }
+    case 0x8003FFB4u:
+    case 0x8003FFECu:
+    case 0x8003FD78u:
+    case 0x8003FE30u:
+    case 0x8003FF08u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        if (target == 0x8003FFB4u) result = sub_8003FFB4(object);
+        else if (target == 0x8003FFECu) result = sub_8003FFEC(object);
+        else if (target == 0x8003FD78u) result = sub_8003FD78(object);
+        else if (target == 0x8003FE30u) result = sub_8003FE30(object);
+        else result = sub_8003FF08(object);
+        break;
+    }
+    case 0x8003D02Cu: {
+        uint32 index, amount;
+        native_dispatch_require(target, argument_count, 2u);
+        index = va_arg(args, uint32);
+        amount = va_arg(args, uint32);
+        result = sub_8003D02C(index, amount);
+        break;
+    }
+    case 0x8003CE7Cu:
+        native_dispatch_require(target, argument_count, 1u);
+        result = sub_8003CE7C(va_arg(args, uint32));
+        break;
+    case 0x8003F814u:
+    case 0x8003FA50u:
+    case 0x80022820u: {
+        uint32 first, second;
+        native_dispatch_require(target, argument_count, 2u);
+        first = va_arg(args, uint32);
+        second = va_arg(args, uint32);
+        if (target == 0x8003F814u) result = sub_8003F814(first, second);
+        else if (target == 0x8003FA50u) result = sub_8003FA50(first, second);
+        else result = sub_80022820(first, second);
+        break;
+    }
+    case 0x8003F79Cu: {
+        uint32 object, mode, value;
+        native_dispatch_require(target, argument_count, 3u);
+        object = va_arg(args, uint32);
+        mode = va_arg(args, uint32);
+        value = va_arg(args, uint32);
+        result = sub_8003F79C(object, mode, value);
+        break;
+    }
+    case 0x8003F974u:
+    case 0x80062CA0u:
+    case 0x8005414Cu: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        if (target == 0x8003F974u) result = sub_8003F974(object);
+        else if (target == 0x80062CA0u) result = sub_80062CA0(object);
+        else result = sub_8005414C(object);
+        break;
+    }
+    case 0x80062B3Cu: {
+        uint32 position, material, scale, count;
+        native_dispatch_require(target, argument_count, 4u);
+        position = va_arg(args, uint32);
+        material = va_arg(args, uint32);
+        scale = va_arg(args, uint32);
+        count = va_arg(args, uint32);
+        result = sub_80062B3C(position, material, scale, count);
+        break;
+    }
+    case 0x800542C0u: {
+        uint32 object, mode, count;
+        native_dispatch_require(target, argument_count, 3u);
+        object = va_arg(args, uint32);
+        mode = va_arg(args, uint32);
+        count = va_arg(args, uint32);
+        result = sub_800542C0(object, mode, count);
+        break;
+    }
+    case 0x80054594u:
+    case 0x800546D4u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        result = target == 0x80054594u ? sub_80054594(object) : sub_800546D4(object);
+        break;
+    }
+    case 0x80045510u:
+    case 0x80062B08u:
+    case 0x800548B0u:
+    case 0x800547ECu:
+    case 0x80054660u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        if (target == 0x80045510u) result = sub_80045510(object);
+        else if (target == 0x80062B08u) result = sub_80062B08(object);
+        else if (target == 0x800548B0u) result = sub_800548B0(object);
+        else if (target == 0x800547ECu) result = sub_800547EC(object);
+        else result = sub_80054660(object);
+        break;
+    }
+    case 0x8004D8B4u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        result = sub_8004D8B4(object);
+        break;
+    }
+    case 0x80054934u: {
+        uint32 object, mode;
+        native_dispatch_require(target, argument_count, 2u);
+        object = va_arg(args, uint32);
+        mode = va_arg(args, uint32);
+        result = sub_80054934(object, mode);
+        break;
+    }
+    case 0x8004BBBCu: {
+        uint32 object, mode;
+        native_dispatch_require(target, argument_count, 2u);
+        object = va_arg(args, uint32);
+        mode = va_arg(args, uint32);
+        result = sub_8004BBBC(object, mode);
+        break;
+    }
+    case 0x8004C8A8u: {
+        native_dispatch_require(target, argument_count, 1u);
+        result = sub_8004C8A8(va_arg(args, uint32));
+        break;
+    }
+    case 0x8006080Cu:
+    case 0x80060878u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        result = target == 0x8006080Cu ? sub_8006080C(object) : sub_80060878(object);
+        break;
+    }
+    case 0x800613D0u:
+    case 0x800617A8u:
+    case 0x80060738u: {
+        uint32 object;
+        native_dispatch_require(target, argument_count, 1u);
+        object = va_arg(args, uint32);
+        if (target == 0x800613D0u) result = sub_800613D0(object);
+        else if (target == 0x800617A8u) result = sub_800617A8(object);
+        else result = sub_80060738(object);
+        break;
+    }
     case 0x80061308u: {
         uint32 parameters[5], index;
         native_dispatch_require(target, argument_count, 5u);
@@ -1201,6 +1452,7 @@ uint64 draft_call_adapter_counted(uint32 argument_count,uint32 target,...)
     case 0x80080474u:
     case 0x8008056Cu:
     case 0x80082B68u:
+    case 0x8008355Cu:
     case 0x8008358Cu:
     case 0x800836DCu:
     case 0x80083868u:
@@ -1215,6 +1467,9 @@ uint64 draft_call_adapter_counted(uint32 argument_count,uint32 target,...)
     case 0x800865ACu:
     case 0x80086668u:
     case 0x80086B58u:
+    case 0x8008757Cu:
+    case 0x800891B0u:
+    case 0x8008A1DCu:
     case 0x80089118u:
     case 0x80089218u:
     case 0x80089490u:

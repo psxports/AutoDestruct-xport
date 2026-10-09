@@ -36,8 +36,23 @@
 <ItemGroup><ClCompile Include="..\..\native_disabled_services.c" /></ItemGroup>
 <ItemGroup><ClCompile Include="..\..\native_input.c" /></ItemGroup>
 <ItemGroup><ClCompile Include="..\..\native_spu_binding.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_spu_common.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_spu_reverb.c" /></ItemGroup>
 <ItemGroup><ClCompile Include="..\..\native_bios_callbacks.c" /></ItemGroup>
 <ItemGroup><ClCompile Include="..\..\native_terrain_1ABB0.c" /></ItemGroup>
 <ItemGroup><ClCompile Include="..\..\native_effects.c" /></ItemGroup>
 <ItemGroup><ClCompile Include="..\..\native_effect_60404.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_collision_helpers.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_collision_effects.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_collision_effect_helpers.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_3F814.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_collision_particles.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_impact_effects.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_3DB40.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_2E190.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_impact_dependencies.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_40478.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_impact_trails.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\native_3F5CC.c" /></ItemGroup>
+<ItemGroup><ClCompile Include="..\..\..\..\xport\src\psx_xa.c" /></ItemGroup>
 </Project>

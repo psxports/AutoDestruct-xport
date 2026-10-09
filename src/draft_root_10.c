@@ -136,7 +136,7 @@ uint32 sub_80036FE4(void)
     draft_scratch_release(native_stack_mark);
 }
 
-uint32 sub_8003315C(void)
+uint32 sub_8003315C(uint32 track)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
@@ -145,7 +145,7 @@ uint32 sub_8003315C(void)
     value = r_u32(0x800A8B30u);
     w_u32(0x800A7BE0u, 0u);
     if (!value && (sint32)r_u32(0x800A5C08u) < 5 && !r_u32(0x800A5C0Cu)) {
-        value = (uint32)draft_call_adapter(0x8003732Cu);
+        value = (uint32)draft_call_adapter(0x8003732Cu, track, r_u32(0x800A5C08u));
         w_u32(0x800A7BE0u, value);
         if (value != 0xFFFFFFFFu) w_u32(0x800A5C08u, r_u32(0x800A5C08u) + 1u);
     }

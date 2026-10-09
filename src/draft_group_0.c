@@ -542,9 +542,9 @@ uint32 sub_80063904(uint32 object)
     angle = (uint32)(int32)(int16)r_u16(temporary + 74u);
     draft_call_adapter(0x800551CCu, angle, matrix);
     draft_call_adapter(0x8008355Cu, matrix);
-    draft_call_adapter(0x80031CE8u, matrix, owner + 20u, temporary);
-    draft_call_adapter(0x80031CC0u, temporary + 8u);
-    draft_call_adapter(0x80031CC0u, temporary + 16u);
+    draft_call_adapter(0x80031CE8u, matrix, owner + 20u, temporary, points);
+    draft_call_adapter(0x80031CC0u, temporary + 8u, points + 12u);
+    draft_call_adapter(0x80031CC0u, temporary + 16u, points + 24u);
     w_u32(points + 36u, r_u32(owner + 20u));
     w_u32(points + 40u, r_u32(owner + 24u));
     w_u32(points + 44u, r_u32(owner + 28u));
@@ -639,11 +639,10 @@ uint32 sub_8001F690(void)
     for (i = 0; i < 14u; ++i) w_u16(zeroes + 4u*i + 2u, 0u);
     for (i = 0; i < 8u; ++i) w_u32(matrix + 4u*i, r_u32(0x800A9324u + 4u*i));
     for (i = 0; i < 8u; ++i) w_u32(view + 4u*i, r_u32(0x800A84B4u + 4u*i));
-    // TODO Bind the existing terrain rendering frontier
     cursor = (uint32)draft_call_adapter(0x80014A68u, matrix, view, quad, zeroes, cursor);
     cursor = sub_8001AE8C(matrix, view, quad, zeroes, cursor);
     if (r_u8(0x800A7BDCu)) {
-        cursor = sub_8001F868(r_u8(0x800A7BDAu), cursor, r_u32(0x800A9A74u), r_u32(0x800A7BD4u), zeroes);
+        cursor = sub_8001F868(r_u16(0x800A7BDAu), cursor, r_u32(0x800A9A74u), r_u32(0x800A7BD4u), r_u8(0x800A7BDCu));
         sub_8002062C();
     }
     w_u32(0x800A865Cu, cursor);
@@ -685,7 +684,7 @@ void sub_8005E31C(void)
         w_u16(0x800A8562u, (uint16)(0u - sub_80055A9C(r_u32(0x800A8554u), r_u32(0x800A855Cu))));
     yaw = r_u16(0x800A8562u);
     roll = r_u16(0x800A8564u);
-    if (!r_u32(0x800A974Cu)) roll = 0u - roll;
+    if (!r_u16(0x800A974Cu)) roll = 0u - roll;
     sub_80055228((uint32)(int32)(int16)roll, first);
     // TODO Bind the existing axis rotation constructors
     draft_call_adapter(0x80055168u, (uint32)(int32)(int16)pitch, second);
@@ -798,19 +797,19 @@ uint32 sub_8001C25C(uint32 cursor, uint32 vertices, uint32 source, uint32 orderi
 }
 
 // FUNCTION_MARKER sub_8001AE8C
-uint32 sub_8001AE8C(uint32 object_matrix, uint32 view_matrix, uint32 clip_quad, uint32 ordering_table, uint32 cursor)
+uint32 sub_8001AE8C(uint32 object_matrix, uint32 view_matrix, uint32 clip_quad, uint32 render_context, uint32 cursor)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 temporary = draft_scratch_adapter(64u), transformed = temporary + 20u, light = temporary + 32u, next_record = temporary + 52u;
     uint32 camera_x = r_u32(0x800A7EE4u), camera_z = r_u32(0x800A7EECu);
-    uint32 vertices = r_u32(r_u32(0x800A7E08u)), uv = r_u32(0x800A9A74u);
+    uint32 vertices = r_u32(r_u32(0x800A7E08u)), ordering_table = r_u32(0x800A9A74u);
     uint32 remaining = r_u32(0x800A636Cu);
     w_u32(0x800A9A6Cu, temporary);
     while (remaining) {
         uint32 object = r_u32(0x800BA8B8u + 4u*--remaining);
         uint32 x = r_u32(object)-camera_x, y = r_u32(object+4u), z = r_u32(object+8u)-camera_z;
-        uint32 asset, source, total, consumed = 0u, i;
+        uint32 asset, source, total, consumed = 0u, depth_bias, i;
         if ((int32)((r_u32(clip_quad+28u)-r_u32(clip_quad+4u))*(x-r_u32(clip_quad))+(r_u32(clip_quad)-r_u32(clip_quad+24u))*(z-r_u32(clip_quad+4u))) < 0) continue;
         if ((int32)((r_u32(clip_quad+12u)-r_u32(clip_quad+20u))*(x-r_u32(clip_quad+16u))+(r_u32(clip_quad+16u)-r_u32(clip_quad+8u))*(z-r_u32(clip_quad+20u))) < 0) continue;
         for (i = 0; i < 8u; ++i) xport_gte_write_control(i, r_u32(object_matrix + 4u*i));
@@ -823,20 +822,22 @@ uint32 sub_8001AE8C(uint32 object_matrix, uint32 view_matrix, uint32 clip_quad, 
         total = r_u32(asset+4u);
         if (r_u8(object+15u)) {
             draft0_rotation(object+16u);
+            depth_bias = 200u;
         } else {
             draft0_matrix_multiply(object_matrix, object+16u, temporary);
             w_u32(0x800A84B0u, object+16u);
             draft0_matrix_multiply(view_matrix, object+16u, light);
             draft0_rotation(temporary);
             for (i = 0; i < 5u; ++i) xport_gte_write_control(8u+i, r_u32(light+4u*i));
+            depth_bias = 500u + r_u8(object+14u);
         }
         for (i = 0; i < 3u; ++i) xport_gte_write_control(5u+i, r_u32(transformed+4u*i));
         while (consumed < total) {
             uint32 header = r_u32(source), target = r_u32(0x8008B728u + 4u*(header >> 24));
-            consumed += header & 0x7FFu;
+            uint32 packet_count = header & 0x7FFu;
+            consumed += packet_count;
             w_u32(next_record, source);
-            // TODO Bind indirect render dispatcher with its source-pointer output
-            cursor = (uint32)draft_call_adapter(target, cursor, vertices, source, ordering_table, uv, 0u, 1u, next_record);
+            cursor = (uint32)draft_call_adapter(target, cursor, vertices, source, ordering_table, render_context, depth_bias, packet_count, next_record);
             source = r_u32(next_record);
         }
     }

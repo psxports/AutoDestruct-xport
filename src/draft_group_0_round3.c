@@ -88,7 +88,7 @@ uint32 sub_800345B0(uint32 object)
         }
         if(r_u32(0x800A6CF4u)==2u && r_u32(0x800A9A68u) && r_u16(r_u32(r_u32(0x800A851Cu)+4u*(uint32)(int32)(int16)r_u16(object))+8u) && r_u16(0x800A9A64u)==1u)w_u32(0x800A6CFCu,1u);
     }
-    result=r_u32(0x800A84D4u);if(!result && r_u32(0x800A9A68u)){result=r_u32(0x800A975Cu);if(result)return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8003315Cu)));}return draft_scratch_result(native_stack_mark, (uint64)(result));
+    result=r_u32(0x800A84D4u);if(!result && r_u32(0x800A9A68u)){result=r_u32(0x800A975Cu);if(result)return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8003315Cu,r_u32(0x800A9A68u))));}return draft_scratch_result(native_stack_mark, (uint64)(result));
 
     draft_scratch_release(native_stack_mark);
 }
@@ -308,7 +308,8 @@ uint32 sub_800784F4(uint32 text,uint32 top,uint32 baseline)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 scratch=draft_scratch_adapter(16u),cursor,ot,result,index=0u,glyph,control,width;int32 x=-144;uint16 y=(uint16)baseline;
+    // Keep the eight-byte RECT beside the complete 92-byte DRAWENV
+    uint32 scratch=draft_scratch_adapter(100u),cursor,ot,result,index=0u,glyph,control,width;int32 x=-144;uint16 y=(uint16)baseline;
     if((int32)r_u32(0x800A84E0u)>=2048)w_u32(0x800A84E0u,2048u);
     else{int32 value=d03_trig(0x800102E0u,r_u32(0x800A84E0u));if(value>=4001)value=4000;w_u32(0x800A8200u,(uint32)value);}w_u32(0x800A84E0u,1024u);
     draft_call_adapter(0x80080800u,scratch+8u);w_u32(scratch,r_u32(scratch+8u)^0x01000000u);w_u32(scratch+4u,r_u32(scratch+12u));cursor=r_u32(0x800A865Cu);w_u32(0x800A7AB4u,cursor);draft_call_adapter(0x80080D84u,cursor,scratch);

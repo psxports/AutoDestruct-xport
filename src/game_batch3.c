@@ -77,7 +77,7 @@ uint32 sub_8005A59C(uint32 filename, GameGeometryCallContext *context)
     child.stack_pointer = frame;
     for (;;)
     {
-        result = CdSearchFile(0x800A7438u, child.caller_s0);
+        result = CdSearchFileGuest(0x800A7438u, child.caller_s0);
         if (result != 0u)
             break;
         child.return_address = 0x8005A5CCu;
@@ -343,7 +343,7 @@ uint32 sub_8005A130(uint32 filename, uint32 destination, GameGeometryCallContext
     child.stack_pointer = frame;
     for (;;)
     {
-        if (CdSearchFile(frame + 0x10u, child.caller_s0) != 0u)
+        if (CdSearchFileGuest(frame + 0x10u, child.caller_s0) != 0u)
         {
             CdControl(2, (uint8 *)psx_addr(frame + 0x10u, 1u), NULL);
             VSync(3);

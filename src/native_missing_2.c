@@ -336,21 +336,20 @@ uint32 sub_8003FAD0(uint32 object, uint32 mode, uint32 model, uint32 value)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 scratch = draft_scratch_adapter(1024), position = scratch, normal = scratch + 16u, tag = scratch + 24u, dust_normal = scratch + 32u, child, i, angle; int32 delta;
-    GameGeometryCallContext context = {0}; GameSceneCallContext scene = {0}; context.stack_pointer = scratch + 1024u; scene.stack_pointer = context.stack_pointer;
+    uint32 scratch = draft_scratch_adapter(40u), position = scratch, dust_normal = scratch + 16u, normal = scratch + 24u, tag = scratch + 32u, child, i, angle; int32 delta;
     if (mode) { for (i = 0; i < 3; ++i) w_u32(position + i * 4u, r_u32(object + 20u + i * 4u)); }
     else { uint32 type = r_u8(r_u32(0x800A8548u) + r_u16(object + 32u)); sub_8003F7D8(object, position, (uint32)(((int16)r_u16(r_u32(0x800A90ACu) + 40u * type + 34u) >> 1) - 50)); }
-    delta = (int32)(sub_8002E310(position, normal, tag, &context) + r_u32(object + 24u));
-    { uint32 magnitude = sub_8002E310(position, normal, tag, &context) + r_u32(object + 24u); if (delta < 0) magnitude = 0u - magnitude; if ((int32)magnitude >= 300) return draft_scratch_result(native_stack_mark, (uint64)(1)); }
-    child = sub_800226E4(60, &context); w_u32(child, mode ? 0x8003FE30u : 0x8003FD78u); w_u32(position + 4u, r_u32(position + 4u) - 100u); w_u32(child + 20u, r_u32(position)); w_u32(child + 28u, r_u32(position + 8u)); w_u32(child + 24u, 0u - sub_8002E310(position, normal, tag, &context));
+    delta = (int32)((uint32)draft_call_adapter(0x8002E310u, position, normal, tag) + r_u32(object + 24u));
+    { uint32 magnitude = (uint32)draft_call_adapter(0x8002E310u, position, normal, tag) + r_u32(object + 24u); if (delta < 0) magnitude = 0u - magnitude; if ((int32)magnitude >= 300) return draft_scratch_result(native_stack_mark, (uint64)(1)); }
+    child = (uint32)draft_call_adapter(0x800226E4u, 60u); w_u32(child, mode ? 0x8003FE30u : 0x8003FD78u); w_u32(position + 4u, r_u32(position + 4u) - 100u); w_u32(child + 20u, r_u32(position)); w_u32(child + 28u, r_u32(position + 8u)); w_u32(child + 24u, 0u - (uint32)draft_call_adapter(0x8002E310u, position, normal, tag));
     w_u16(child + 8u, value + 160u); w_u8(child + 13u, mode); w_u32(child + 16u, object); w_u16(child + 56u, 0); w_u8(object + 15u, r_u8(object + 15u) + 1u);
     for (i = 0; i < 5; ++i) {
-        child = sub_800226E4(56, &context); w_u8(child + 34u, 10); w_u32(child, 0x8003FF08u);
+        child = (uint32)draft_call_adapter(0x800226E4u, 56u); w_u8(child + 34u, 10); w_u32(child, 0x8003FF08u);
         w_u32(child + 20u, (sub_80069A50() & 255u) + r_u32(position) - 127u); w_u32(child + 24u, r_u32(position + 4u)); w_u32(child + 28u, (sub_80069A50() & 255u) + r_u32(position + 8u) - 127u);
-        w_u32(child + 24u, 0u - sub_8002E310(child + 20u, dust_normal, normal, &context)); w_u16(child + 8u, value + (sub_80069A50() & 127u)); w_u16(child + 10u, 1024);
+        w_u32(child + 24u, 0u - (uint32)draft_call_adapter(0x8002E310u, child + 20u, dust_normal, normal)); w_u16(child + 8u, value + (sub_80069A50() & 127u)); w_u16(child + 10u, 1024);
         angle = 0u - (sub_80055A9C((uint32)(int32)(int16)r_u16(dust_normal + 4u), (uint32)(int32)(int16)r_u16(dust_normal + 2u)) + 2048u); w_u16(child + 16u, angle);
         angle = sub_80055A9C((uint32)(int32)(int16)r_u16(dust_normal), (uint32)(int32)(int16)r_u16(dust_normal + 2u)) + 2048u; w_u16(child + 18u, angle);
-        sub_80054D38((uint32)(int32)(int16)r_u16(child + 16u), 0, (uint32)(int32)(int16)angle, child + 36u, &scene); w_u16(child + 32u, model); w_u8(child + 14u, r_u8(child + 14u) | 2u);
+        draft_call_adapter(0x80054D38u, (uint32)(int32)(int16)r_u16(child + 16u), 0u, (uint32)(int32)(int16)angle, child + 36u); w_u16(child + 32u, model); w_u8(child + 14u, r_u8(child + 14u) | 2u);
     }
     return draft_scratch_result(native_stack_mark, (uint64)(0));
 
@@ -821,4 +820,30 @@ uint32 sub_800617A8(uint32 object)
     w_u16(object + 36u, r_u16(object + 36u) - 10u * step);
     w_u16(object + 38u, result);
     return result;
+}
+
+uint32 sub_8004C8A8(uint32 object)
+{
+    sint32 timer = (sint16)r_u16(object + 170u);
+    uint32 result;
+    FUNCTION_MARKER(0x8004C8A8u, "1.EXE");
+    if (timer > 0)
+        w_u16(object + 170u, (uint32)timer - 1u);
+    if (r_u8(object + 198u) == 9u)
+        w_u16(object + 168u, 0u);
+    result = 0u - (uint32)(sint32)(sint8)r_u8(object + 87u);
+    w_u16(object + 114u, 120u);
+    w_u8(object + 87u, result);
+    return result;
+}
+
+uint32 sub_8004BBBC(uint32 object, uint32 mode)
+{
+    FUNCTION_MARKER(0x8004BBBCu, "1.EXE");
+    draft_call_adapter(0x8004D8B4u, object);
+    sub_80030F08((uint32)(sint32)(sint16)r_u16(object + 74u),
+        (uint32)(sint32)(sint16)r_u16(object + 68u), 1u);
+    draft_call_adapter(0x80054934u, object, mode);
+    w_u32(object, 0x80045510u);
+    return 0x80045510u;
 }

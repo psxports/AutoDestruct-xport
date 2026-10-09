@@ -58,11 +58,11 @@ uint32 sub_80034264(void)
     uint32 state,v;
     FUNCTION_MARKER(0x80034264u, "1.EXE");
     v=r_u32(0x800A9D5Cu);if((int32)v>0){w_u32(0x800A9D5Cu,v-1);return draft_scratch_result(native_stack_mark, (uint64)(0));}
-    if(r_u32(0x800A84D4u)){state=r_u32(0x800A6D04u);w_u32(0x800A98F4u,0);if(state==1)w_u32(0x800A98F4u,2000);
-        v=(uint32)draft_call_adapter(0x800339D0u,r_u32(0x800A98F4u));w_u32(0x800A6D08u,v);w_u32(0x800A6CF8u,0);if(r_u32(0x800A6D04u)==1)return draft_scratch_result(native_stack_mark, (uint64)(0xFFFF));}
+    if(r_u32(0x800A84D4u)){state=r_u32(0x800A6D04u);w_u32(0x800A98F4u,0);if(state==1)w_u32(0x800A98F4u,0x2000u);
+        v=(uint32)draft_call_adapter(0x800339D0u,r_u32(0x800A98F4u));w_u32(0x800A6D08u,v);w_u32(0x800A6CF8u,0);if(r_u32(0x800A6D04u)==1)return draft_scratch_result(native_stack_mark, (uint64)(0xFFFFFFFFu));}
     state=r_u32(0x800A6D04u);
-    if((!r_u32(0x800A8E70u)&&!r_u32(0x800A84D4u)&&(r_u32(0x800A6D14u)&0x900))||state==2||state==3){w_u16(0x800A6D10u,2);return draft_scratch_result(native_stack_mark, (uint64)(0xFFFF));}
-    return draft_scratch_result(native_stack_mark, (uint64)(!r_u32(0x800A84D4u)&&state==1?0xFFFF:0));
+    if((!r_u32(0x800A8E70u)&&!r_u32(0x800A84D4u)&&(r_u32(0x800A6D14u)&0x900))||state==2||state==3){w_u16(0x800A6D10u,2);return draft_scratch_result(native_stack_mark, (uint64)(0xFFFFFFFFu));}
+    return draft_scratch_result(native_stack_mark, (uint64)(!r_u32(0x800A84D4u)&&state==1?0xFFFFFFFFu:0u));
 
     draft_scratch_release(native_stack_mark);
 }
@@ -174,7 +174,7 @@ uint32 sub_8004AA30(uint32 a0)
     draft_scratch_release(native_stack_mark);
 }
 
-uint32 sub_8003CB98(void)
+uint32 sub_8003CB98(uint32 object)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
@@ -186,7 +186,7 @@ uint32 sub_8003CB98(void)
     if((uint32)r_s16(count)<r_u32(table+12)){draft_call_adapter(0x80035A08u,36u,2048u,255u,0u,0u);w_u16(0x800A5EECu,100);return draft_scratch_result(native_stack_mark, (uint64)(0xFFFFFFFF));}
     if(r_s16(0x800A5EECu))return draft_scratch_result(native_stack_mark, (uint64)(0xFFFFFFFE));
     delay=index==3?128:index==11?80:r_u16(table+16);w_u16(0x800A5EECu,delay);index=(uint32)r_s16(0x800A5EF2u);count=0x800A5EACu+2*index;w_u16(count,r_u16(count)-1);
-    index=(uint32)r_s16(0x800A5EF2u);draft_call_adapter(r_u32(0x800901E0u+12*index));return draft_scratch_result(native_stack_mark, (uint64)(0));
+    index=(uint32)r_s16(0x800A5EF2u);draft_call_adapter(r_u32(0x800901E0u+12*index),object,index);return draft_scratch_result(native_stack_mark, (uint64)(0));
 
     draft_scratch_release(native_stack_mark);
 }

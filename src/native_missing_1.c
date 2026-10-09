@@ -4,6 +4,7 @@
 #include "draft_signatures.h"
 #include <stdio.h>
 #include <string.h>
+uint32 sub_8007FAAC(uint32 mode);
 
 uint32 sub_80078830(void);
 
@@ -109,7 +110,7 @@ uint32 sub_8006F2B0(void);
 uint32 sub_80059E2C(GameSceneCallContext *context);
 uint32 sub_800380A8(void);
 sint32 LoadPSX(uint32 filename, uint32 header);
-sint32 MemCardEnd(void);
+sint32 MemCardEndPSX(void);
 
 uint32 sub_8003C958(GameGeometryCallContext *context)
 {
@@ -148,12 +149,12 @@ uint32 sub_800392B4(GameGeometryCallContext *context)
     uint32 saved = r_u32(0x800A6DE4); w_u32(0x800A6DE4, 0x8012FFE0);
     w_u32(saved + 4, r_u32(0x800A87E4)); w_u32(saved + 8, r_u32(0x800A8698)); w_u32(saved + 12, r_u32(0x800A8FD4));
     for (uint32 i = 0; i < 4; ++i) w_u32(0x8012FFE0 + i * 4, r_u32(0x800A8504 + i * 4));
-    ResetGraph(3); SetGraphDebug(0);
+    sub_8007FAAC(3u); SetGraphDebug(0);
     scene.stack_pointer = frame; scene.return_address = 0x80039448; scene.caller_s0 = 2; sub_80059E2C(&scene);
-    sub_800380A8(); psx_bios_bind_card_end_patch(0x674u, 0x8008628Cu); MemCardEnd(); _96_init();
+    sub_800380A8(); psx_bios_bind_card_end_patch(0x674u, 0x8008628Cu); MemCardEndPSX(); _96_init();
     w_u8(filename + 17, r_u8(0x800A8FD4) + 48);
     while (!LoadPSX(filename, header)) { }
-    ResetGraph(0); SetDispMask(0); result = Exec(header, 0, 0);
+    sub_8007FAAC(0u); SetDispMask(0); result = Exec(header, 0, 0);
     context->return_address = r_u32(frame + 0xB4); context->caller_s0 = r_u32(frame + 0xB0); return result;
 }
 

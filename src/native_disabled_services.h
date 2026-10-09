@@ -12,12 +12,12 @@ uint32 ad_todo_card_read(uint32 channel,uint32 filename,uint32 output,uint32 off
 #define InitTAP ad_todo_init_tap
 #define StartTAP ad_todo_service
 #define StopTAP ad_todo_service_unsigned
-#define MemCardInit ad_todo_service
-#define MemCardStart ad_todo_service
-#define MemCardEnd ad_todo_service
-#define MemCardClose ad_todo_service_unsigned
-#define MemCardExist ad_todo_card_exist
-#define MemCardSync ad_todo_card_sync
-#define MemCardOpen ad_todo_card_open
-#define MemCardReadFile ad_todo_card_read
+#define MemCardInitPSX ad_todo_service
+#define MemCardStartPSX ad_todo_service
+#define MemCardEndPSX ad_todo_service
+#define MemCardClosePSX ad_todo_service_unsigned
+#define MemCardExistPSX ad_todo_card_exist
+#define MemCardSyncPSX ad_todo_card_sync
+#define MemCardOpenPSX ad_todo_card_open
+#define MemCardReadFilePSX ad_todo_card_read
 #endif

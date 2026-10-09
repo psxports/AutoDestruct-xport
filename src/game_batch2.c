@@ -1,4 +1,5 @@
 #include "psx.h"
+uint32 sub_800805E0(uint32 environment);
 
 #include "game_scene.h"
 
@@ -975,7 +976,7 @@ uint32 sub_8001FF7C(uint32 mode, GameGeometryCallContext *context)
         VSync(0);
         page = 1u - r_u32(0x800A562Cu);
         w_u32(0x800A562Cu, page);
-        PutDrawEnv((DRAWENV *)psx_addr(0x800A856Cu + page * 120u, sizeof(DRAWENV)));
+        sub_800805E0(0x800A856Cu + page * 120u);
         page = r_u32(0x800A562Cu);
         PutDispEnv((DISPENV *)psx_addr(0x800A85C8u + page * 120u, sizeof(DISPENV)));
         page = r_u32(0x800A562Cu);
@@ -1551,12 +1552,12 @@ uint32 sub_80076ED4(GameGeometryCallContext *context)
     FUNCTION_MARKER(0x80076ED4u, "1.EXE");
     w_u32(frame + 0x1Cu, context->return_address);
     w_u32(frame + 0x18u, context->caller_s0);
-    MemCardExist(0u);
-    MemCardSync(0u, 0u, frame + 0x10u);
+    MemCardExistPSX(0u);
+    MemCardSyncPSX(0u, 0u, frame + 0x10u);
     status = r_u32(frame + 0x10u);
     mask = status == 0u || status == 3u ? 1u : 0u;
-    MemCardExist(16u);
-    MemCardSync(0u, 0u, frame + 0x10u);
+    MemCardExistPSX(16u);
+    MemCardSyncPSX(0u, 0u, frame + 0x10u);
     status = r_u32(frame + 0x10u);
     if (status == 0u || status == 3u)
         mask |= 2u;
@@ -1635,7 +1636,7 @@ uint32 sub_80073C48(uint32 filename, GameGeometryCallContext *context)
     first = r_u32(0x800A98F8u);
     w_u32(frame + 0x30u, context->return_address);
     child.stack_pointer = frame;
-    result = MemCardOpen(first << 4u, filename, 1u);
+    result = MemCardOpenPSX(first << 4u, filename, 1u);
     if (result != 0u)
     {
         child.caller_s1 = 1u;
@@ -1644,11 +1645,11 @@ uint32 sub_80073C48(uint32 filename, GameGeometryCallContext *context)
     child.caller_s0 = 0x800B5898u;
     first = r_u32(0x800A98F8u);
     w_u32(frame + 0x10u, 0xE00u);
-    result = MemCardReadFile(first << 4u, filename, child.caller_s0, 0x200u, r_u32(frame + 0x10u));
+    result = MemCardReadFilePSX(first << 4u, filename, child.caller_s0, 0x200u, r_u32(frame + 0x10u));
     w_u32(frame + 0x20u, result);
     child.return_address = 0x80073CACu;
     sub_8007361C(135u, &child);
-    MemCardSync(0u, 0u, frame + 0x20u);
+    MemCardSyncPSX(0u, 0u, frame + 0x20u);
     if (r_u32(frame + 0x20u) != 0u)
         goto close_file;
     if (r_u32(0x800A651Cu) != 1u)
@@ -1693,7 +1694,7 @@ uint32 sub_80073C48(uint32 filename, GameGeometryCallContext *context)
     result = 0u;
     goto restore;
 close_file:
-    MemCardClose();
+    MemCardClosePSX();
     result = child.caller_s1;
 restore:
     context->caller_s2 = child.caller_s2;

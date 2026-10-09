@@ -45,7 +45,6 @@ uint32 sub_8005AB3C(void)
     if ((sint32)value < 0) value += 511u;
     w_u32(0x800A745Cu, 611u - (uint32)((sint32)value >> 9));
     draft_call_adapter(0x8005ABD8u);
-    // TODO Recover logical inputs produced by the preceding callee for 44618
     if (!r_u32(0x800A8B30u)) draft_call_adapter(0x80044618u);
     value = r_u32(0x800A8540u) & 1u;
     return draft_scratch_result(native_stack_mark, (uint64)(value ? (uint32)draft_call_adapter(0x800446D8u) : value));

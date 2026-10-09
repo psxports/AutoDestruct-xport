@@ -1,4 +1,5 @@
 #include "psx.h"
+#include "draft_adapters.h"
 
 #include <stdlib.h>
 #include "game_scene.h"
@@ -6,6 +7,7 @@
 
 
 void native_input_publish_basic_pad(void);
+void native_sdk_stream_stop(void);
 uint32 sub_80069A70(uint32 destination, uint32 limit);
 uint32 sub_80069A98(void);
 uint32 sub_80069AD4(uint32 size, GameSceneCallContext *context);
@@ -213,9 +215,11 @@ uint32 sub_80059E2C(GameSceneCallContext *context)
 
 uint32 sub_8005A4D8(uint32 filename, GameSceneCallContext *context)
 {
+    uint32 stack_mark = draft_scratch_mark();
     uint32 frame = context->stack_pointer - 0x30u;
     uint32 result;
     FUNCTION_MARKER(0x8005A4D8u, "1.EXE");
+    draft_scratch_guest_frame(context->stack_pointer, 0x30u);
     w_u32(frame + 0x28u, context->caller_s0);
     w_u32(frame + 0x2Cu, context->return_address);
     for (;;)
@@ -232,6 +236,7 @@ uint32 sub_8005A4D8(uint32 filename, GameSceneCallContext *context)
     result = r_u32(frame + 0x14u);
     context->return_address = r_u32(frame + 0x2Cu);
     context->caller_s0 = r_u32(frame + 0x28u);
+    draft_scratch_release(stack_mark);
     return result;
 }
 
@@ -268,6 +273,7 @@ uint32 sub_8004206C(uint32 destination, uint32 first, uint32 second, uint32 thir
 
 uint32 sub_8003C87C(GameGeometryCallContext *context)
 {
+    uint32 stack_mark = draft_scratch_mark();
     uint32 frame = context->stack_pointer - 0x40u;
     uint32 first, second, third;
     uint32 result = 0u;
@@ -275,6 +281,7 @@ uint32 sub_8003C87C(GameGeometryCallContext *context)
     GameSceneCallContext search;
     GameGeometryCallContext playback = *context;
     FUNCTION_MARKER(0x8003C87Cu, "1.EXE");
+    draft_scratch_guest_frame(context->stack_pointer, 0x40u);
     w_u32(frame + 0x38u, context->return_address);
     w_u32(frame + 0x34u, context->caller_s1);
     w_u32(frame + 0x30u, context->caller_s0);
@@ -306,11 +313,13 @@ uint32 sub_8003C87C(GameGeometryCallContext *context)
     context->return_address = r_u32(frame + 0x38u);
     context->caller_s1 = r_u32(frame + 0x34u);
     context->caller_s0 = r_u32(frame + 0x30u);
+    draft_scratch_release(stack_mark);
     return result;
 }
 
 uint32 sub_80041E24(uint32 filename, uint32 mode, GameGeometryCallContext *context)
 {
+    uint32 stack_mark = draft_scratch_mark();
     uint32 frame = context->stack_pointer - 0x58u;
     uint32 result = 0u;
     uint32 buffer;
@@ -323,6 +332,7 @@ uint32 sub_80041E24(uint32 filename, uint32 mode, GameGeometryCallContext *conte
     uint32 live_s0 = mode;
     uint32 live_s2 = context->caller_s2;
     FUNCTION_MARKER(0x80041E24u, "1.EXE");
+    draft_scratch_guest_frame(context->stack_pointer, 0x58u);
     w_u32(frame + 0x4Cu, context->caller_s1);
     w_u32(frame + 0x48u, context->caller_s0);
     w_u32(frame + 0x54u, context->return_address);
@@ -419,6 +429,7 @@ uint32 sub_80041E24(uint32 filename, uint32 mode, GameGeometryCallContext *conte
     context->caller_s2 = r_u32(frame + 0x50u);
     context->caller_s1 = r_u32(frame + 0x4Cu);
     context->caller_s0 = r_u32(frame + 0x48u);
+    draft_scratch_release(stack_mark);
     return result;
 }
 
@@ -654,6 +665,7 @@ void sub_8007D230(GameMainCallContext *context)
         sub_8007B770(0u);
         sub_8007B350(0u);
     }
+    native_sdk_stream_stop();
     w_u8(r_u32(0x800928D0u), 0u);
     w_u8(r_u32(0x800928DCu), 0u);
     child.return_address = 0x8007D2A4u;

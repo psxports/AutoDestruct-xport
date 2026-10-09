@@ -377,7 +377,7 @@ uint32 sub_8005BA64(uint32 camera)
     sint32 heading = (sint16)r_u16(gp + 0xD04);
     w_u32(temporary + 8, r_u32(0x800A633C)); w_u32(temporary + 12, r_u32(0x800A6340));
     /* TODO Original indirect camera callbacks */
-    sint32 speed = (sint32)draft_call_adapter(r_u32(callbacks)) >> 16;
+    sint32 speed = (sint32)draft_call_adapter(r_u32(callbacks), owner) >> 16;
     if (speed < 10) speed = 15; else if (speed >= 21) speed = 20;
     draft_call_adapter(r_u32(callbacks + 20), owner, temporary);
     uint32 difference = (heading - (sint16)r_u16(temporary + 2)) & 4095;
@@ -593,7 +593,7 @@ uint32 sub_80027024(uint32 object)
     w_u8(object + 67, sub_800287B4(object, object + 88, r_u32(object + 472), heights));
     model = r_u8(r_u32(0x800A8548) + r_u16(object + 32));
     uint32 shape = r_u32(0x800A9750) + model * 40, physical = r_u32(0x800A90AC) + model * 40;
-    draft_call_adapter(0x80022FF8, object, object + 88, object + 592, (sint16)(2 * r_u16(physical + 32)), object + 160);
+    draft_call_adapter(0x80022FF8, object, object + 88, object + 592, object + 160);
     sint32 h0 = (sint16)r_u16(heights), h1 = (sint16)r_u16(heights + 2), h2 = (sint16)r_u16(heights + 4), h3 = (sint16)r_u16(heights + 6);
     w_u16(object + 224, sub_80055A9C((h3 + h2 - h0 - h1) >> 1, (sint16)r_u16(shape + 34)));
     w_u16(object + 228, sub_80055A9C((h2 + h1 - h3 - h0) >> 1, (sint16)r_u16(shape + 36))); w_u16(object + 226, r_u16(object + 560));
@@ -603,21 +603,25 @@ uint32 sub_80027024(uint32 object)
     draft_call_adapter(0x80054D38, (sint16)r_u16(object + 224), (sint16)r_u16(object + 226), (sint16)r_u16(object + 228), object + 36);
     sint32 time = r_u32(0x800A63D8); if (time) w_u32(gp + 0x128, time);
     sint32 vertical = (r_u32(object + 24) - r_u32(object + 248)) << 16, divisor = time >> 16;
-    if (divisor) { if (vertical == (sint32)0x80000000 && divisor == -1) { /* TODO Original arithmetic trap */ draft_call_adapter(0x80027024); } else vertical /= divisor; }
+    if (divisor) { if (vertical == (sint32)0x80000000 && divisor == -1) abort(); else vertical /= divisor; }
     w_u32(object + 492, vertical);
-    /* TODO Resolve fifth 80029970 argument from original call boundary */
-    draft_call_adapter(0x80029970, object, (sint16)r_u16(physical + 32), 0, 1);
+    draft_call_adapter(0x80029970, object, (sint16)r_u16(physical + 32), 0, 1, object + 244);
     if (r_u32(gp + 0x94) && (sint32)r_u32(object + 484) > 0 && (sint32)r_u32(0x800A7E10) > 0) { draft_call_adapter(0x80063450, object); draft_call_adapter(0x800361FC, r_u32(gp + 0x84), 192); }
     else if (r_u32(gp + 0x84) != 0xFFFFFFFF) draft_call_adapter(0x800361FC, r_u32(gp + 0x84), 0);
     uint32 distance = draft_call_adapter(0x80069BE0, r_u32(object + 244) - r_u32(object + 20), r_u32(object + 252) - r_u32(object + 28));
     w_u32(gp + 0x74, r_u32(gp + 0x74) + distance * (((sint32)r_u32(object + 472) >> 19) + 1));
     if (r_u32(gp + 0x74) > 100000) { if (!r_u32(gp + 0x6C)) w_u16(0x800A7E10, r_u16(0x800A7E10) - 1); w_u32(gp + 0x74, 0); }
     if ((sint16)r_u16(0x800A7E10) <= 0) { w_u32(0x800A8538, 728160); w_u32(gp + 0x9C, 728160); }
-    for (uint32 i = 0; i < 4; ++i) w_u8(surface + i, r_u16(object + 594) ? r_u8(object + 582) : r_u8((uint32)-2146800736 + i));
-    draft_call_adapter(0x80061A78, object, object + 596, object + 244, surface); w_u8(object + 581, 0);
+    uint32 force_mask = 0, excluded_mask = 0;
+    for (uint32 i = 0; i < 4; ++i) {
+        excluded_mask |= (r_u16(object + 98 + 16 * i) & 15u) << i;
+        force_mask |= (uint32)r_u8(object + (r_u16(object + 594) ? 584 : 588) + i) << i;
+        w_u8(surface + i, r_u16(object + 594) ? r_u8(object + 582) : r_u8((uint32)-2146800736 + i));
+    }
+    draft_call_adapter(0x80061A78, object, object + 596, surface, force_mask, excluded_mask, 4u); w_u8(object + 581, 0);
     uint32 buttons = r_u16(0x800A8398);
     if (!(buttons & 64)) w_u16(gp + 0x156C, 0);
-    else if (!(r_u16(gp + 0x156C) & 64)) { if ((sint16)draft_call_adapter(0x8003CB98, object, (sint16)r_u16(0x800A84AC)) == -1) w_u16(gp + 0x156C, buttons); else w_u16(gp + 0x156C, 0); }
+    else if (!(r_u16(gp + 0x156C) & 64)) { if ((sint16)draft_call_adapter(0x8003CB98, object) == -1) w_u16(gp + 0x156C, buttons); else w_u16(gp + 0x156C, 0); }
     if (buttons & 1) w_u8(object + 581, 1); else if (buttons & 2) w_u8(object + 581, 255);
     w_u32(object + 580, (r_u32(object + 580) & 0xFFFFFFF) | ((buttons & 4) ? 0x10000000 : 0));
     w_u16(0x800A84AC, (409 * ((sint32)r_u32(object + 472) >> 8)) >> 16);

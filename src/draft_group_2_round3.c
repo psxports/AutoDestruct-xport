@@ -123,7 +123,7 @@ uint32 sub_80033200(void)
     if ((int16)r_u16(0x800A6CF0u) >= 30) {
         sub_80033400(); w_u16(0x800A973Cu, 2); w_u16(0x800A6CECu, 0); w_u16(0x800A6CF0u, 0); return draft_scratch_result(native_stack_mark, (uint64)(2));
     }
-    if ((int32)r_u32(0x800A9A68u) > 0 && r_u32(0x800A975Cu)) w_u32(0x800A7BE0u, sub_8003315C());
+    if ((int32)r_u32(0x800A9A68u) > 0 && r_u32(0x800A975Cu)) w_u32(0x800A7BE0u, sub_8003315C(r_u32(0x800A9A68u)));
     result = 1;
     if (r_u16(0x800A9744u) == 1) { result = r_u32(0x800A7BE0u); if (!result) { result = r_u16(0x800A6CF0u) + 1u; w_u16(0x800A6CF0u, result); } }
     return draft_scratch_result(native_stack_mark, (uint64)(result));

@@ -1,6 +1,38 @@
 #include "draft_signatures.h"
 #include "draft_adapters.h"
 
+uint32 sub_8006080C(uint32 object)
+{
+    uint32 tick = r_u32(0x800A9010u);
+    uint32 rotation = tick * (uint32)(sint32)(sint16)r_u16(object + 16u);
+    uint32 result;
+    FUNCTION_MARKER(0x8006080Cu, "1.EXE");
+    w_u16(object + 8u, r_u16(object + 8u) - tick);
+    w_u32(object + 24u, r_u32(object + 24u) - 12u * tick);
+    result = r_u16(object + 38u) + rotation;
+    w_u16(object + 38u, result);
+    if ((sint16)r_u16(object + 8u) < 0) {
+        result = 0x80060878u;
+        w_u32(object, result);
+    }
+    return result;
+}
+
+uint32 sub_80060878(uint32 object)
+{
+    uint32 tick = r_u32(0x800A9010u);
+    uint32 rotation = tick * (uint32)(sint32)(sint16)r_u16(object + 16u);
+    uint32 result;
+    FUNCTION_MARKER(0x80060878u, "1.EXE");
+    w_u32(object + 24u, r_u32(object + 24u) - 12u * tick);
+    w_u16(object + 36u, r_u16(object + 36u) - 10u * tick);
+    result = r_u16(object + 38u) + rotation;
+    w_u16(object + 38u, result);
+    if ((sint16)r_u16(object + 36u) < 30)
+        return sub_8002289C(object);
+    return result;
+}
+
 uint32 sub_80060738(uint32 object)
 {
     uint32 tick = r_u32(0x800A9010u);

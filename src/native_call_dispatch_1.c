@@ -672,8 +672,9 @@ uint64 native_dispatch_group_1(uint32 target,uint32 argument_count,va_list args)
         break;
     }
     case 0x8003CB98u: {
-        native_dispatch_require(target,argument_count,0u);
-        result=(uint64)sub_8003CB98();
+        native_dispatch_require(target,argument_count,1u);
+        uint32 p0=(uint32)va_arg(args,uint32);
+        result=(uint64)sub_8003CB98(p0);
         break;
     }
     case 0x8003CCE0u: {
@@ -1234,10 +1235,8 @@ uint64 native_dispatch_group_1(uint32 target,uint32 argument_count,va_list args)
         break;
     }
     case 0x80044618u: {
-        native_dispatch_require(target,argument_count,2u);
-        uint32 p0=(uint32)va_arg(args,uint32);
-        uint32 p1=(uint32)va_arg(args,uint32);
-        result=(uint64)sub_80044618(p0,p1);
+        native_dispatch_require(target,argument_count,0u);
+        result=(uint64)sub_80044618();
         break;
     }
     case 0x80044C78u: {

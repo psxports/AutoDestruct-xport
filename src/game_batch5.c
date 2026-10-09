@@ -1271,7 +1271,6 @@ uint32 sub_800551CC(uint32 angle, uint32 matrix);
 void sub_80031CE8(uint32 matrix, uint32 translation, uint32 vector, uint32 destination);
 uint32 sub_8005B2AC(uint32 first, uint32 second, uint32 destination);
 uint32 sub_80069BE0(uint32 first, uint32 second);
-uint32 sub_8005B70C(uint32 position, GameGeometryCallContext *context);
 uint32 sub_8005B2AC(uint32 first, uint32 second, uint32 destination);
 uint32 sub_80069BE0(uint32 first, uint32 second);
 void sub_80031CE8(uint32 matrix, uint32 translation, uint32 vector, uint32 destination);
@@ -1425,7 +1424,7 @@ uint32 sub_8005BF3C(uint32 object, GameGeometryCallContext *context)
     w_u32(0x800A84E8u, b);
     child.stack_pointer = frame;
     child.return_address = 0x8005C05Cu;
-    result = sub_8005B70C(child.caller_s1, &child);
+    result = sub_8005B70C(child.caller_s1, child.stack_pointer);
     context->caller_s2 = child.caller_s2;
     context->caller_s3 = child.caller_s3;
     context->caller_s4 = child.caller_s4;
