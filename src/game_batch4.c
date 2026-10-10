@@ -4,42 +4,11 @@ uint32 sub_800805E0(uint32 environment);
 
 #include "game_scene.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 uint32 sub_80054F40(uint32 x, uint32 y, uint32 z, uint32 matrix);
-
-
-
-
-
-
-
-
-
-
-
-
 
 uint32 sub_80057AB0(GameGeometryCallContext *context);
 
-
-
-uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height,
-    GameGeometryCallContext *context);
+uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height, GameGeometryCallContext *context);
 void sub_80041DB4(uint32 destination, uint32 x, uint32 y, uint32 rotation);
 void sub_80058418(GameGeometryCallContext *context);
 uint32 sub_8003D0F4(GameGeometryCallContext *context);
@@ -289,12 +258,10 @@ uint32 sub_80059610(GameGeometryCallContext *context)
     w_u32(frame + 0x18u, context->return_address);
     w_u16(frame + 0x16u, 1u);
     DrawSync(0);
-    StoreImage((PSX_RECT *)psx_addr(frame + 0x10u, sizeof(PSX_RECT)),
-        (uint32 *)psx_addr(0x800A71C8u, 1u));
+    StoreImage((PSX_RECT *)psx_addr(frame + 0x10u, sizeof(PSX_RECT)), (uint32 *)psx_addr(0x800A71C8u, 1u));
     w_u16(frame + 0x10u, 0x2D0u);
     DrawSync(0);
-    StoreImage((PSX_RECT *)psx_addr(frame + 0x10u, sizeof(PSX_RECT)),
-        (uint32 *)psx_addr(0x800A7248u, 1u));
+    StoreImage((PSX_RECT *)psx_addr(frame + 0x10u, sizeof(PSX_RECT)), (uint32 *)psx_addr(0x800A7248u, 1u));
     DrawSync(0);
     pointer = 0x800A73C4u;
     for (index = 0u; index < 64u; ++index)
@@ -306,8 +273,7 @@ uint32 sub_80059610(GameGeometryCallContext *context)
     w_u16(frame + 0x10u, 0x2B0u);
     w_u16(frame + 0x14u, 64u);
     DrawSync(0);
-    LoadImagePSX((PSX_RECT *)psx_addr(frame + 0x10u, sizeof(PSX_RECT)),
-        (uint32 *)psx_addr(0x800A72C8u, 1u));
+    LoadImagePSX((PSX_RECT *)psx_addr(frame + 0x10u, sizeof(PSX_RECT)), (uint32 *)psx_addr(0x800A72C8u, 1u));
     result = (uint32)DrawSync(0);
     context->return_address = r_u32(frame + 0x18u);
     return result;
@@ -602,7 +568,6 @@ uint32 sub_8003AD54(GameGeometryCallContext *context)
 void sub_80058418(GameGeometryCallContext *context)
 {
     FUNCTION_MARKER(0x80058418u, "1.EXE");
-    (void)context;
     w_u32(0x800A71B8u, 0u);
     w_u32(0x800A71BCu, 0u);
     w_u32(0x800A71C0u, 0u);
@@ -613,7 +578,6 @@ uint32 sub_8003D0F4(GameGeometryCallContext *context)
 {
     uint32 index = 0u;
     FUNCTION_MARKER(0x8003D0F4u, "1.EXE");
-    (void)context;
     do
     {
         w_u16(0x800A5EACu + (uint32)((sint32)(index << 16) >> 15), 0u);
@@ -656,7 +620,6 @@ uint32 sub_80057C7C(GameGeometryCallContext *context)
     uint32 address = 0x800A930Cu;
     uint32 result;
     FUNCTION_MARKER(0x80057C7Cu, "1.EXE");
-    (void)context;
     do
     {
         sint32 remaining = 1;
@@ -1177,7 +1140,6 @@ uint32 sub_80029C80(uint32 source, uint32 destination, uint32 scale_x, uint32 un
     uint32 factor_y = (uint32)((sint32)scale_y >> 8);
     uint32 value, result;
     FUNCTION_MARKER(0x80029C80u, "1.EXE");
-    (void)unused;
     do
     {
         uint32 offset = (uint32)((sint32)(index << 16) >> 13);

@@ -1,18 +1,16 @@
 #include "psx.h"
 
-uint32 sub_8001ABB0(uint32 cursor, uint32 vertices, uint32 source,
-    uint32 ordering, uint32 unused, uint32 depth_bias, uint32 count,
-    uint32 next_source)
+uint32 sub_8001ABB0(uint32 cursor, uint32 vertices, uint32 source, uint32 ordering, uint32 unused, uint32 depth_bias, uint32 count, uint32 next_source)
 {
     uint32 saved[8], index;
     uint32 matrix = r_u32(0x800A9A6Cu);
     uint32 destination = cursor + 36u;
-    (void)unused;
     FUNCTION_MARKER(0x8001ABB0u, "1.EXE");
     for (index = 0u; index < 8u; ++index)
         saved[index] = r_u32(matrix + index * 4u);
     depth_bias <<= 2u;
-    while (count != 0u) {
+    while (count != 0u)
+    {
         uint32 center = vertices + 8u * r_u16(source + 18u);
         uint32 x = (uint32)(sint32)(sint16)r_u16(center);
         uint32 y = (uint32)(sint32)(sint16)r_u16(center + 2u);
@@ -39,7 +37,8 @@ uint32 sub_8001ABB0(uint32 cursor, uint32 vertices, uint32 source,
         // Preserve the original speculative UV write even for a culled quad
         w_u32(destination - 24u, r_u32(source + 4u));
         depth = xport_gte_read_data(19u);
-        if (depth != 0u) {
+        if (depth != 0u)
+        {
             uint32 slot;
             w_u32(cursor + 32u, xport_gte_read_data(14u));
             xport_gte_write_data(0u, radius | (radius << 16u));

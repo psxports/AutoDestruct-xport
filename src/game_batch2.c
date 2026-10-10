@@ -10,13 +10,11 @@ uint32 sub_8003B574(uint32 selected, uint32 mode, GameGeometryCallContext *conte
 uint32 sub_80059860(uint32 divisor);
 uint32 sub_8003C3D4(GameGeometryCallContext *context);
 uint32 sub_80021144(uint32 selection, GameSceneCallContext *context);
-uint32 sub_80020C60(uint32 index, uint32 table, uint32 color, uint32 mode,
-    GameGeometryCallContext *context);
+uint32 sub_80020C60(uint32 index, uint32 table, uint32 color, uint32 mode, GameGeometryCallContext *context);
 uint32 sub_8003BFAC(GameGeometryCallContext *context);
 uint32 sub_8006499C(GameSceneCallContext *context);
 uint32 sub_80064594(uint32 target, uint32 baseline, GameGeometryCallContext *context);
-uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output,
-    GameSceneCallContext *context);
+uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output, GameSceneCallContext *context);
 void sub_8001F850(void);
 uint32 sub_8001FF7C(uint32 mode, GameGeometryCallContext *context);
 void sub_800643EC(GameRenderCallContext *context);
@@ -43,8 +41,7 @@ uint32 sub_800376D0(void);
 uint32 sub_80037864(void);
 sint32 sub_800389A8(GameMainCallContext *context);
 uint32 sub_80039224(void);
-uint32 sub_8003BA80(uint32 mission, uint32 allocation, uint32 loading,
-    GameGeometryCallContext *context);
+uint32 sub_8003BA80(uint32 mission, uint32 allocation, uint32 loading, GameGeometryCallContext *context);
 uint32 sub_8003C4B8(GameGeometryCallContext *context);
 uint32 sub_8003C5E4(GameGeometryCallContext *context);
 uint32 sub_8003C6D8(uint32 language, GameGeometryCallContext *context);
@@ -172,17 +169,17 @@ uint32 sub_8003B864(GameGeometryCallContext *context)
         context->caller_s2 = geometry.caller_s2;
         w_u16(0x800A6DE0u, result);
         geometry = *context;
-geometry.stack_pointer = frame;
-geometry.return_address = 0x8003B8ACu;
-result = sub_8003C394(&geometry);
-context->caller_s0 = geometry.caller_s0;
-context->caller_s1 = geometry.caller_s1;
-context->caller_s2 = geometry.caller_s2;
-context->caller_s3 = geometry.caller_s3;
-context->caller_s4 = geometry.caller_s4;
-context->caller_s5 = geometry.caller_s5;
-context->caller_s6 = geometry.caller_s6;
-context->caller_s7 = geometry.caller_s7;
+        geometry.stack_pointer = frame;
+        geometry.return_address = 0x8003B8ACu;
+        result = sub_8003C394(&geometry);
+        context->caller_s0 = geometry.caller_s0;
+        context->caller_s1 = geometry.caller_s1;
+        context->caller_s2 = geometry.caller_s2;
+        context->caller_s3 = geometry.caller_s3;
+        context->caller_s4 = geometry.caller_s4;
+        context->caller_s5 = geometry.caller_s5;
+        context->caller_s6 = geometry.caller_s6;
+        context->caller_s7 = geometry.caller_s7;
     }
     else
     {
@@ -200,17 +197,17 @@ context->caller_s7 = geometry.caller_s7;
         context->caller_s7 = geometry.caller_s7;
         w_u16(0x800A6DE0u, result);
         geometry = *context;
-geometry.stack_pointer = frame;
-geometry.return_address = 0x8003B8C8u;
-sub_8003C394(&geometry);
-context->caller_s0 = geometry.caller_s0;
-context->caller_s1 = geometry.caller_s1;
-context->caller_s2 = geometry.caller_s2;
-context->caller_s3 = geometry.caller_s3;
-context->caller_s4 = geometry.caller_s4;
-context->caller_s5 = geometry.caller_s5;
-context->caller_s6 = geometry.caller_s6;
-context->caller_s7 = geometry.caller_s7;
+        geometry.stack_pointer = frame;
+        geometry.return_address = 0x8003B8C8u;
+        sub_8003C394(&geometry);
+        context->caller_s0 = geometry.caller_s0;
+        context->caller_s1 = geometry.caller_s1;
+        context->caller_s2 = geometry.caller_s2;
+        context->caller_s3 = geometry.caller_s3;
+        context->caller_s4 = geometry.caller_s4;
+        context->caller_s5 = geometry.caller_s5;
+        context->caller_s6 = geometry.caller_s6;
+        context->caller_s7 = geometry.caller_s7;
         child.return_address = 0x8003B8D0u;
         child.caller_s0 = context->caller_s0;
         sub_80069B84(3u, &child);
@@ -242,7 +239,6 @@ uint32 sub_8003B574(uint32 selected, uint32 mode, GameGeometryCallContext *conte
     GameSceneCallContext child;
     GameGeometryCallContext geometry = *context;
     FUNCTION_MARKER(0x8003B574u, "1.EXE");
-    (void)mode;
     w_u32(frame + 0x14u, context->caller_s1);
     state = r_u32(0x800A6E1Cu);
     w_u32(frame + 0x1Cu, context->return_address);
@@ -290,8 +286,10 @@ uint32 sub_8003B574(uint32 selected, uint32 mode, GameGeometryCallContext *conte
         if (value == 0xFFFFFFFFu)
         {
             sub_80032D80();
-            if (r_u32(0x800A87E4u) != 0u) sub_80039198();
-            else sub_80039224();
+            if (r_u32(0x800A87E4u) != 0u)
+                sub_80039198();
+            else
+                sub_80039224();
             w_u8(0x800A9872u, 0u);
             w_u8(0x800A9878u, 0u);
         }
@@ -367,7 +365,8 @@ uint32 sub_8003B574(uint32 selected, uint32 mode, GameGeometryCallContext *conte
     state = r_u32(0x800A6E1Cu);
     if (state != 0u)
     {
-        if (state == 1u) sub_80059860(4u);
+        if (state == 1u)
+            sub_80059860(4u);
         geometry.stack_pointer = frame;
         geometry.return_address = 0x8003B748u;
         geometry.caller_s0 = counter;
@@ -378,103 +377,105 @@ uint32 sub_8003B574(uint32 selected, uint32 mode, GameGeometryCallContext *conte
         selected = geometry.caller_s1;
         resource = geometry.caller_s2;
     }
-    else sub_80059860(3u);
+    else
+        sub_80059860(3u);
     {
-    geometry.stack_pointer = frame;
-    geometry.caller_s0 = counter;
-    geometry.caller_s1 = selected;
-    geometry.caller_s2 = resource;
-    geometry.return_address = 0x8003B764u;
-    sub_8003C6D8((uint32)(sint32)(sint16)selected, &geometry);
-    counter = geometry.caller_s0;
-    selected = geometry.caller_s1;
-    resource = geometry.caller_s2;
-}
+        geometry.stack_pointer = frame;
+        geometry.caller_s0 = counter;
+        geometry.caller_s1 = selected;
+        geometry.caller_s2 = resource;
+        geometry.return_address = 0x8003B764u;
+        sub_8003C6D8((uint32)(sint32)(sint16)selected, &geometry);
+        counter = geometry.caller_s0;
+        selected = geometry.caller_s1;
+        resource = geometry.caller_s2;
+    }
     w_u32(0x800A6E18u, selected);
     w_u32(0x800A6E44u, selected);
     child.return_address = 0x8003B774u;
     sub_80069B84(2u, &child);
     if (r_u32(0x800A9760u) != 0u)
-        {
-    geometry.stack_pointer = frame;
-    geometry.caller_s0 = counter;
-    geometry.caller_s1 = selected;
-    geometry.caller_s2 = resource;
-    geometry.return_address = 0x8003B7DCu;
-    value = sub_8003BA80(r_u32(0x800A9768u), 1u, 1u, &geometry);
-    counter = geometry.caller_s0;
-    selected = geometry.caller_s1;
-    resource = geometry.caller_s2;
-    selected = value;
-}
+    {
+        geometry.stack_pointer = frame;
+        geometry.caller_s0 = counter;
+        geometry.caller_s1 = selected;
+        geometry.caller_s2 = resource;
+        geometry.return_address = 0x8003B7DCu;
+        value = sub_8003BA80(r_u32(0x800A9768u), 1u, 1u, &geometry);
+        counter = geometry.caller_s0;
+        selected = geometry.caller_s1;
+        resource = geometry.caller_s2;
+        selected = value;
+    }
     else
     {
         state = r_u32(0x800A8690u);
         if (state == 0u || state == 2u)
         {
             {
-    geometry.stack_pointer = frame;
-    geometry.caller_s0 = counter;
-    geometry.caller_s1 = selected;
-    geometry.caller_s2 = resource;
-    geometry.return_address = 0x8003B7ACu;
-    value = sub_8003BA80(r_u32(0x800A854Cu), 1u, 1u, &geometry);
-    counter = geometry.caller_s0;
-    selected = geometry.caller_s1;
-    resource = geometry.caller_s2;
-    selected = value;
-}
+                geometry.stack_pointer = frame;
+                geometry.caller_s0 = counter;
+                geometry.caller_s1 = selected;
+                geometry.caller_s2 = resource;
+                geometry.return_address = 0x8003B7ACu;
+                value = sub_8003BA80(r_u32(0x800A854Cu), 1u, 1u, &geometry);
+                counter = geometry.caller_s0;
+                selected = geometry.caller_s1;
+                resource = geometry.caller_s2;
+                selected = value;
+            }
             state = r_u32(0x800A8690u);
         }
-        if (state == 1u) {
-    geometry.stack_pointer = frame;
-    geometry.caller_s0 = counter;
-    geometry.caller_s1 = selected;
-    geometry.caller_s2 = resource;
-    geometry.return_address = 0x8003B7DCu;
-    value = sub_8003BA80(selected, 1u, 1u, &geometry);
-    counter = geometry.caller_s0;
-    selected = geometry.caller_s1;
-    resource = geometry.caller_s2;
-    selected = value;
-}
+        if (state == 1u)
+        {
+            geometry.stack_pointer = frame;
+            geometry.caller_s0 = counter;
+            geometry.caller_s1 = selected;
+            geometry.caller_s2 = resource;
+            geometry.return_address = 0x8003B7DCu;
+            value = sub_8003BA80(selected, 1u, 1u, &geometry);
+            counter = geometry.caller_s0;
+            selected = geometry.caller_s1;
+            resource = geometry.caller_s2;
+            selected = value;
+        }
     }
     child.return_address = 0x8003B7E8u;
     sub_80069B84(3u, &child);
     {
+        geometry.stack_pointer = frame;
+        geometry.caller_s0 = counter;
+        geometry.caller_s1 = selected;
+        geometry.caller_s2 = resource;
+        geometry.return_address = 0x8003B7F0u;
+        sub_800649E4(&geometry);
+        counter = geometry.caller_s0;
+        selected = geometry.caller_s1;
+        resource = geometry.caller_s2;
+    }
+    sub_80021200(r_u32(0x800A62F4u));
+    sub_8005AAE0();
     geometry.stack_pointer = frame;
     geometry.caller_s0 = counter;
     geometry.caller_s1 = selected;
     geometry.caller_s2 = resource;
-    geometry.return_address = 0x8003B7F0u;
-    sub_800649E4(&geometry);
+    geometry.return_address = 0x8003B818u;
+    sub_800651AC(r_u32(0x800A62F8u), &geometry);
     counter = geometry.caller_s0;
     selected = geometry.caller_s1;
     resource = geometry.caller_s2;
-}
-    sub_80021200(r_u32(0x800A62F4u));
-    sub_8005AAE0();
-    geometry.stack_pointer = frame;
-geometry.caller_s0 = counter;
-geometry.caller_s1 = selected;
-geometry.caller_s2 = resource;
-geometry.return_address = 0x8003B818u;
-sub_800651AC(r_u32(0x800A62F8u), &geometry);
-counter = geometry.caller_s0;
-selected = geometry.caller_s1;
-resource = geometry.caller_s2;
     sub_8005E818();
     if (r_u32(0x800A6E2Cu) == 0u)
     {
         geometry.stack_pointer = frame;
-geometry.caller_s0 = counter;
-geometry.caller_s1 = selected;
-geometry.caller_s2 = resource;
-geometry.return_address = 0x8003B838u;
-sub_80059610(&geometry);
-counter = geometry.caller_s0;
-selected = geometry.caller_s1;
-resource = geometry.caller_s2;
+        geometry.caller_s0 = counter;
+        geometry.caller_s1 = selected;
+        geometry.caller_s2 = resource;
+        geometry.return_address = 0x8003B838u;
+        sub_80059610(&geometry);
+        counter = geometry.caller_s0;
+        selected = geometry.caller_s1;
+        resource = geometry.caller_s2;
         w_u32(0x800A6E2Cu, 1u);
     }
     w_u32(0x800A6E1Cu, 0u);
@@ -551,7 +552,8 @@ uint32 sub_8003C3D4(GameGeometryCallContext *context)
     sub_8005A3E4(frame + 0x10u, buffer, &load);
     size = load.caller_s1;
     result = (uint32)((sint32)size / 16);
-    if (size != (result << 4u)) ++result;
+    if (size != (result << 4u))
+        ++result;
     context->caller_s2 = load.caller_s2;
     context->return_address = r_u32(frame + 0x30u);
     context->caller_s1 = r_u32(frame + 0x2Cu);
@@ -567,7 +569,8 @@ uint32 sub_80021144(uint32 selection, GameSceneCallContext *context)
     FUNCTION_MARKER(0x80021144u, "1.EXE");
     w_u32(frame + 0x10u, context->caller_s0);
     w_u32(frame + 0x14u, context->return_address);
-    if (selection >= 5u) selection = 5u;
+    if (selection >= 5u)
+        selection = 5u;
     child.stack_pointer = frame;
     child.caller_s0 = selection;
     if (selection == 0u)
@@ -595,8 +598,7 @@ uint32 sub_80021144(uint32 selection, GameSceneCallContext *context)
     return result;
 }
 
-uint32 sub_80020C60(uint32 index, uint32 table, uint32 color, uint32 mode,
-    GameGeometryCallContext *context)
+uint32 sub_80020C60(uint32 index, uint32 table, uint32 color, uint32 mode, GameGeometryCallContext *context)
 {
     uint32 frame = context->stack_pointer - 0x20u;
     uint32 slot = table + (index << 2u);
@@ -740,12 +742,14 @@ uint32 sub_80064594(uint32 target, uint32 baseline, GameGeometryCallContext *con
     {
         sub_80064784(target + 0x88u, target + 0x94u);
         distance = (sint16)r_u16(target + 0x98u);
-        if (distance >= 13001) distance = 13000;
+        if (distance >= 13001)
+            distance = 13000;
         w_u32(target, (uint32)distance);
         w_u16(target + 0x98u, distance);
         amount = (sint8)r_u8(target + 0x9Fu);
         distance = (sint16)distance - amount * 200;
-        if (distance < 0) distance = 0;
+        if (distance < 0)
+            distance = 0;
         amount = r_u8(target + 0x9Fu);
         w_u32(target + 4u, distance);
         component = r_u8(baseline + 0x10u);
@@ -793,7 +797,8 @@ uint32 sub_80064594(uint32 target, uint32 baseline, GameGeometryCallContext *con
             component = r_u8(target + 0x12u);
             result = component - (uint32)((sint32)(value << 2u) >> 16);
             w_u8(target + 0x12u, result);
-            if (distance < 0) distance = 0;
+            if (distance < 0)
+                distance = 0;
             w_u32(target + 4u, distance);
         }
     }
@@ -803,8 +808,7 @@ uint32 sub_80064594(uint32 target, uint32 baseline, GameGeometryCallContext *con
     return result;
 }
 
-uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output,
-    GameSceneCallContext *context)
+uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output, GameSceneCallContext *context)
 {
     uint32 frame = context->stack_pointer - 0x18u;
     uint32 yp = (y + x) & 0xFFFu;
@@ -958,8 +962,10 @@ uint32 sub_8001FF7C(uint32 mode, GameGeometryCallContext *context)
         w_u32(0x800A865Cu, primitives);
         sub_80080474(ordering, 2048u);
         sub_8008056C(previous + 8188u);
-        if (r_u16(0x800A9A64u) != 0u) sub_80037864();
-        else sub_800376D0();
+        if (r_u16(0x800A9A64u) != 0u)
+            sub_80037864();
+        else
+            sub_800376D0();
         result = mode << 16u;
     }
     if (result == 0u)
@@ -1114,16 +1120,13 @@ void sub_80031C1C(uint32 matrix, uint32 vector, uint32 destination)
 #include <string.h>
 #include "game_scene.h"
 
-
-
 sint32 sub_800389A8(GameMainCallContext *context);
 uint32 sub_80020D98(uint32 index, uint32 table, uint32 color, uint32 x, uint32 entry_sp);
 uint32 sub_800202B0(uint32 page);
 void sub_8005A5F8(uint32 value, GameGeometryCallContext *context);
 void sub_80059E20(void);
 uint32 sub_800598CC(uint32 resource, GameGeometryCallContext *context);
-uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height,
-    GameGeometryCallContext *context);
+uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height, GameGeometryCallContext *context);
 void sub_80041DB4(uint32 destination, uint32 x, uint32 y, uint32 rotation);
 uint32 sub_80041D90(uint32 destination, uint32 color);
 uint32 sub_80020AB4(uint32 source, uint32 table, uint32 count);
@@ -1216,7 +1219,8 @@ void sub_8005A5F8(uint32 value, GameGeometryCallContext *context)
     w_u32(frame + 0x1Cu, context->caller_s1);
     w_u32(frame + 0x20u, context->return_address);
     w_u32(frame + 0x18u, context->caller_s0);
-    if (pending == 0u) sub_80059E20();
+    if (pending == 0u)
+        sub_80059E20();
     child.stack_pointer = frame;
     child.caller_s0 = 0x80090DFCu;
     child.caller_s1 = adjusted;
@@ -1286,8 +1290,7 @@ uint32 sub_800598CC(uint32 resource, GameGeometryCallContext *context)
     return result;
 }
 
-uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height,
-    GameGeometryCallContext *context)
+uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height, GameGeometryCallContext *context)
 {
     uint32 frame = context->stack_pointer - 0x38u;
     uint32 mode;

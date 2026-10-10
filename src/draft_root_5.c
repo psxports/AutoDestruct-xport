@@ -6,7 +6,8 @@ uint32 sub_80037D8C(void)
 
     uint32 value;
     FUNCTION_MARKER(0x80037D8Cu, "1.EXE");
-    if (r_s16(0x800A5C70u) != 2) return draft_scratch_result(native_stack_mark, (uint64)(0u));
+    if (r_s16(0x800A5C70u) != 2)
+        return draft_scratch_result(native_stack_mark, (uint64)(0u));
     value = r_u16(0x800A5C9Au);
     return draft_scratch_result(native_stack_mark, (uint64)(value == 64u || value == 128u || value == 4u));
 
@@ -19,9 +20,12 @@ uint32 sub_8006E708(uint32 a0, uint32 a1, uint32 a2)
 
     uint32 value;
     FUNCTION_MARKER(0x8006E708u, "1.EXE");
-    value = r_u32(a0) - r_u32(a1); w_u32(a2, value);
-    value = r_u32(a0 + 4u) - r_u32(a1 + 4u); w_u32(a2 + 4u, value);
-    value = r_u32(a0 + 8u) - r_u32(a1 + 8u); w_u32(a2 + 8u, value);
+    value = r_u32(a0) - r_u32(a1);
+    w_u32(a2, value);
+    value = r_u32(a0 + 4u) - r_u32(a1 + 4u);
+    w_u32(a2 + 4u, value);
+    value = r_u32(a0 + 8u) - r_u32(a1 + 8u);
+    w_u32(a2 + 8u, value);
     return draft_scratch_result(native_stack_mark, (uint64)(value));
 
     draft_scratch_release(native_stack_mark);
@@ -111,11 +115,13 @@ uint32 sub_80047438(uint32 a0)
     sint32 value;
     FUNCTION_MARKER(0x80047438u, "1.EXE");
     value = r_s16(a0 + 0x38u);
-    if (value > 0) {
+    if (value > 0)
+    {
         w_u16(a0 + 0x38u, (uint16)(value - 1));
         value = r_s16(a0 + 0x38u);
     }
-    if (value == 0) {
+    if (value == 0)
+    {
         w_u16(a0 + 0x38u, 0xFFFFu);
         w_u32(a0, 0x80029968u);
         return draft_scratch_result(native_stack_mark, (uint64)(0x80029968u));
@@ -166,7 +172,8 @@ uint32 sub_8002A300(uint32 a0)
 
     uint32 iteration, x, y, z;
     FUNCTION_MARKER(0x8002A300u, "1.EXE");
-    for (iteration = 0u; iteration < 2u; ++iteration, a0 += 8u) {
+    for (iteration = 0u; iteration < 2u; ++iteration, a0 += 8u)
+    {
         x = r_u16(a0 + 0x10u);
         y = r_u16(a0 + 0x12u);
         w_u16(a0 + 0x20u, (uint16)(0u - x));
@@ -192,7 +199,8 @@ static void draft5_copy_block(uint32 source, uint32 destination, uint32 words)
     w_u32(destination, a);
     w_u32(destination + 4u, b);
     w_u32(destination + 8u, c);
-    if (words == 4u) w_u32(destination + 12u, d);
+    if (words == 4u)
+        w_u32(destination + 12u, d);
 }
 
 uint32 sub_8005E640(void)

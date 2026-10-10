@@ -29,7 +29,8 @@ uint32 sub_8003CAB4(uint32 a0)
 
     uint32 offset, first, second, third, fourth;
     FUNCTION_MARKER(0x8003CAB4u, "1.EXE");
-    for (offset = 0u; offset < 0x50u; offset += 16u) {
+    for (offset = 0u; offset < 0x50u; offset += 16u)
+    {
         first = r_u32(a0 + offset);
         second = r_u32(a0 + offset + 4u);
         third = r_u32(a0 + offset + 8u);

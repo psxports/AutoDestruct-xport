@@ -10,10 +10,7 @@ uint32 sub_8003DB40(uint32 object, uint32 mode)
     target = r_u32(r_u32(object + 16u) + 20u);
     draft_call_adapter(target, object, orientation);
     child = (uint32)draft_call_adapter(0x800226E4u, 60u);
-    draft_call_adapter(0x80054D38u,
-        (uint32)(sint32)(sint16)r_u16(orientation),
-        (uint32)(sint32)(sint16)r_u16(orientation + 2u),
-        (uint32)(sint32)(sint16)r_u16(orientation + 4u), child + 36u);
+    draft_call_adapter(0x80054D38u, (uint32)(sint32)(sint16)r_u16(orientation), (uint32)(sint32)(sint16)r_u16(orientation + 2u), (uint32)(sint32)(sint16)r_u16(orientation + 4u), child + 36u);
     w_u8(child + 34u, 8u);
     model = r_u32(0x800A62ECu);
     w_u32(child + 20u, r_u32(object + 20u));
@@ -61,14 +58,18 @@ uint32 sub_8003DC50(uint32 object)
         w_u32(displacement + 4u * i, r_u32(previous + 4u * i));
     if ((sint16)r_u16(object + 10u) >= 20000)
         return (uint32)draft_scratch_result(mark, sub_8002289C(object));
-    if (sub_8002F3FC(displacement, object + 20u) << 16u) {
-        if ((sub_80069A50() & 63u) == 0u) {
+    if (sub_8002F3FC(displacement, object + 20u) << 16u)
+    {
+        if ((sub_80069A50() & 63u) == 0u)
+        {
             w_u16(object + 56u, 7u);
             return (uint32)draft_scratch_result(mark, 7u);
         }
         draft_call_adapter(0x80060D20u, object, displacement);
         sub_8002A8F0(object);
-    } else if (sub_80030678(displacement, object + 20u) << 16u) {
+    }
+    else if (sub_80030678(displacement, object + 20u) << 16u)
+    {
         sub_8002A8F0(object);
     }
     result = sub_80029970(object, 136u, 6u, 1u, previous);

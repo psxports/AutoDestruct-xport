@@ -133,13 +133,11 @@ uint32 sub_8003B574(uint32 selected, uint32 mode, GameGeometryCallContext *conte
 uint32 sub_80059860(uint32 divisor);
 uint32 sub_8003C3D4(GameGeometryCallContext *context);
 uint32 sub_80021144(uint32 selection, GameSceneCallContext *context);
-uint32 sub_80020C60(uint32 index, uint32 table, uint32 color, uint32 mode,
-    GameGeometryCallContext *context);
+uint32 sub_80020C60(uint32 index, uint32 table, uint32 color, uint32 mode, GameGeometryCallContext *context);
 uint32 sub_8003BFAC(GameGeometryCallContext *context);
 uint32 sub_8006499C(GameSceneCallContext *context);
 uint32 sub_80064594(uint32 target, uint32 baseline, GameGeometryCallContext *context);
-uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output,
-    GameSceneCallContext *context);
+uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output, GameSceneCallContext *context);
 void sub_8001F850(void);
 uint32 sub_8001FF7C(uint32 mode, GameGeometryCallContext *context);
 void sub_80031C1C(uint32 matrix, uint32 vector, uint32 destination);
@@ -149,8 +147,7 @@ uint32 sub_800202B0(uint32 page);
 void sub_8005A5F8(uint32 value, GameGeometryCallContext *context);
 void sub_80059E20(void);
 uint32 sub_800598CC(uint32 resource, GameGeometryCallContext *context);
-uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height,
-    GameGeometryCallContext *context);
+uint32 sub_80041C9C(uint32 destination, uint32 flags, uint32 width, uint32 height, GameGeometryCallContext *context);
 void sub_80041DB4(uint32 destination, uint32 x, uint32 y, uint32 rotation);
 uint32 sub_80041D90(uint32 destination, uint32 color);
 uint32 sub_80020AB4(uint32 source, uint32 table, uint32 count);
@@ -189,11 +186,9 @@ uint32 sub_8005A8F0(GameGeometryCallContext *context);
 uint32 sub_80059A88(uint32 radius, uint32 angle);
 uint32 sub_80059CE4(uint32 progress, GameGeometryCallContext *context);
 uint32 sub_80059C2C(GameGeometryCallContext *context);
-uint32 sub_80035A08(uint32 channel, uint32 pitch, uint32 volume, uint32 mode,
-    GameGeometryCallContext *context);
+uint32 sub_80035A08(uint32 channel, uint32 pitch, uint32 volume, uint32 mode, GameGeometryCallContext *context);
 uint32 sub_8003C6D8(uint32 language, GameGeometryCallContext *context);
-uint32 sub_8003BA80(uint32 mission, uint32 allocation, uint32 loading,
-    GameGeometryCallContext *context);
+uint32 sub_8003BA80(uint32 mission, uint32 allocation, uint32 loading, GameGeometryCallContext *context);
 uint32 sub_800551CC(uint32 angle, uint32 matrix);
 uint32 sub_8005E790(uint32 object, GameGeometryCallContext *context);
 uint32 sub_8005E7C4(uint32 object);
@@ -364,16 +359,15 @@ uint32 sub_8007EA60(uint32 data_out, uint32 header_out);
 uint32 sub_8007EC14(uint32 data);
 void sub_8007D368(uint32 mode, uint32 channel, uint32 limit, uint32 mask, uint32 entry_sp);
 
-
-void native_dispatch_require(uint32 target,uint32 count,uint32 minimum);
+void native_dispatch_require(uint32 target, uint32 count, uint32 minimum);
 uint32 sub_8008757C(uint32 attr);
 void sub_8008355C(uint32 matrix);
 uint32 sub_800891B0(uint32 on, uint32 voice_mask);
 uint32 sub_8008A1DC(uint32 on, uint32 mask, uint32 low_index, uint32 high_index);
-uint32 native_dispatch_stack(uint32 target,uint32 count,uint32 consumed,va_list args);
-uint64 native_dispatch_group_0(uint32 target,uint32 argument_count,va_list args);
-uint64 native_dispatch_group_1(uint32 target,uint32 argument_count,va_list args);
-uint64 native_dispatch_group_2(uint32 target,uint32 argument_count,va_list args);
-uint64 native_dispatch_group_3(uint32 target,uint32 argument_count,va_list args);
+uint32 native_dispatch_stack(uint32 target, uint32 count, uint32 consumed, va_list args);
+uint64 native_dispatch_group_0(uint32 target, uint32 argument_count, va_list args);
+uint64 native_dispatch_group_1(uint32 target, uint32 argument_count, va_list args);
+uint64 native_dispatch_group_2(uint32 target, uint32 argument_count, va_list args);
+uint64 native_dispatch_group_3(uint32 target, uint32 argument_count, va_list args);
 
 #endif

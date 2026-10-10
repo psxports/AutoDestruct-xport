@@ -4,7 +4,8 @@ void sub_8003F5CC(uint32 position)
 {
     uint32 remaining = r_u32(0x800A9010u);
     FUNCTION_MARKER(0x8003F5CCu, "1.EXE");
-    while ((sint32)remaining > 0) {
+    while ((sint32)remaining > 0)
+    {
         uint32 effect = sub_800227C4(40u);
         w_u8(effect + 34u, 11u);
         w_u32(effect, 0x8003F6D0u);
@@ -41,6 +42,7 @@ uint32 sub_8003F6D0(uint32 object)
     w_u32(object + 28u, r_u32(object + 28u) + z);
     w_u16(object + 36u, size);
     result = (sint16)size < 10;
-    if (result != 0u) return sub_8002289C(object);
+    if (result != 0u)
+        return sub_8002289C(object);
     return result;
 }

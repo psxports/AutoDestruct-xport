@@ -112,7 +112,8 @@ uint32 sub_8005CB04(uint32 a0, uint32 a1, uint32 a2)
     w_u16(0x800A8814u, 0u);
     w_u16(0x800A8816u, (uint16)a2);
     w_u32(0x800A8804u, third);
-    if ((sint32)a0 <= 0) a0 = 1u;
+    if ((sint32)a0 <= 0)
+        a0 = 1u;
     uint32 object = r_u32(0x800A7BACu);
     w_u16(0x800A881Au, (uint16)a0);
     uint32 result = 1u;

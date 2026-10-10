@@ -11,7 +11,8 @@ uint32 sub_8006080C(uint32 object)
     w_u32(object + 24u, r_u32(object + 24u) - 12u * tick);
     result = r_u16(object + 38u) + rotation;
     w_u16(object + 38u, result);
-    if ((sint16)r_u16(object + 8u) < 0) {
+    if ((sint16)r_u16(object + 8u) < 0)
+    {
         result = 0x80060878u;
         w_u32(object, result);
     }
@@ -43,9 +44,9 @@ uint32 sub_80060738(uint32 object)
     w_u16(object + 8u, r_u16(object + 8u) + (tick << 1));
     w_u32(object + 24u, r_u32(object + 24u) - (uint32)(movement / 3));
     w_u16(object + 38u, r_u16(object + 38u) + rotation);
-    result = ((sint32)(sint16)r_u16(object + 10u) >> 1)
-        < (sint32)(sint16)r_u16(object + 8u);
-    if (result != 0u) {
+    result = ((sint32)(sint16)r_u16(object + 10u) >> 1) < (sint32)(sint16)r_u16(object + 8u);
+    if (result != 0u)
+    {
         w_u32(object, 0x8006080Cu);
         w_u16(object + 32u, r_u16(r_u32(0x800A62ECu) + 78u));
         result = (sub_80069A50() & 15u) + 32u;
@@ -59,7 +60,8 @@ uint32 sub_8006061C(uint32 object, uint32 count)
     sint32 remaining = (sint32)count;
     uint32 effect, result;
     FUNCTION_MARKER(0x8006061Cu, "1.EXE");
-    while (remaining >= 0) {
+    while (remaining >= 0)
+    {
         effect = sub_800227C4(40u);
         w_u32(effect, 0x80060738u);
         w_u8(effect + 34u, 11u);
@@ -79,7 +81,8 @@ uint32 sub_8006061C(uint32 object, uint32 count)
     result = r_u16(object + 8u) - (r_u32(0x800A9010u) << 3);
     w_u16(object + 8u, result);
     result <<= 16;
-    if ((sint32)result < 0) {
+    if ((sint32)result < 0)
+    {
         sub_80036CFC(object + 18u);
         return sub_8002289C(object);
     }
@@ -92,7 +95,8 @@ uint32 sub_80060404(uint32 object)
     sint8 steps = (sint8)(elapsed / 5);
     FUNCTION_MARKER(0x80060404u, "1.EXE");
     w_u8(object + 13u, (uint8)elapsed);
-    if (steps != 0) w_u8(object + 13u, 0u);
+    if (steps != 0)
+        w_u8(object + 13u, 0u);
     sub_800369E0(object + 20u, object + 18u, 2048u, 16u);
     return sub_8006061C(object, (uint32)(sint32)steps);
 }

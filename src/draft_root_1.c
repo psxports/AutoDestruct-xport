@@ -165,7 +165,8 @@ uint32 sub_80071960(uint32 a0, uint32 a1)
     uint32 native_stack_mark = draft_scratch_mark();
 
     FUNCTION_MARKER(0x80071960u, "1.EXE");
-    if ((sint32)a0 < 0) return draft_scratch_result(native_stack_mark, (uint64)(0u));
+    if ((sint32)a0 < 0)
+        return draft_scratch_result(native_stack_mark, (uint64)(0u));
     return draft_scratch_result(native_stack_mark, (uint64)((sint32)a1 >= (sint32)a0 ? a0 : a1));
 
     draft_scratch_release(native_stack_mark);
@@ -250,7 +251,8 @@ uint32 sub_80055FA4(uint32 a0, uint32 a1)
     uint32 index = (r_u16(a0 + 78u) & 0xFFFu) << 1u;
     sint32 magnitude = r_s16(a0 + 10u);
     sint32 sine = r_s16(0x800102E0u + index);
-    if (magnitude < 0) magnitude = -magnitude;
+    if (magnitude < 0)
+        magnitude = -magnitude;
     uint32 product = (uint32)magnitude * (uint32)sine;
     w_u32(a1, (uint32)((sint32)product >> 4));
     sint32 cosine = r_s16(0x80010AE0u + index);

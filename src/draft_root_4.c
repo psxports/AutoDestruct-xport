@@ -51,11 +51,13 @@ uint32 sub_800595B8(uint32 a0)
     uint32 native_stack_mark = draft_scratch_mark();
 
     FUNCTION_MARKER(0x800595B8u, "1.EXE");
-    if (r_u32(0x800A625Cu) == 1u) {
+    if (r_u32(0x800A625Cu) == 1u)
+    {
         w_u32(0x800A625Cu, 2u);
         w_u32(0x800A6270u, 0u);
     }
-    if (a0 == 1u) {
+    if (a0 == 1u)
+    {
         w_u32(0x800A625Cu, 0u);
         w_u32(0x800A6268u, 0u);
         w_u32(0x800A626Cu, 0u);
@@ -94,9 +96,12 @@ uint32 sub_80029884(uint32 a0, uint32 a1)
 
     uint32 value;
     FUNCTION_MARKER(0x80029884u, "1.EXE");
-    value = r_u16(a0 + 0x50u); w_u16(a1, (uint16)value);
-    value = r_u16(a0 + 0x52u); w_u16(a1 + 2u, (uint16)value);
-    value = r_u16(a0 + 0x54u); w_u16(a1 + 4u, (uint16)value);
+    value = r_u16(a0 + 0x50u);
+    w_u16(a1, (uint16)value);
+    value = r_u16(a0 + 0x52u);
+    w_u16(a1 + 2u, (uint16)value);
+    value = r_u16(a0 + 0x54u);
+    w_u16(a1 + 4u, (uint16)value);
     return draft_scratch_result(native_stack_mark, (uint64)(value));
 
     draft_scratch_release(native_stack_mark);
@@ -141,8 +146,8 @@ uint32 sub_80047670(uint32 a0)
     sint32 index;
     FUNCTION_MARKER(0x80047670u, "1.EXE");
     index = r_s16(a0 + 0x3Cu);
-    if ((index != -1 && r_u8(r_u32(r_u32(0x800A851Cu) + (uint32)index * 4u) + 0x41u) == 0u)
-        || r_s8(a0 + 0x42u) <= 0) {
+    if ((index != -1 && r_u8(r_u32(r_u32(0x800A851Cu) + (uint32)index * 4u) + 0x41u) == 0u) || r_s8(a0 + 0x42u) <= 0)
+    {
         w_u8(a0 + 0x40u, 1u);
         w_u8(a0 + 0x42u, 1u);
         w_u16(a0 + 0x3Cu, 0xFFFFu);
@@ -161,11 +166,13 @@ uint32 sub_8003CB14(void)
     uint32 value;
     FUNCTION_MARKER(0x8003CB14u, "1.EXE");
     value = (uint32)r_s16(0x800A5EECu);
-    if ((sint32)value > 0) {
+    if ((sint32)value > 0)
+    {
         value -= r_u16(0x800A9010u);
         w_u16(0x800A5EECu, (uint16)value);
         value <<= 16;
-        if ((sint32)value < 0) w_u16(0x800A5EECu, 0u);
+        if ((sint32)value < 0)
+            w_u16(0x800A5EECu, 0u);
     }
     return draft_scratch_result(native_stack_mark, (uint64)(value));
 
@@ -200,7 +207,8 @@ uint32 sub_80037D50(void)
 
     uint32 value;
     FUNCTION_MARKER(0x80037D50u, "1.EXE");
-    if (r_s16(0x800A5C70u) != 2) return draft_scratch_result(native_stack_mark, (uint64)(0u));
+    if (r_s16(0x800A5C70u) != 2)
+        return draft_scratch_result(native_stack_mark, (uint64)(0u));
     value = r_u16(0x800A5C98u);
     return draft_scratch_result(native_stack_mark, (uint64)(value == 64u || value == 128u || value == 4u));
 

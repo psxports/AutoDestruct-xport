@@ -217,7 +217,8 @@ uint32 sub_8006DF90(uint32 a0)
     w_u32(0x800A7500u + offset, third);
     uint32 result = r_u32(0x800A6440u) + 1u;
     w_u32(0x800A6440u, result);
-    if (result == 8u) w_u32(0x800A6440u, 0u);
+    if (result == 8u)
+        w_u32(0x800A6440u, 0u);
     return draft_scratch_result(native_stack_mark, (uint64)(result));
 
     draft_scratch_release(native_stack_mark);
@@ -277,7 +278,8 @@ uint32 sub_8003DB0C(uint32 a0)
     uint32 native_stack_mark = draft_scratch_mark();
 
     FUNCTION_MARKER(0x8003DB0Cu, "1.EXE");
-    if ((r_u8(a0 + 13u) & 0x7Fu) != 1u) return draft_scratch_result(native_stack_mark, (uint64)(0u));
+    if ((r_u8(a0 + 13u) & 0x7Fu) != 1u)
+        return draft_scratch_result(native_stack_mark, (uint64)(0u));
     return draft_scratch_result(native_stack_mark, (uint64)((r_u32(0x800A7E80u) & 0xFF00FF00u) == 0u));
 
     draft_scratch_release(native_stack_mark);

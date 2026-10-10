@@ -13,9 +13,11 @@ uint32 sub_800548B0(uint32 object)
     uint32 result;
     FUNCTION_MARKER(0x800548B0u, "1.EXE");
     result = (uint32)draft_call_adapter(0x80054594u, object);
-    if (result != 0u) {
+    if (result != 0u)
+    {
         result = (uint32)(sint32)(sint16)r_u16(object + 82u);
-        if (result == 0u) return sub_8002289C(object);
+        if (result == 0u)
+            return sub_8002289C(object);
         return result;
     }
     if ((sint32)r_u32(object + 60u) < (sint32)r_u32(object + 24u))
@@ -28,8 +30,10 @@ uint32 sub_800547EC(uint32 object)
     uint32 result;
     FUNCTION_MARKER(0x800547ECu, "1.EXE");
     result = (uint32)draft_call_adapter(0x80054594u, object);
-    if (result != 0u) return result;
-    if ((sint32)r_u32(object + 60u) < (sint32)r_u32(object + 24u)) {
+    if (result != 0u)
+        return result;
+    if ((sint32)r_u32(object + 60u) < (sint32)r_u32(object + 24u))
+    {
         draft_call_adapter(0x800542C0u, object, 0u, 4u);
         result = sub_80069A50();
         if (result % 7u == 0u)
@@ -46,9 +50,11 @@ uint32 sub_80054660(uint32 object)
     uint32 result;
     FUNCTION_MARKER(0x80054660u, "1.EXE");
     result = (uint32)draft_call_adapter(0x80054594u, object);
-    if (result != 0u) {
+    if (result != 0u)
+    {
         result = (uint32)(sint32)(sint16)r_u16(object + 82u);
-        if (result == 0u) return sub_8002289C(object);
+        if (result == 0u)
+            return sub_8002289C(object);
         return result;
     }
     result = (sint32)r_u32(object + 60u) < (sint32)r_u32(object + 24u);

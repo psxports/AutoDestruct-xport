@@ -10,7 +10,8 @@ uint32 sub_8005F7F0(uint32 object)
     y = r_u32(object + 24u) - (random & 511u);
     random = sub_80069A50();
     z = r_u32(object + 28u) - 255u + (random & 511u);
-    do {
+    do
+    {
         effect = sub_800227C4(40u);
         w_u8(effect + 34u, 8u);
         w_u16(effect + 36u, 288u);
@@ -47,7 +48,8 @@ uint32 sub_8005EFBC(uint32 object)
     w_u32(object + 20u, r_u32(object + 20u) + vx);
     w_u32(object + 24u, r_u32(object + 24u) + vy);
     w_u32(object + 28u, r_u32(object + 28u) + vz);
-    if ((sint8)r_u8(object + 13u) < 0 || (sint32)(size << 16u) < 0) {
+    if ((sint8)r_u8(object + 13u) < 0 || (sint32)(size << 16u) < 0)
+    {
         w_u16(object + 36u, 0u);
         return sub_8002289C(object);
     }
@@ -60,7 +62,8 @@ uint32 sub_8005F774(uint32 object)
     FUNCTION_MARKER(0x8005F774u, "1.EXE");
     w_u16(object + 10u, r_u16(object + 10u) - tick);
     w_u16(object + 8u, r_u16(object + 8u) - tick);
-    if ((sint16)r_u16(object + 10u) < 0) {
+    if ((sint16)r_u16(object + 10u) < 0)
+    {
         draft_call_adapter(0x8005F7F0u, object);
         w_u16(object + 10u, sub_80069A50() & 15u);
     }
@@ -92,7 +95,8 @@ uint32 sub_8005EEC0(uint32 object)
 {
     uint32 count = 15u, effect, result;
     FUNCTION_MARKER(0x8005EEC0u, "1.EXE");
-    do {
+    do
+    {
         effect = sub_800227C4(40u);
         w_u8(effect + 34u, 8u);
         w_u16(effect + 36u, 50u);
@@ -120,11 +124,14 @@ uint32 sub_80060320(uint32 object)
     FUNCTION_MARKER(0x80060320u, "1.EXE");
     result = (uint32)draft_call_adapter(0x8002E310u, object + 20u, temporary, temporary + 8u);
     ground = 0u - result;
-    if (ground != 0u) {
+    if (ground != 0u)
+    {
         result = ground - 300u;
-        if ((sint32)ground >= (sint32)r_u32(object + 24u)) {
+        if ((sint32)ground >= (sint32)r_u32(object + 24u))
+        {
             result = (sint32)result < (sint32)r_u32(object + 24u);
-            if (result != 0u) {
+            if (result != 0u)
+            {
                 effect = sub_800227C4(40u);
                 result = effect;
                 w_u16(effect + 36u, 288u);

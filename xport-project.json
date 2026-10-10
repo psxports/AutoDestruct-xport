@@ -13,6 +13,7 @@
     "project_tools": "tools",
     "analysis_database": "status/analysis.sqlite",
     "native_executable": "bin/AD.exe",
+    "native_debug_executable": "bin/AD_debug.exe",
     "native_working_directory": "bin",
     "native_solution": "src/platform/win/AD.sln",
     "native_build": "_build",

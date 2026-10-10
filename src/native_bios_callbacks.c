@@ -4,15 +4,15 @@
 
 static sint32 native_bios_callback(void *context, uint32 target)
 {
-    (void)context;
-    switch (target) {
-    case 0x80078D70u:
-    case 0x80078DB8u:
-        draft_call_adapter(target);
-        return 1;
-    default:
-        fprintf(stderr, "Unbound native BIOS callback %08X\n", target);
-        abort();
+    switch (target)
+    {
+        case 0x80078D70u:
+        case 0x80078DB8u:
+            draft_call_adapter(target);
+            return 1;
+        default:
+            fprintf(stderr, "Unbound native BIOS callback %08X\n", target);
+            abort();
     }
 }
 

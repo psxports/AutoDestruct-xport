@@ -40,15 +40,20 @@ uint32 sub_80070C48(uint32 a0, uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint3
 
     uint32 packet, table, result;
     FUNCTION_MARKER(0x80070C48u, "1.EXE");
-    (void)a3;
     packet = r_u32(0x800A865Cu);
-    w_u16(packet + 8u, (uint16)a4); w_u16(packet + 24u, (uint16)a4);
-    w_u32(packet + 4u, a1 | 0x38000000u); w_u32(packet + 20u, a1);
-    w_u32(packet + 12u, a2); w_u32(packet + 28u, a2);
+    w_u16(packet + 8u, (uint16)a4);
+    w_u16(packet + 24u, (uint16)a4);
+    w_u32(packet + 4u, a1 | 0x38000000u);
+    w_u32(packet + 20u, a1);
+    w_u32(packet + 12u, a2);
+    w_u32(packet + 28u, a2);
     table = r_u32(0x800A9A74u) + a0 * 4u;
-    w_u16(packet + 16u, (uint16)(a4 + a6)); w_u16(packet + 32u, (uint16)(a4 + a6));
-    w_u16(packet + 10u, (uint16)a5); w_u16(packet + 18u, (uint16)a5);
-    w_u16(packet + 34u, (uint16)(a5 + a7)); w_u16(packet + 26u, (uint16)(a5 + a7));
+    w_u16(packet + 16u, (uint16)(a4 + a6));
+    w_u16(packet + 32u, (uint16)(a4 + a6));
+    w_u16(packet + 10u, (uint16)a5);
+    w_u16(packet + 18u, (uint16)a5);
+    w_u16(packet + 34u, (uint16)(a5 + a7));
+    w_u16(packet + 26u, (uint16)(a5 + a7));
     w_u32(packet, (r_u32(table) & 0xFFFFFFu) | 0x08000000u);
     w_u32(0x800A865Cu, packet + 36u);
     result = (r_u32(table) & 0xFF000000u) | (packet & 0xFFFFFFu);
@@ -74,7 +79,8 @@ uint32 sub_800408C0(uint32 a0)
     threshold = r_s16(a0 + 8u);
     w_u16(a0 + 38u, (uint16)value);
     threshold = (sint32)((uint32)threshold * 768u) >> 10;
-    if (threshold >= height) return draft_scratch_result(native_stack_mark, (uint64)(0u));
+    if (threshold >= height)
+        return draft_scratch_result(native_stack_mark, (uint64)(0u));
     value = r_u32(0x800A62ECu);
     w_u32(a0, 0x8004094Cu);
     value = (uint32)r_s16(value + 0x58u);
@@ -87,7 +93,8 @@ uint32 sub_800408C0(uint32 a0)
 static void draft7_matrix(uint32 source, uint32 count)
 {
     uint32 i;
-    for (i = 0u; i < count; ++i) xport_gte_write_control(i, r_u32(source + i * 4u));
+    for (i = 0u; i < count; ++i)
+        xport_gte_write_control(i, r_u32(source + i * 4u));
 }
 
 uint32 sub_80064784(uint32 a0, uint32 a1)
@@ -96,19 +103,28 @@ uint32 sub_80064784(uint32 a0, uint32 a1)
 
     uint32 xy, z, result, m0, m1, m2, saved_xy, saved_z;
     FUNCTION_MARKER(0x80064784u, "1.EXE");
-    saved_xy = r_u32(0x800A6364u); saved_z = r_u32(0x800A6368u);
+    saved_xy = r_u32(0x800A6364u);
+    saved_z = r_u32(0x800A6368u);
     draft7_matrix(0x800A9324u, 8u);
     xy = r_u16(a0) | ((uint32)r_u16(a0 + 4u) << 16);
     z = r_u32(a0 + 8u);
-    xport_gte_write_data(0u, xy); xport_gte_write_data(1u, z);
+    xport_gte_write_data(0u, xy);
+    xport_gte_write_data(1u, z);
     xport_gte_mvmva(0x480012u);
-    m0 = xport_gte_read_data(25u); m1 = xport_gte_read_data(26u); m2 = xport_gte_read_data(27u);
+    m0 = xport_gte_read_data(25u);
+    m1 = xport_gte_read_data(26u);
+    m2 = xport_gte_read_data(27u);
     // TODO Replace the escaped local-result address with an integration contract
     result = draft_scratch_adapter(12u);
-    w_u32(result, m0); w_u32(result + 4u, m1); w_u32(result + 8u, m2);
+    w_u32(result, m0);
+    w_u32(result + 4u, m1);
+    w_u32(result + 8u, m2);
     draft7_matrix(0x800A8FBCu, 5u);
-    xport_gte_write_control(5u, m0); xport_gte_write_control(6u, m1); xport_gte_write_control(7u, m2);
-    xport_gte_write_data(0u, saved_xy); xport_gte_write_data(1u, saved_z);
+    xport_gte_write_control(5u, m0);
+    xport_gte_write_control(6u, m1);
+    xport_gte_write_control(7u, m2);
+    xport_gte_write_data(0u, saved_xy);
+    xport_gte_write_data(1u, saved_z);
     draft_gte_command_adapter(0x180001u);
     // TODO Unsupported screen/depth GTE outputs retain fail-fast boundaries
     w_u32(a1, xport_gte_read_data(14u));
@@ -126,10 +142,16 @@ uint32 sub_80030E18(uint32 a0)
     FUNCTION_MARKER(0x80030E18u, "1.EXE");
     node = r_u32(0x800A60A0u);
     w_u16(0x800A5C04u, 0u);
-    if (node == 0u) return draft_scratch_result(native_stack_mark, (uint64)(0u));
-    if (a0 == 1u) {
+    if (node == 0u)
+        return draft_scratch_result(native_stack_mark, (uint64)(0u));
+    if (a0 == 1u)
+    {
         object = r_u32(r_u32(0x800A851Cu) + (uint32)r_s16(node) * 4u);
-        if (r_u8(object + 17u) == 0u) { w_u16(0x800A5C04u, 0u); return draft_scratch_result(native_stack_mark, (uint64)(0u)); }
+        if (r_u8(object + 17u) == 0u)
+        {
+            w_u16(0x800A5C04u, 0u);
+            return draft_scratch_result(native_stack_mark, (uint64)(0u));
+        }
     }
     object = r_u32(r_u32(0x800A851Cu) + (uint32)r_s16(r_u32(0x800A60A0u)) * 4u);
     w_u16(0x800A5C04u, r_u8(object + 16u) == 0u && node != r_u32(0x800A6098u));
@@ -142,7 +164,8 @@ uint32 sub_80030E18(uint32 a0)
 
 static uint32 draft7_divide(uint32 value, uint32 divisor)
 {
-    if (divisor == 0u || (divisor == 0xFFFFFFFFu && value == 0x80000000u)) abort();
+    if (divisor == 0u || (divisor == 0xFFFFFFFFu && value == 0x80000000u))
+        abort();
     return (uint32)((sint32)value / (sint32)divisor);
 }
 
@@ -152,12 +175,21 @@ uint32 sub_80069C78(uint32 a0, uint32 a1)
 
     uint32 scale, smaller, larger, ratio, correction;
     FUNCTION_MARKER(0x80069C78u, "1.EXE");
-    if ((sint32)a0 < 0) a0 = 0u - a0;
-    if ((sint32)a1 < 0) a1 = 0u - a1;
-    if ((sint32)a1 < (sint32)a0) { uint32 swap = a0; a0 = a1; a1 = swap; }
+    if ((sint32)a0 < 0)
+        a0 = 0u - a0;
+    if ((sint32)a1 < 0)
+        a1 = 0u - a1;
+    if ((sint32)a1 < (sint32)a0)
+    {
+        uint32 swap = a0;
+        a0 = a1;
+        a1 = swap;
+    }
     scale = (uint32)((sint32)a1 >> 15);
-    if (a1 == 0u) return draft_scratch_result(native_stack_mark, (uint64)(a0));
-    if (scale == 0u) scale = 1u;
+    if (a1 == 0u)
+        return draft_scratch_result(native_stack_mark, (uint64)(a0));
+    if (scale == 0u)
+        scale = 1u;
     larger = draft7_divide(a1, scale);
     smaller = draft7_divide(a0, scale);
     ratio = draft7_divide(smaller << 9, larger);
@@ -174,24 +206,31 @@ uint32 sub_80033764(uint32 a0, uint32 a1)
     uint32 base, value, rate, delta;
     FUNCTION_MARKER(0x80033764u, "1.EXE");
     base = 0x800A6C6Cu + a0 * 12u;
-    if (r_u32(base) == 0u) {
+    if (r_u32(base) == 0u)
+    {
         delta = a1 * r_u32(0x800A9010u) * r_u32(base + 8u);
         rate = r_u32(base + 8u) << 7;
         value = delta + r_u32(base + 4u);
         w_u32(base + 4u, value);
-        if ((sint32)value >= (sint32)rate) {
+        if ((sint32)value >= (sint32)rate)
+        {
             value = r_u32(base + 8u);
-            w_u32(base, 1u); w_u32(base + 4u, value << 7);
+            w_u32(base, 1u);
+            w_u32(base + 4u, value << 7);
         }
     }
-    if (r_u32(base) != 1u) return draft_scratch_result(native_stack_mark, (uint64)(1u));
+    if (r_u32(base) != 1u)
+        return draft_scratch_result(native_stack_mark, (uint64)(1u));
     delta = a1 * r_u32(0x800A9010u) * r_u32(base + 8u);
     rate = r_u32(base + 8u);
     value = r_u32(base + 4u) - delta;
     w_u32(base + 4u, value);
-    if ((sint32)rate >= (sint32)value) {
+    if ((sint32)rate >= (sint32)value)
+    {
         value = r_u32(base + 8u);
-        w_u32(base, 0u); w_u32(base + 8u, 0u); w_u32(base + 4u, value);
+        w_u32(base, 0u);
+        w_u32(base + 8u, 0u);
+        w_u32(base + 4u, value);
     }
     return draft_scratch_result(native_stack_mark, (uint64)(value));
 
@@ -205,14 +244,19 @@ uint32 sub_80078854(uint32 a0)
     uint32 value, threshold;
     FUNCTION_MARKER(0x80078854u, "1.EXE");
     value = r_u32(0x800A7AC8u);
-    if (value != 0u) return draft_scratch_result(native_stack_mark, (uint64)(value));
+    if (value != 0u)
+        return draft_scratch_result(native_stack_mark, (uint64)(value));
     value = a0 & 0x1000u;
-    if (r_u32(0x800A7ACCu) != 0u) return draft_scratch_result(native_stack_mark, (uint64)(value));
-    if (value && r_u32(0x800A7AC4u)) w_u32(0x800A7ACCu, 13u);
+    if (r_u32(0x800A7ACCu) != 0u)
+        return draft_scratch_result(native_stack_mark, (uint64)(value));
+    if (value && r_u32(0x800A7AC4u))
+        w_u32(0x800A7ACCu, 13u);
     value = a0 & 0x4000u;
-    if (value == 0u) return draft_scratch_result(native_stack_mark, (uint64)(value));
+    if (value == 0u)
+        return draft_scratch_result(native_stack_mark, (uint64)(value));
     threshold = 13u * r_u32(0x800A7BE4u) - 39u;
-    if ((sint32)r_u32(0x800A7AC4u) < (sint32)threshold) w_u32(0x800A7AC8u, 13u);
+    if ((sint32)r_u32(0x800A7AC4u) < (sint32)threshold)
+        w_u32(0x800A7AC8u, 13u);
     return draft_scratch_result(native_stack_mark, (uint64)(13u));
 
     draft_scratch_release(native_stack_mark);
@@ -229,7 +273,8 @@ uint32 sub_8005E89C(uint32 a0, uint32 a1)
     w_u16(0x800A988Eu, r_u16(a0 + 2u));
     dx = (sint16)(r_u16(a1) - r_u16(a0));
     dy = (sint16)(r_u16(a1 + 2u) - r_u16(a0 + 2u));
-    for (i = 0u; i < 6u; ++i) {
+    for (i = 0u; i < 6u; ++i)
+    {
         weight = r_u8(0x800A6349u - i);
         offset -= 10u;
         w_u16(0x800A988Cu + offset, (uint16)(r_u16(a0) + ((dx * (sint32)weight) >> 8)));
@@ -258,7 +303,8 @@ uint32 sub_8005E95C(uint32 a0, uint32 a1)
     negative = (0u - product) >> 12;
     coordinates[0] = coordinates[1] = coordinates[3] = coordinates[4] = (uint16)positive;
     coordinates[2] = coordinates[5] = coordinates[6] = coordinates[7] = (uint16)negative;
-    for (index = 4u; index > 0u; --index) {
+    for (index = 4u; index > 0u; --index)
+    {
         uint32 pair = (index - 1u) * 2u;
         coordinates[pair] = (uint16)(coordinates[pair] + r_u16(base));
         coordinates[pair + 1u] = (uint16)(coordinates[pair + 1u] + r_u16(base + 2u));
@@ -280,11 +326,13 @@ uint32 sub_80023388(uint32 a0)
 
     uint32 axis, amplitude, angle, product, step, result = 0u;
     FUNCTION_MARKER(0x80023388u, "1.EXE");
-    for (axis = 0u; axis < 2u; ++axis) {
+    for (axis = 0u; axis < 2u; ++axis)
+    {
         uint32 field = a0 + 0x23Cu + axis * 4u;
         angle = (uint32)r_s16(field + 2u);
         result = angle & 0xFFFu;
-        if ((sint32)angle >= 0x2000) continue;
+        if ((sint32)angle >= 0x2000)
+            continue;
         product = (uint32)r_s16(field) * (uint32)r_s16(0x800102E0u + result * 2u);
         amplitude = (uint32)r_s16(field);
         step = r_u32(0x800A63D8u);

@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include "game_scene.h"
 
-
-
 void native_input_publish_basic_pad(void);
 void native_sdk_stream_stop(void);
 uint32 sub_80069A70(uint32 destination, uint32 limit);
@@ -129,7 +127,6 @@ uint32 sub_80069B84(uint32 index, GameSceneCallContext *context)
 void sub_800861E4(uint32 mode)
 {
     FUNCTION_MARKER(0x800861E4u, "1.EXE");
-    (void)mode;
     abort();
 }
 
@@ -231,7 +228,12 @@ uint32 sub_8005A4D8(uint32 filename, GameSceneCallContext *context)
             if ((sub_8007A7AC(1u) & 2u) != 0u)
                 break;
         }
-        { GameGeometryCallContext error_context = {0}; error_context.stack_pointer = frame; error_context.caller_s0 = filename; sub_80059E4C(filename, &error_context); }
+        {
+            GameGeometryCallContext error_context = {0};
+            error_context.stack_pointer = frame;
+            error_context.caller_s0 = filename;
+            sub_80059E4C(filename, &error_context);
+        }
     }
     result = r_u32(frame + 0x14u);
     context->return_address = r_u32(frame + 0x2Cu);
@@ -339,7 +341,9 @@ uint32 sub_80041E24(uint32 filename, uint32 mode, GameGeometryCallContext *conte
     w_u32(frame + 0x50u, context->caller_s2);
     SetDispMask(0);
     w_u32(0x800A6EC0u, mode);
-    while (sub_8007D3F0(frame + 0x30u, filename) == 0u) { }
+    while (sub_8007D3F0(frame + 0x30u, filename) == 0u)
+    {
+    }
     allocation.stack_pointer = frame;
     allocation.caller_s0 = mode;
     allocation.return_address = 0x80041E6Cu;
@@ -394,8 +398,7 @@ uint32 sub_80041E24(uint32 filename, uint32 mode, GameGeometryCallContext *conte
             sub_80042424(0x800A6E70u, frame);
             VSync(0);
             w_u32(frame + 0x10u, 240u);
-            SetDefDispEnv((DISPENV *)psx_addr(frame + 0x18u, sizeof(DISPENV)),
-                0, r_u32(0x800A6E98u) == 0u ? 240 : 0, 480, (sint32)r_u32(frame + 0x10u));
+            SetDefDispEnv((DISPENV *)psx_addr(frame + 0x18u, sizeof(DISPENV)), 0, r_u32(0x800A6E98u) == 0u ? 240 : 0, 480, (sint32)r_u32(frame + 0x10u));
             scaled_width = (sint32)(sint16)r_u16(frame + 0x1Cu) * 2;
             w_u8(frame + 0x29u, 1u);
             w_u16(frame + 0x1Cu, (uint32)(scaled_width / 3));
@@ -434,8 +437,6 @@ uint32 sub_80041E24(uint32 filename, uint32 mode, GameGeometryCallContext *conte
 }
 
 #include "game_scene.h"
-
-
 
 uint32 sub_80069B38(uint32 size, GameSceneCallContext *context);
 uint32 sub_8005A484(uint32 length, uint32 destination, uint32 mode, GameSceneCallContext *context);
@@ -576,12 +577,16 @@ uint32 sub_8005A3E4(uint32 filename, uint32 destination, GameGeometryCallContext
                 read_context.stack_pointer = frame;
                 read_context.return_address = 0x8005A450u;
                 read_context.caller_s0 = font.caller_s0;
-                if (sub_8005A484(r_u32(frame + 0x14u), font.caller_s1,
-                    font.caller_s2, &read_context) == 0u)
+                if (sub_8005A484(r_u32(frame + 0x14u), font.caller_s1, font.caller_s2, &read_context) == 0u)
                     break;
             }
         }
-        { GameGeometryCallContext error_context = {0}; error_context.stack_pointer = frame; error_context.caller_s0 = font.caller_s0; sub_80059E4C(font.caller_s0, &error_context); }
+        {
+            GameGeometryCallContext error_context = {0};
+            error_context.stack_pointer = frame;
+            error_context.caller_s0 = font.caller_s0;
+            sub_80059E4C(font.caller_s0, &error_context);
+        }
     }
     context->return_address = r_u32(frame + 0x34u);
     context->caller_s2 = r_u32(frame + 0x30u);
@@ -792,8 +797,7 @@ uint32 sub_80042318(uint32 stream, GameGeometryCallContext *context)
     header = r_u32(frame + 0x14u);
     if (r_u32(header + 8u) >= r_u32(0x800A6EC0u))
         w_u32(0x800A6EBCu, 1u);
-    if (r_u16(header + 0x10u) != r_u32(0x800A5F54u) ||
-        r_u16(header + 0x12u) != r_u32(0x800A5F58u))
+    if (r_u16(header + 0x10u) != r_u32(0x800A5F54u) || r_u16(header + 0x12u) != r_u32(0x800A5F58u))
     {
         w_u16(frame + 0x18u, 0u);
         w_u16(frame + 0x1Au, 0u);
@@ -913,8 +917,7 @@ uint32 sub_80042130(GameSceneCallContext *context)
         position = r_u16(0x800A6E8Au + (page << 3u));
         w_u16(0x800A6E9Eu, position);
     }
-    result = sub_80080230(frame + 0x10u,
-        r_u32(0x800A6E7Cu + (previous_index << 2u)));
+    result = sub_80080230(frame + 0x10u, r_u32(0x800A6E7Cu + (previous_index << 2u)));
     context->return_address = r_u32(frame + 0x1Cu);
     context->caller_s0 = r_u32(frame + 0x18u);
     return result;
@@ -985,24 +988,31 @@ sint32 sub_800380C8(GameMainCallContext *context)
         center = (sint32)r_u32(0x800A5C7Cu);
         tolerance = (sint32)r_u32(0x800A5C74u);
         value = r_u8(0x800A9988u + offset);
-        if ((sint32)((uint32)center + (uint32)tolerance) >= value &&
-            value >= (sint32)((uint32)center - (uint32)tolerance))
+        if ((sint32)((uint32)center + (uint32)tolerance) >= value && value >= (sint32)((uint32)center - (uint32)tolerance))
             w_u8(0x800A6D30u, r_u8(0x800A5C7Cu));
         else
         {
             adjusted = (sint32)((uint32)value + 128u - (uint32)center);
-            if (adjusted < 0) adjusted = 0;
-            if (adjusted >= 256) adjusted = 255;
+            if (adjusted < 0)
+                adjusted = 0;
+            if (adjusted >= 256)
+                adjusted = 255;
             w_u8(0x800A6D30u, adjusted);
         }
         raw = r_u16(0x800A5C98u);
-        if (raw == 64u) w_u8(0x800A6D34u, r_u8(0x800A9989u + offset));
-        else if (raw == 128u) w_u8(0x800A6D34u, r_u8(0x800A998Au + offset));
-        else if (raw == 4u) w_u8(0x800A6D34u, r_u8(0x800A998Bu + offset));
+        if (raw == 64u)
+            w_u8(0x800A6D34u, r_u8(0x800A9989u + offset));
+        else if (raw == 128u)
+            w_u8(0x800A6D34u, r_u8(0x800A998Au + offset));
+        else if (raw == 4u)
+            w_u8(0x800A6D34u, r_u8(0x800A998Bu + offset));
         raw = r_u16(0x800A5C9Au);
-        if (raw == 64u) w_u8(0x800A6D38u, r_u8(0x800A9989u + offset));
-        else if (raw == 128u) w_u8(0x800A6D38u, r_u8(0x800A998Au + offset));
-        else if (raw == 4u) w_u8(0x800A6D38u, r_u8(0x800A998Bu + offset));
+        if (raw == 64u)
+            w_u8(0x800A6D38u, r_u8(0x800A9989u + offset));
+        else if (raw == 128u)
+            w_u8(0x800A6D38u, r_u8(0x800A998Au + offset));
+        else if (raw == 4u)
+            w_u8(0x800A6D38u, r_u8(0x800A998Bu + offset));
         value = r_u8(0x800A998Bu + offset);
         if ((sint32)r_u32(0x800A5C74u) < value)
             w_u8(0x800A9987u + offset, r_u8(0x800A9987u + offset) ^ 4u);
@@ -1019,23 +1029,23 @@ sint32 sub_800380C8(GameMainCallContext *context)
         goto copy_default;
     tolerance = (sint32)r_u32(0x800A5C80u);
     value = r_u8(0x800A998Bu + offset);
-    if ((sint32)((uint32)tolerance + 128u) >= value &&
-        value >= (sint32)(128u - (uint32)tolerance))
+    if ((sint32)((uint32)tolerance + 128u) >= value && value >= (sint32)(128u - (uint32)tolerance))
         w_u8(0x800A6D3Cu, 128u);
     else
         w_u8(0x800A6D3Cu, value);
     center = (sint32)r_u32(0x800A5C88u);
     tolerance = (sint32)r_u32(0x800A5C80u);
     value = r_u8(0x800A998Au + offset);
-    if ((sint32)((uint32)center + (uint32)tolerance) >= value &&
-        value >= (sint32)((uint32)center - (uint32)tolerance))
+    if ((sint32)((uint32)center + (uint32)tolerance) >= value && value >= (sint32)((uint32)center - (uint32)tolerance))
         w_u8(0x800A6D40u, r_u8(0x800A5C88u));
     else
     {
         w_u8(0x800A6D44u, value);
         adjusted = (sint32)((uint32)value + 128u - (uint32)center);
-        if (adjusted < 0) adjusted = 0;
-        if (adjusted >= 256) adjusted = 255;
+        if (adjusted < 0)
+            adjusted = 0;
+        if (adjusted >= 256)
+            adjusted = 255;
         w_u8(0x800A6D40u, adjusted);
     }
     w_u16(0x800A5C70u, 3u);
@@ -1043,14 +1053,22 @@ sint32 sub_800380C8(GameMainCallContext *context)
     if (r_u8(0x800A9985u + offset) != 0x53u)
         goto copy_analog;
     raw = r_u8(0x800A9987u + offset);
-    if (raw & 1u) buttons |= 1u;
-    if (raw & 2u) buttons |= 4u;
-    if (raw & 4u) buttons |= 128u;
-    if (raw & 8u) buttons |= 16u;
-    if (raw & 16u) buttons |= 8u;
-    if (raw & 32u) buttons |= 32u;
-    if (raw & 64u) buttons |= 64u;
-    if (raw & 128u) buttons |= 2u;
+    if (raw & 1u)
+        buttons |= 1u;
+    if (raw & 2u)
+        buttons |= 4u;
+    if (raw & 4u)
+        buttons |= 128u;
+    if (raw & 8u)
+        buttons |= 16u;
+    if (raw & 16u)
+        buttons |= 8u;
+    if (raw & 32u)
+        buttons |= 32u;
+    if (raw & 64u)
+        buttons |= 64u;
+    if (raw & 128u)
+        buttons |= 2u;
     callback_ra = 0x80038774u;
     goto copy_all;
 copy_digital:
@@ -1076,8 +1094,7 @@ copy_all:
     if (type == 0x23u)
     {
         w_u8(0x800A6D44u, r_u8(0x800A9988u + offset));
-        result = (sint16)(((r_u8(0x800A9986u + offset) << 8u) +
-            r_u8(0x800A9987u + offset)) ^ 0xFFFFu);
+        result = (sint16)(((r_u8(0x800A9986u + offset) << 8u) + r_u8(0x800A9987u + offset)) ^ 0xFFFFu);
         goto done;
     }
     if (type == 0x73u)
@@ -1086,8 +1103,7 @@ copy_all:
         goto done;
     }
     if (type == 0x41u)
-        result = (sint16)(((r_u8(0x800A9986u + offset) << 8u) +
-            r_u8(0x800A9987u + offset)) ^ 0xFFFFu);
+        result = (sint16)(((r_u8(0x800A9986u + offset) << 8u) + r_u8(0x800A9987u + offset)) ^ 0xFFFFu);
     else if (type == 0x53u)
         result = (sint16)((high + buttons) ^ 0xFFFFu);
     else

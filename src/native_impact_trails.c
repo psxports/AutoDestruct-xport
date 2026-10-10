@@ -18,7 +18,8 @@ uint32 sub_80040DAC(uint32 object)
     w_u32(object + 20u, r_u32(object + 20u) + dx);
     result += dz;
     w_u32(object + 28u, result);
-    if (width < 0) {
+    if (width < 0)
+    {
         w_u16(object + 36u, 0u);
         return sub_8002289C(object);
     }

@@ -49,7 +49,8 @@ uint32 sub_80040BC4(uint32 object)
     uint32 i, effect, scale, model;
     sint32 x, y, z;
     FUNCTION_MARKER(0x80040BC4u, "1.EXE");
-    for (i = 0u; i < 5u; ++i) {
+    for (i = 0u; i < 5u; ++i)
+    {
         effect = sub_800227C4(40u);
         w_u8(effect + 34u, 11u);
         scale = (uint32)(sint32)(sint16)r_u16(object + 8u) * 21760u;
@@ -86,13 +87,15 @@ uint32 sub_80060E20(uint32 object)
     w_u32(previous + 4u, r_u32(object + 24u));
     w_u32(previous + 8u, r_u32(object + 28u));
     remaining = (sint32)ticks;
-    while (remaining > 0) {
+    while (remaining > 0)
+    {
         --remaining;
         w_u32(object + 20u, r_u32(object + 20u) + (uint32)(sint32)(sint16)r_u16(object + 10u));
         w_u32(object + 24u, r_u32(object + 24u) - (uint32)(sint32)(sint16)r_u16(object + 16u));
         w_u32(object + 28u, r_u32(object + 28u) + (uint32)(sint32)(sint16)r_u16(object + 18u));
         w_u16(object + 16u, r_u16(object + 16u) - 1u);
-        if ((sint8)r_u8(object + 35u) < 0) {
+        if ((sint8)r_u8(object + 35u) < 0)
+        {
             draft_call_adapter(0x80060F6Cu, object, r_u16(r_u32(0x800A62ECu) + 46u), 100u);
             draft_call_adapter(0x80060F6Cu, object, r_u16(r_u32(0x800A62ECu) + 60u), 200u);
             w_u8(object + 35u, 1u);

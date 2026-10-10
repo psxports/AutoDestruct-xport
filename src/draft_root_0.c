@@ -113,10 +113,14 @@ uint32 sub_800618D4(uint32 a0, uint32 a1)
     uint32 native_stack_mark = draft_scratch_mark();
 
     FUNCTION_MARKER(0x800618D4u, "1.EXE");
-    if (a0 == 8u) return draft_scratch_result(native_stack_mark, (uint64)(16u));
-    if (a0 == 9u) return draft_scratch_result(native_stack_mark, (uint64)(8u));
-    if (a0 == 51u) return draft_scratch_result(native_stack_mark, (uint64)(32u));
-    if (a0 == 1u) return draft_scratch_result(native_stack_mark, (uint64)(a1 == 0u ? 64u : 4u));
+    if (a0 == 8u)
+        return draft_scratch_result(native_stack_mark, (uint64)(16u));
+    if (a0 == 9u)
+        return draft_scratch_result(native_stack_mark, (uint64)(8u));
+    if (a0 == 51u)
+        return draft_scratch_result(native_stack_mark, (uint64)(32u));
+    if (a0 == 1u)
+        return draft_scratch_result(native_stack_mark, (uint64)(a1 == 0u ? 64u : 4u));
     return draft_scratch_result(native_stack_mark, (uint64)(2u));
 
     draft_scratch_release(native_stack_mark);
@@ -129,10 +133,14 @@ uint32 sub_800619FC(uint32 a0)
     FUNCTION_MARKER(0x800619FCu, "1.EXE");
     uint32 kind = a0 & 0xFEu;
     uint32 index = 101u;
-    if (kind == 8u || kind == 64u) return draft_scratch_result(native_stack_mark, (uint64)(0u));
-    if (kind == 4u) index = 172u;
-    if (kind == 16u) index = 173u;
-    if (kind == 32u) index = 171u;
+    if (kind == 8u || kind == 64u)
+        return draft_scratch_result(native_stack_mark, (uint64)(0u));
+    if (kind == 4u)
+        index = 172u;
+    if (kind == 16u)
+        index = 173u;
+    if (kind == 32u)
+        index = 171u;
     return draft_scratch_result(native_stack_mark, (uint64)((uint32)r_s16(r_u32(0x800A62ECu) + (index << 1u))));
 
     draft_scratch_release(native_stack_mark);

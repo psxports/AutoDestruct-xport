@@ -22,7 +22,8 @@ uint32 sub_8003D02C(uint32 index, uint32 amount)
         w_u16(counter, 0u);
     w_u16(counter, r_u16(counter) + amount);
     result = (sint16)sub_8003CE7C(signed_index) < (sint16)r_u16(counter);
-    if (result != 0u) {
+    if (result != 0u)
+    {
         result = sub_8003CE7C(signed_index);
         w_u16(counter, result);
     }
@@ -34,8 +35,7 @@ uint32 sub_8003F79C(uint32 object, uint32 mode, uint32 value)
     uint32 result = r_u8(object + 13u) & 127u;
     FUNCTION_MARKER(0x8003F79Cu, "1.EXE");
     if (result == 1u)
-        return sub_8003D02C(
-            (uint32)(sint32)(sint16)mode, (uint32)(sint32)(sint16)value);
+        return sub_8003D02C((uint32)(sint32)(sint16)mode, (uint32)(sint32)(sint16)value);
     return result;
 }
 
@@ -64,7 +64,8 @@ uint32 sub_8003F974(uint32 object)
     distance = sub_80069BE0(previous_x - current_x, previous_z - current_z);
     w_u16(object + 16u, r_u16(object + 16u) - distance);
     w_u8(object + 13u, r_u8(object + 13u) - r_u8(0x800A9010u));
-    if ((sint16)r_u16(object + 16u) < 0) {
+    if ((sint16)r_u16(object + 16u) < 0)
+    {
         owner = r_u32(object + 8u);
         w_u16(object + 16u, r_u16(object + 18u));
         sub_8003FA50(owner, 0u);
@@ -88,7 +89,8 @@ uint32 sub_8003F814(uint32 object, uint32 mode)
     height = (uint32)draft_call_adapter(0x8002E310u, position, normal, tag) + r_u32(object + 24u);
     second = (uint32)draft_call_adapter(0x8002E310u, position, normal, tag) + r_u32(object + 24u);
     distance = (sint32)height < 0 ? 0u - second : second;
-    if ((sint32)distance >= 300) {
+    if ((sint32)distance >= 300)
+    {
         result = sub_8003F79C(object, (uint32)(sint32)(sint16)mode, 1u);
         return (uint32)draft_scratch_result(mark, result);
     }

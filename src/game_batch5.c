@@ -13,20 +13,7 @@ uint32 sub_8002E310(uint32 position, uint32 normal_output, uint32 tag_output, Ga
 uint32 sub_8004F340(uint32 destination, uint32 source, GameGeometryCallContext *context);
 uint32 sub_8004F394(uint32 unused, uint32 destination, uint32 count, uint32 incoming_v0);
 uint32 sub_80045280(uint32 object);
-uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output,
-    GameSceneCallContext *context);
-
-
-
-
-
-
-
-
-
-
-
-
+uint32 sub_80054D38(uint32 x, uint32 y, uint32 z, uint32 output, GameSceneCallContext *context);
 
 void sub_8003D324(uint32 value);
 void sub_8003D27C(uint32 value);
@@ -185,406 +172,669 @@ next_record:
     kind = r_u32(frame + 0x20u);
     switch (kind)
     {
-    case 1u:
-        child.return_address = 0x8004FACCu;
-        result = sub_8004F47C(child.caller_s6, 1u, &child);
-        goto advance;
-    case 2u:
-        result = sub_8004F394(child.caller_s6, child.caller_s7, 40u, result);
-        child.caller_s1 = child.caller_s7;
-        if (r_s16(frame + 0x36u) == 2)
-        {
-            child.return_address = 0x8004FAFCu;
-            result = sub_800226E4(460u, &child);
-            object = child.caller_s0 = result;
-            index = 0u;
-            do { w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u); ++index; }
-            while ((uint16)index < 404u);
-            w_u8(object + 34u, child.caller_s5);
-            choice = r_s16(record + 38u) == 2 ? 4u : (r_s16(record + 38u) == 1 ? 3u : 1u);
-            table = 0x800136E8u + 10u * choice;
-            w_u16(object + 32u, r_u16(r_u32(0x800A62ECu) + 2u * r_u8(table)));
-            index = 0u;
-            do
-            {
-                value = r_u16(r_u32(0x800A62ECu) + 2u * r_u8(table + (uint32)(sint32)(sint16)index + 1u));
-                w_u8(object + 36u * index + 102u, child.caller_s5);
-                w_u16(object + 36u * index + 100u, value);
-                ++index;
-            } while ((sint16)index < 9);
-            child.return_address = 0x8004FBF0u;
-            sub_80055A70(object + 428u, &child);
-            value = r_u16(r_u32(0x800A62ECu) + 0xAAu);
-            w_u8(object + 426u, child.caller_s5);
-            w_u16(object + 452u, 2u);
-            w_u16(object + 424u, value);
-            child.return_address = 0x8004FC1Cu;
-            sub_80022908(object, object + 88u, 10u);
-            w_u32(object, 0x800473C8u);
-            scene.stack_pointer = frame; scene.return_address = 0x8004FC3Cu; scene.caller_s0 = child.caller_s0;
-            sub_80054D38(0u, 0u, 0u, object + 36u, &scene); child.caller_s0 = scene.caller_s0;
-            for (index = 0u; index < 4u; ++index)
-                w_u16(object + 72u + index * 2u, r_u16(child.caller_s1 + 28u + index * 2u));
-            if (r_u8(child.caller_s1 + 21u)) w_u8(object + 14u, r_u8(object + 14u) | 2u);
-            if (r_u8(child.caller_s1 + 20u)) w_u8(object + 14u, r_u8(object + 14u) | 8u);
-            child.return_address = 0x8004FCB8u;
-            sub_8004F340(object + 20u, child.caller_s1, &child);
-            w_u16(object + 58u, r_u16(child.caller_s1 + 14u));
-            w_u8(object + 67u, r_u8(child.caller_s1 + 24u));
-            w_u16(object + 80u, r_u16(child.caller_s1 + 36u));
-            w_u16(object + 82u, r_u16(child.caller_s1 + 38u));
-            w_u16(object + 68u, r_u16(child.caller_s1 + 12u));
-            w_u16(object + 56u, r_u16(child.caller_s1 + 16u));
-            value = r_u16(child.caller_s1 + 18u);
-            w_u8(object + 65u, child.caller_s4); w_u8(object + 66u, child.caller_s4);
-            w_u16(object + 84u, value);
-            if (r_u8(child.caller_s1 + 21u)) w_u8(object + 66u, 0u);
-            w_u16(object + 62u, 0xFFFFu);
-            w_u8(object + 13u, r_u8(child.caller_s1 + 24u) ? 12u : 4u);
-            value = r_u32(0x800A7BACu);
-            value2 = r_u32(object + 20u); value3 = r_u32(object + 28u);
-            child.return_address = 0x8004FD64u;
-            result = sub_80055A9C(r_u32(value + 20u) - value2, r_u32(value + 28u) - value3, &child);
-            child.return_address = 0x8004FD7Cu;
-            sub_80055D54(object, object + 88u, (uint32)(sint32)(sint16)(0u - result), &child);
-            value = (uint32)r_s16(object + 452u); value2 = (uint32)r_s16(object + 458u);
-            value = (uint32)r_s16(r_u32(0x8008FCFCu + (value << 2u)) + (value2 << 6u));
-            w_u32(object + 24u, r_u32(object + 24u) - value);
-            w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(child.caller_s1 + 12u) << 2u), object);
+        case 1u:
+            child.return_address = 0x8004FACCu;
+            result = sub_8004F47C(child.caller_s6, 1u, &child);
             goto advance;
-        }
-        child.return_address = 0x8004FDD0u;
-        result = sub_800226E4(124u, &child); object = child.caller_s0 = result;
-        w_u8(object + 34u, child.caller_s5);
-        index = object + 56u;
-        do { w_u8(index, 0u); ++index; } while (index < object + 124u);
-        w_u32(object, 0x80047124u);
-        scene.stack_pointer = frame; scene.return_address = 0x8004FE10u; scene.caller_s0 = child.caller_s0;
-        sub_80054D38(0u, 0u, 0u, object + 36u, &scene); child.caller_s0 = scene.caller_s0;
-        for (index = 0u; index < 4u; ++index) w_u16(object + 72u + 2u * index, r_u16(record + 28u + 2u * index));
-        value = r_u16(0x800A5FA8u + ((uint32)r_s16(frame + 0x36u) << 1u));
-        w_u16(object + 32u, r_u16(r_u32(0x800A62ECu) + 2u * value));
-        if (r_u8(frame + 0x3Du)) w_u8(object + 14u, r_u8(object + 14u) | 2u);
-        if (r_u8(frame + 0x3Cu)) w_u8(object + 14u, r_u8(object + 14u) | 8u);
-        child.return_address = 0x8004FEB4u;
-        sub_8004F340(object + 20u, record, &child);
-        if (r_s16(frame + 0x36u) == 7) w_u16(record + 14u, 4u);
-        w_u16(object + 58u, r_u16(frame + 0x36u));
-        w_u8(object + 67u, r_u8(frame + 0x40u));
-        w_u16(object + 80u, r_u16(frame + 0x4Cu));
-        w_u16(object + 82u, r_u16(frame + 0x4Eu));
-        w_u16(object + 68u, r_u16(frame + 0x34u));
-        w_u16(object + 56u, r_u16(frame + 0x38u));
-        value = r_u16(frame + 0x3Au);
-        w_u8(object + 65u, child.caller_s4); w_u8(object + 66u, child.caller_s4); w_u16(object + 84u, value);
-        if (r_u8(frame + 0x3Du)) w_u8(object + 66u, 0u);
-        w_u16(object + 70u, r_u16(0x800A6EE4u));
-        choice = 11u;
-        signed_value = r_s16(frame + 0x36u);
-        switch (signed_value)
-        {
-        case 0: case 1: case 5: case 6:
-            if (!r_u8(object + 67u)) choice = 3u;
-            value = r_u16(0x800A5FC8u + ((uint32)signed_value << 1u)); goto type2_extra;
-        case 3: case 4: case 7:
-            choice = r_u8(object + 67u) ? 14u : 6u;
-            value = r_u16(0x800A5FC8u + ((uint32)signed_value << 1u)); goto type2_extra;
-        case 12:
-            if (!r_u8(object + 67u)) choice = 3u;
-            value = r_u16(0x800A5FE6u + ((uint32)r_s16(object + 82u) << 1u)); goto type2_extra;
-        case 13:
-            if (!r_u8(object + 67u)) choice = 3u;
-            value = r_u16(0x800A5FEEu + ((uint32)r_s16(object + 82u) << 1u));
- type2_extra:
-            w_u16(object + 100u, r_u16(r_u32(0x800A62ECu) + (value << 1u)));
-            w_u8(object + 13u, choice);
-            w_u8(object + 102u, child.caller_s5);
-            scene.stack_pointer = frame; scene.return_address = 0x8005006Cu; scene.caller_s0 = child.caller_s0;
-            sub_80054D38(0u, 0u, 0u, object + 104u, &scene); child.caller_s0 = scene.caller_s0;
-            child.return_address = 0x8005007Cu;
-            sub_80022908(object, object + 88u, 1u);
-            value = r_u16(object + 32u);
-            value = r_u8(r_u32(0x800A8548u) + value);
-            value = r_u16(r_u32(0x800A90ACu) + value * 40u + 32u);
-            value2 = r_u32(object + 24u); value3 = r_u32(object + 20u);
-            w_u32(object + 88u, value3);
-            w_u32(object + 24u, value2 - (uint32)((sint32)(value << 16u) >> 17));
-            value = r_u32(object + 24u) - 350u; value2 = r_u32(object + 28u);
-            w_u32(object + 96u, value2); w_u32(object + 92u, value);
-            break;
-        default:
-            if (!r_u8(object + 67u)) choice = 3u;
-            w_u8(object + 13u, choice); break;
-        }
-        w_u16(object + 62u, 0xFFFFu); w_u16(object + 86u, r_u16(frame + 0x42u));
-        if (r_u16(frame + 0x4Eu) - 27u < 2u)
-        {
-            value = r_u16(r_u32(0x800A62ECu) + 0x1C0u);
-            w_u32(object, 0x800469E8u); w_u16(object + 100u, value);
-        }
-        w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(frame + 0x34u) << 2u), object);
-        w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(frame + 0x34u), 2u);
-        goto advance;
-    case 3u:
-        child.return_address = 0x80050160u;
-        result = sub_800226E4(72u, &child); object = child.caller_s0 = result;
-        child.caller_s1 = frame + 0x50u;
-        w_u8(object + 34u, child.caller_s5);
-        result = sub_8004F394(child.caller_s6, child.caller_s1, 48u, result);
-        value = (uint32)r_s16(frame + 0x54u) + (uint32)r_s16(frame + 0x60u);
-        w_u32(object + 24u, (uint32)((sint32)(value + (value >> 31u)) >> 1));
-        value = r_u32(frame + 0x50u) + r_u32(frame + 0x5Cu);
-        w_u32(object + 20u, (uint32)((sint32)value >> 1));
-        value = r_u32(frame + 0x58u) + r_u32(frame + 0x64u);
-        w_u32(object + 28u, (uint32)((sint32)value >> 1));
-        value = r_u32(object + 20u); value2 = r_u32(object + 24u); value3 = r_u32(object + 28u);
-        w_u32(frame + 0x80u, value); w_u32(frame + 0x84u, value2); w_u32(frame + 0x88u, value3);
-        child.return_address = 0x800501ECu;
-        sub_8004F340(object + 20u, frame + 0x80u, &child);
-        value = r_u32(object + 24u) + 136u;
-        w_u32(object + 24u, value); if ((sint32)value > 0) w_u32(object + 24u, 0u);
-        w_u32(object + 36u, (uint32)((sint32)(r_u32(frame + 0x5Cu) - r_u32(frame + 0x50u)) >> 1));
-        w_u32(object + 40u, (uint32)((sint32)(r_u32(frame + 0x64u) - r_u32(frame + 0x58u)) >> 1));
-        w_u32(object + 44u, (uint32)r_s16(frame + 0x54u)); w_u32(object + 48u, (uint32)r_s16(frame + 0x60u));
-        value = r_u16(frame + 0x6Au); w_u16(object + 34u, value);
-        w_u32(object, (sint16)value < 0 || r_s16(0x800A7F3Eu) < (sint16)value ? 0x8004644Cu : 0x800463F0u);
-        w_u8(object + 64u, 0u); w_u16(object + 68u, r_u16(frame + 0x68u));
-        for (index = 0u; index < 4u; ++index) w_u16(object + 56u + index * 2u, r_u16(child.caller_s1 + 40u + index * 2u));
-        w_u16(object + 32u, r_u16(frame + 0x6Cu));
-        value = r_u16(frame + 0x6Eu); w_u8(object + 65u, child.caller_s4); w_u8(object + 66u, child.caller_s4); w_u16(object + 52u, value);
-        if (r_u8(frame + 0x71u)) w_u8(object + 66u, 0u);
-        if (r_u8(frame + 0x70u)) w_u8(object + 14u, r_u8(object + 14u) | 8u);
-        w_u8(object + 8u, r_u8(frame + 0x75u)); w_u16(object + 54u, r_u16(frame + 0x76u)); w_u8(object + 67u, r_u8(frame + 0x74u));
-        w_u8(object + 13u, r_u8(object + 67u) ? 13u : 5u);
-        w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(frame + 0x68u) << 2u), object);
-        w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(frame + 0x68u), 3u);
-        goto advance;
-    case 4u:
-        table = r_u32(0x800A6ED4u); value = (uint32)r_s16(table + 10u);
-        w_u8(table + 18u, 0u); w_u32(0x800A6ED4u, r_u32(0x800A6ED4u) + value);
-        w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(table) << 2u), table);
-        goto advance;
-    case 5u:
-        value = r_u32(0x800A6ED4u); w_u32(frame + 0x98u, value);
-        result = sub_8004F394(child.caller_s6, child.caller_s7, 64u, result);
-        switch (r_s16(frame + 0x40u))
-        {
-        case 7:
-            child.caller_s1 = record;
-            child.return_address = 0x8005041Cu;
-            result = sub_800226E4(364u, &child); object = child.caller_s0 = result;
-            child.caller_s2 = 0x800A8740u;
-            index = 0u; do { w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u); ++index; } while ((uint16)index < 308u);
-            w_u8(object + 34u, child.caller_s5);
-            value = r_u16(r_u32(0x800A62ECu) + 8u); w_u32(object, 0x8004F2F8u); w_u16(object + 32u, value);
-            child.return_address = 0x80050480u; sub_8004F340(object + 20u, child.caller_s1, &child);
-            value = r_u16(object + 32u); value = r_u8(r_u32(0x800A8548u) + value);
-            value = r_u16(r_u32(0x800A90ACu) + value * 40u + 32u);
-            w_u32(object + 24u, r_u32(object + 24u) - (uint32)((sint32)(value << 16u) >> 17));
-            if (r_u16(child.caller_s1 + 26u) >= 4u) w_u16(child.caller_s1 + 26u, child.caller_s4);
-            value = ((uint32)r_s16(child.caller_s1 + 24u) << 2u) + (uint32)r_s16(child.caller_s1 + 26u);
-            w_u16(object + 178u, r_u16(child.caller_s2 + (value << 1u) - 18u));
-            value = r_u16(r_u32(0x800A62ECu) + 0x28u); w_u8(object + 338u, child.caller_s5); w_u16(object + 336u, value);
-            child.return_address = 0x80050524u; sub_80022908(object, object + 324u, 1u);
-            child.return_address = 0x8005052Cu; sub_8004ED64(object, &child);
-            goto type5_bind;
-        case 8: case 9:
-            child.caller_s1 = record;
-            child.return_address = 0x80050540u; result = sub_800226E4(300u, &child); object = child.caller_s0 = result;
-            child.caller_s3 = 0x800A8740u;
-            index = object + 56u;
-            do { w_u8(index, 0u); ++index; child.caller_s2 = object + 20u; } while (index < object + 300u);
-            w_u8(object + 34u, child.caller_s5);
-            value = r_u16(0x800A5FF8u + ((uint32)r_s16(child.caller_s1 + 24u) << 1u));
-            value = r_u16(r_u32(0x800A62ECu) + (value << 1u)); w_u32(object, 0x8004EC84u); w_u16(object + 32u, value);
-            child.return_address = 0x800505B0u; sub_8004F340(child.caller_s2, child.caller_s1, &child);
-            w_u32(object + 24u, r_u32(object + 24u) - 1200u);
-            if (r_u16(child.caller_s1 + 26u) >= 4u) w_u16(child.caller_s1 + 26u, child.caller_s4);
-            value = ((uint32)r_s16(child.caller_s1 + 24u) << 2u) + (uint32)r_s16(child.caller_s1 + 26u);
-            w_u16(object + 178u, r_u16(child.caller_s3 + (value << 1u) - 18u));
-            value = r_u16(r_u32(0x800A62ECu) + 0x24u); w_u8(object + 214u, child.caller_s5); w_u16(object + 212u, value);
-            value = r_u16(r_u32(0x800A62ECu) + 0x26u); w_u8(object + 250u, child.caller_s5); w_u16(object + 248u, value);
-            child.return_address = 0x8005062Cu; sub_80022908(object, object + 200u, 2u);
-            child.return_address = 0x8005063Cu; result = sub_8002E310(child.caller_s2, frame + 0x68u, frame + 0x70u, &child);
-            child.return_address = 0x8005064Cu; sub_8004E4F4(object, 0u - result - 1200u);
-            child.return_address = 0x80050658u; sub_8004E6A4(object, 0u, &child);
-            w_u32(object + 276u, 0u); goto type5_common;
-        case 22: case 23: case 24:
-            child.caller_s2 = record;
-            child.return_address = 0x8005066Cu; result = sub_800226E4(572u, &child); object = child.caller_s0 = result;
-            index = 0u; do { w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u); ++index; } while ((uint16)index < 516u);
-            w_u8(object + 34u, child.caller_s5);
-            signed_value = r_s16(child.caller_s2 + 24u); choice = 1u;
-            if (signed_value == 23) choice = r_s16(child.caller_s2 + 28u) ? 5u : 3u;
-            else if (signed_value == 24) choice = r_s16(child.caller_s2 + 28u) ? 6u : 4u;
-            else if (signed_value == 22) choice = r_s16(child.caller_s2 + 28u) ? 2u : 1u;
-            table = 0x800136E8u + choice * 10u;
-            w_u16(object + 32u, r_u16(r_u32(0x800A62ECu) + (r_u8(table) << 1u)));
-            index = 0u;
-            do
+        case 2u:
+            result = sub_8004F394(child.caller_s6, child.caller_s7, 40u, result);
+            child.caller_s1 = child.caller_s7;
+            if (r_s16(frame + 0x36u) == 2)
             {
-                value = r_u16(r_u32(0x800A62ECu) + (r_u8(table + index + 1u) << 1u));
-                w_u8(object + index * 36u + 214u, child.caller_s5); w_u16(object + index * 36u + 212u, value); ++index;
-            } while ((sint16)index < 9);
-            child.return_address = 0x800507C0u; sub_80055A70(object + 540u, &child);
-            value = r_u16(r_u32(0x800A62ECu) + 0xAAu); w_u8(object + 538u, child.caller_s5); w_u32(object, 0x8004E3F0u); w_u16(object + 536u, value);
-            child.return_address = 0x800507ECu; sub_8004F340(object + 20u, child.caller_s2, &child);
-            child.caller_s1 = object + 200u; w_u16(object + 564u, 6u);
-            child.return_address = 0x80050808u; sub_80022908(object, child.caller_s1, 10u);
-            if (r_u16(child.caller_s2 + 26u) >= 4u) w_u16(child.caller_s2 + 26u, child.caller_s4);
-            value = (uint32)r_s16(object + 564u); value2 = (uint32)r_s16(object + 570u);
-            w_u16(object + 178u, r_u16(0x800A61C0u + ((uint32)r_s16(child.caller_s2 + 26u) << 1u)));
-            value = (uint32)r_s16(r_u32(0x8008FCFCu + (value << 2u)) + (value2 << 6u));
-            w_u32(object + 24u, r_u32(object + 24u) - value);
-            child.return_address = 0x80050878u; sub_80055D54(object, child.caller_s1, 0u, &child);
-            w_u16(child.caller_s7 + 24u, 22u); goto type5_common;
-        default:
-            child.caller_s1 = record;
-            child.return_address = 0x80050890u; result = sub_800226E4(328u, &child); object = child.caller_s0 = result;
-            child.caller_s2 = 0x800A8740u;
-            index = 0u; do { w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u); ++index; } while ((uint16)index < 272u);
-            w_u8(object + 34u, child.caller_s5);
-            if (r_s16(child.caller_s1 + 24u) == (sint32)child.caller_s4) w_u16(child.caller_s1 + 24u, 2u);
-            value = r_u16(0x800A5FF8u + ((uint32)r_s16(child.caller_s1 + 24u) << 1u));
-            value = r_u16(r_u32(0x800A62ECu) + (value << 1u)); w_u32(object, 0x8004D874u); w_u16(object + 32u, value);
-            child.return_address = 0x80050924u; sub_8004F340(object + 20u, child.caller_s1, &child);
-            value = r_u16(object + 32u); value = r_u8(r_u32(0x800A8548u) + value); value = r_u16(r_u32(0x800A90ACu) + value * 40u + 32u);
-            w_u32(object + 24u, r_u32(object + 24u) - (uint32)((sint32)(value << 16u) >> 17));
-            if (r_u16(child.caller_s1 + 26u) >= 4u) w_u16(child.caller_s1 + 26u, child.caller_s4);
-            if (r_u32(0x800A9760u) != 0u && r_u32(0x800A9764u) == 4u) value = 0xFA00u;
-            else { value = ((uint32)r_s16(child.caller_s1 + 24u) << 2u) + (uint32)r_s16(child.caller_s1 + 26u); value = r_u16(child.caller_s2 + (value << 1u) - 18u); }
-            w_u16(object + 178u, value); w_u8(object + 324u, 255u); w_u32(object + 8u, 0u);
-            if (r_u16(0x800A5FF8u + ((uint32)r_s16(child.caller_s1 + 24u) << 1u)) == 6u) w_u32(object + 8u, 255u);
- type5_bind:
-            child.return_address = 0x80050A14u; sub_8002B198(object, object + 200u);
-            goto type5_common;
-        }
- type5_common:
-        w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(frame + 0x34u) << 2u), object);
-        w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(frame + 0x34u), 5u);
-        w_u8(object + 196u, r_u8(frame + 0x46u)); w_u8(object + 197u, r_u8(frame + 0x40u)); w_u16(object + 156u, r_u16(frame + 0x64u));
-        value = r_u16(frame + 0x66u); w_u8(object + 65u, child.caller_s4); w_u8(object + 66u, child.caller_s4); w_u16(object + 158u, value); w_u16(object + 68u, r_u16(frame + 0x34u));
-        if (r_s16(frame + 0x66u) == -1)
-        {
-            if (r_u8(frame + 0x51u)) w_u8(object + 66u, 0u);
-            if (r_u8(frame + 0x55u)) w_u8(object + 14u, r_u8(object + 14u) | 2u);
-            sub_80045280(object);
-        }
-        if (r_u8(frame + 0x50u)) w_u8(object + 14u, r_u8(object + 14u) | 8u);
-        w_u16(object + 160u, r_u16(frame + 0x4Cu)); w_u16(object + 162u, r_u16(frame + 0x4Eu)); w_u8(object + 67u, r_u8(frame + 0x54u)); w_u16(object + 164u, r_u16(frame + 0x4Au));
-        w_u16(object + 176u, (((uint32)r_s16(frame + 0x3Au) - 1u) << 8u) | 255u);
-        value = r_u16(frame + 0x44u); w_u16(object + 56u, 2u); w_u16(object + 70u, value);
-        w_u16(object + 58u, r_u16(frame + 0x36u)); w_u16(object + 166u, r_u16(frame + 0x36u));
-        for (index = 0u; index < 4u; ++index) w_u16(object + 72u + index * 2u, r_u16(child.caller_s7 + 48u + index * 2u));
-        w_u16(object + 170u, 5u); w_u8(object + 87u, child.caller_s4); w_u8(object + 198u, child.caller_s5); w_u8(object + 194u, 255u);
-        w_u32(object + 148u, r_u32(r_u32(frame + 0x98u) + 20u));
-        w_u8(object + 13u, child.caller_s5); w_u16(object + 70u, r_u16(frame + 0x44u));
-        if (!r_s16(frame + 0x44u)) { w_u8(object + 13u, 7u); if (!r_u32(0x800A622Cu)) w_u32(0x800A622Cu, object); }
-        value = r_u16(frame + 0x48u); w_u32(object + 144u, 0u); w_u16(object + 192u, value);
-        if (r_s16(frame + 0x48u)) w_u32(object + 144u, r_u32(frame + 0x98u) + 64u);
-        value = (90u - (uint32)r_s16(frame + 0x38u)) << 12u;
-        w_u32(object + 16u, 0x80090A84u); w_u16(object + 182u, (uint32)((sint32)value / 360) & 0xFFFu);
-        value = r_u32(object + 20u); value2 = r_u32(object + 24u); value3 = r_u32(object + 28u);
-        w_u32(object + 116u, value); w_u32(object + 120u, value2); w_u32(object + 124u, value3);
-        value = r_u32(object + 20u); value2 = r_u32(object + 24u); value3 = r_u32(object + 28u);
-        w_u32(object + 128u, value); w_u32(object + 132u, value2); w_u32(object + 136u, value3);
-        scene.stack_pointer = frame; scene.return_address = 0x80050CA8u; scene.caller_s0 = child.caller_s0;
-        sub_80054D38(0u, (uint32)r_s16(object + 182u) + 2048u, 0u, object + 36u, &scene); child.caller_s0 = scene.caller_s0;
-        if (r_s16(object + 164u) == -1) w_u16(object + 164u, 0u);
-        if (r_s16(frame + 0x66u) == -1 && r_s16(frame + 0x40u) == 16)
-        {
-            w_u32(frame + 0x10u, 450u); w_u32(frame + 0x14u, 400u); value = (uint32)r_s16(object + 68u); w_u32(frame + 0x18u, value);
-            child.return_address = 0x80050D04u; sub_800535DC(object, 1u, 167u, 500u, &child);
-        }
-        value = r_u16(frame + 0x48u); value2 = r_u32(0x800A622Cu);
-        value = ((value & 1u) + (uint32)(sint32)(sint16)value) << 1u;
-        w_u32(0x800A6ED4u, r_u32(0x800A6ED4u) + value);
-        if (value2 == object && r_u32(0x800A8690u))
-        {
-            w_u32(0x800A9A58u, value2); child.return_address = 0x80050D5Cu; sub_8005BF3C(value2, &child);
-        }
-        goto advance;
-    case 6u:
-        table = r_u32(0x800A6ED4u); value = (uint32)r_s16(table); value2 = r_u16(table + 2u);
-        w_u32(r_u32(0x800A851Cu) + (value << 2u), table);
-        value2 = (uint32)(sint32)(sint16)((((value2 & 1u) + value2) << 1u) + 4u);
-        value = (uint32)r_s16(table); value3 = r_u32(0x800A7F08u);
-        w_u32(0x800A6ED4u, table + value2); w_u8(value3 + value, 6u); goto advance;
-    case 7u:
-        child.return_address = 0x80050DC0u; result = sub_800226E4(72u, &child); object = child.caller_s0 = result;
-        result = sub_8004F394(child.caller_s6, record, 24u, result);
-        w_u8(object + 14u, child.caller_s4); w_u32(object, 0x80047670u);
-        value = r_u32(frame + 0x2Cu); value2 = r_u16(0x800A6EE4u); w_u32(object + 8u, value); w_u16(object + 56u, value2);
-        w_u8(object + 67u, r_u8(frame + 0x37u)); value = r_u16(frame + 0x28u);
-        w_u32(object + 52u, 0u); w_u8(object + 64u, 0u); w_u16(object + 68u, value);
-        w_u16(object + 60u, r_u16(frame + 0x30u)); value = r_u16(frame + 0x32u);
-        w_u8(object + 65u, child.caller_s4); w_u8(object + 66u, child.caller_s4); w_u16(object + 62u, value);
-        if (r_u8(frame + 0x34u)) w_u8(object + 66u, 0u);
-        w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(object + 68u) << 2u), object);
-        w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(object + 68u), 7u); goto advance;
-    case 8u:
-        result = sub_8004F394(child.caller_s6, record, 4u, result);
-        value = (uint32)r_s16(frame + 0x28u); table = r_u32(0x800A6ED4u); value2 = table + (value << 3u);
-        w_u32(0x800A6EECu, table); w_u32(0x800A6EE8u, value2); w_u32(0x800A6EF0u, value); w_u32(0x800A6ED4u, value2);
-        if ((sint32)value > 0)
-        {
-            index = 0u;
-            do
-            {
-                value2 = table + ((uint32)(sint32)(sint16)index << 3u);
-                if ((r_u32(value2) & 0x3FFu) != 0u)
+                child.return_address = 0x8004FAFCu;
+                result = sub_800226E4(460u, &child);
+                object = child.caller_s0 = result;
+                index = 0u;
+                do
                 {
-                    value3 = r_u32(value2 + 4u); value2 = r_u32(0x800A6ED4u);
-                    w_u32(0x800A6ED4u, value2 + ((value3 & 15u) << 2u));
-                }
+                    w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u);
+                    ++index;
+                } while ((uint16)index < 404u);
+                w_u8(object + 34u, child.caller_s5);
+                choice = r_s16(record + 38u) == 2 ? 4u : (r_s16(record + 38u) == 1 ? 3u : 1u);
+                table = 0x800136E8u + 10u * choice;
+                w_u16(object + 32u, r_u16(r_u32(0x800A62ECu) + 2u * r_u8(table)));
+                index = 0u;
+                do
+                {
+                    value = r_u16(r_u32(0x800A62ECu) + 2u * r_u8(table + (uint32)(sint32)(sint16)index + 1u));
+                    w_u8(object + 36u * index + 102u, child.caller_s5);
+                    w_u16(object + 36u * index + 100u, value);
+                    ++index;
+                } while ((sint16)index < 9);
+                child.return_address = 0x8004FBF0u;
+                sub_80055A70(object + 428u, &child);
+                value = r_u16(r_u32(0x800A62ECu) + 0xAAu);
+                w_u8(object + 426u, child.caller_s5);
+                w_u16(object + 452u, 2u);
+                w_u16(object + 424u, value);
+                child.return_address = 0x8004FC1Cu;
+                sub_80022908(object, object + 88u, 10u);
+                w_u32(object, 0x800473C8u);
+                scene.stack_pointer = frame;
+                scene.return_address = 0x8004FC3Cu;
+                scene.caller_s0 = child.caller_s0;
+                sub_80054D38(0u, 0u, 0u, object + 36u, &scene);
+                child.caller_s0 = scene.caller_s0;
+                for (index = 0u; index < 4u; ++index)
+                    w_u16(object + 72u + index * 2u, r_u16(child.caller_s1 + 28u + index * 2u));
+                if (r_u8(child.caller_s1 + 21u))
+                    w_u8(object + 14u, r_u8(object + 14u) | 2u);
+                if (r_u8(child.caller_s1 + 20u))
+                    w_u8(object + 14u, r_u8(object + 14u) | 8u);
+                child.return_address = 0x8004FCB8u;
+                sub_8004F340(object + 20u, child.caller_s1, &child);
+                w_u16(object + 58u, r_u16(child.caller_s1 + 14u));
+                w_u8(object + 67u, r_u8(child.caller_s1 + 24u));
+                w_u16(object + 80u, r_u16(child.caller_s1 + 36u));
+                w_u16(object + 82u, r_u16(child.caller_s1 + 38u));
+                w_u16(object + 68u, r_u16(child.caller_s1 + 12u));
+                w_u16(object + 56u, r_u16(child.caller_s1 + 16u));
+                value = r_u16(child.caller_s1 + 18u);
+                w_u8(object + 65u, child.caller_s4);
+                w_u8(object + 66u, child.caller_s4);
+                w_u16(object + 84u, value);
+                if (r_u8(child.caller_s1 + 21u))
+                    w_u8(object + 66u, 0u);
+                w_u16(object + 62u, 0xFFFFu);
+                w_u8(object + 13u, r_u8(child.caller_s1 + 24u) ? 12u : 4u);
+                value = r_u32(0x800A7BACu);
+                value2 = r_u32(object + 20u);
+                value3 = r_u32(object + 28u);
+                child.return_address = 0x8004FD64u;
+                result = sub_80055A9C(r_u32(value + 20u) - value2, r_u32(value + 28u) - value3, &child);
+                child.return_address = 0x8004FD7Cu;
+                sub_80055D54(object, object + 88u, (uint32)(sint32)(sint16)(0u - result), &child);
+                value = (uint32)r_s16(object + 452u);
+                value2 = (uint32)r_s16(object + 458u);
+                value = (uint32)r_s16(r_u32(0x8008FCFCu + (value << 2u)) + (value2 << 6u));
+                w_u32(object + 24u, r_u32(object + 24u) - value);
+                w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(child.caller_s1 + 12u) << 2u), object);
+                goto advance;
+            }
+            child.return_address = 0x8004FDD0u;
+            result = sub_800226E4(124u, &child);
+            object = child.caller_s0 = result;
+            w_u8(object + 34u, child.caller_s5);
+            index = object + 56u;
+            do
+            {
+                w_u8(index, 0u);
                 ++index;
-            } while ((sint32)(sint16)index < (sint32)value);
-        }
-        goto advance;
-    case 9u:
-        child.return_address = 0x80050F10u; result = sub_800226E4(72u, &child); object = child.caller_s0 = result;
-        result = sub_8004F394(child.caller_s6, record, 8u, result);
-        w_u8(object + 14u, child.caller_s4); w_u32(object, 0x80045F94u);
-        value = r_u16(frame + 0x28u); w_u8(object + 64u, 0u); w_u16(object + 68u, value);
-        value = r_u16(frame + 0x2Cu); w_u8(object + 65u, child.caller_s4); w_u16(object + 62u, value);
-        w_u8(object + 66u, r_u8(frame + 0x2Au));
-        w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(object + 68u) << 2u), object);
-        w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(object + 68u), 9u); goto advance;
-    default:
-        goto advance;
+            } while (index < object + 124u);
+            w_u32(object, 0x80047124u);
+            scene.stack_pointer = frame;
+            scene.return_address = 0x8004FE10u;
+            scene.caller_s0 = child.caller_s0;
+            sub_80054D38(0u, 0u, 0u, object + 36u, &scene);
+            child.caller_s0 = scene.caller_s0;
+            for (index = 0u; index < 4u; ++index)
+                w_u16(object + 72u + 2u * index, r_u16(record + 28u + 2u * index));
+            value = r_u16(0x800A5FA8u + ((uint32)r_s16(frame + 0x36u) << 1u));
+            w_u16(object + 32u, r_u16(r_u32(0x800A62ECu) + 2u * value));
+            if (r_u8(frame + 0x3Du))
+                w_u8(object + 14u, r_u8(object + 14u) | 2u);
+            if (r_u8(frame + 0x3Cu))
+                w_u8(object + 14u, r_u8(object + 14u) | 8u);
+            child.return_address = 0x8004FEB4u;
+            sub_8004F340(object + 20u, record, &child);
+            if (r_s16(frame + 0x36u) == 7)
+                w_u16(record + 14u, 4u);
+            w_u16(object + 58u, r_u16(frame + 0x36u));
+            w_u8(object + 67u, r_u8(frame + 0x40u));
+            w_u16(object + 80u, r_u16(frame + 0x4Cu));
+            w_u16(object + 82u, r_u16(frame + 0x4Eu));
+            w_u16(object + 68u, r_u16(frame + 0x34u));
+            w_u16(object + 56u, r_u16(frame + 0x38u));
+            value = r_u16(frame + 0x3Au);
+            w_u8(object + 65u, child.caller_s4);
+            w_u8(object + 66u, child.caller_s4);
+            w_u16(object + 84u, value);
+            if (r_u8(frame + 0x3Du))
+                w_u8(object + 66u, 0u);
+            w_u16(object + 70u, r_u16(0x800A6EE4u));
+            choice = 11u;
+            signed_value = r_s16(frame + 0x36u);
+            switch (signed_value)
+            {
+                case 0:
+                case 1:
+                case 5:
+                case 6:
+                    if (!r_u8(object + 67u))
+                        choice = 3u;
+                    value = r_u16(0x800A5FC8u + ((uint32)signed_value << 1u));
+                    goto type2_extra;
+                case 3:
+                case 4:
+                case 7:
+                    choice = r_u8(object + 67u) ? 14u : 6u;
+                    value = r_u16(0x800A5FC8u + ((uint32)signed_value << 1u));
+                    goto type2_extra;
+                case 12:
+                    if (!r_u8(object + 67u))
+                        choice = 3u;
+                    value = r_u16(0x800A5FE6u + ((uint32)r_s16(object + 82u) << 1u));
+                    goto type2_extra;
+                case 13:
+                    if (!r_u8(object + 67u))
+                        choice = 3u;
+                    value = r_u16(0x800A5FEEu + ((uint32)r_s16(object + 82u) << 1u));
+                type2_extra:
+                    w_u16(object + 100u, r_u16(r_u32(0x800A62ECu) + (value << 1u)));
+                    w_u8(object + 13u, choice);
+                    w_u8(object + 102u, child.caller_s5);
+                    scene.stack_pointer = frame;
+                    scene.return_address = 0x8005006Cu;
+                    scene.caller_s0 = child.caller_s0;
+                    sub_80054D38(0u, 0u, 0u, object + 104u, &scene);
+                    child.caller_s0 = scene.caller_s0;
+                    child.return_address = 0x8005007Cu;
+                    sub_80022908(object, object + 88u, 1u);
+                    value = r_u16(object + 32u);
+                    value = r_u8(r_u32(0x800A8548u) + value);
+                    value = r_u16(r_u32(0x800A90ACu) + value * 40u + 32u);
+                    value2 = r_u32(object + 24u);
+                    value3 = r_u32(object + 20u);
+                    w_u32(object + 88u, value3);
+                    w_u32(object + 24u, value2 - (uint32)((sint32)(value << 16u) >> 17));
+                    value = r_u32(object + 24u) - 350u;
+                    value2 = r_u32(object + 28u);
+                    w_u32(object + 96u, value2);
+                    w_u32(object + 92u, value);
+                    break;
+                default:
+                    if (!r_u8(object + 67u))
+                        choice = 3u;
+                    w_u8(object + 13u, choice);
+                    break;
+            }
+            w_u16(object + 62u, 0xFFFFu);
+            w_u16(object + 86u, r_u16(frame + 0x42u));
+            if (r_u16(frame + 0x4Eu) - 27u < 2u)
+            {
+                value = r_u16(r_u32(0x800A62ECu) + 0x1C0u);
+                w_u32(object, 0x800469E8u);
+                w_u16(object + 100u, value);
+            }
+            w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(frame + 0x34u) << 2u), object);
+            w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(frame + 0x34u), 2u);
+            goto advance;
+        case 3u:
+            child.return_address = 0x80050160u;
+            result = sub_800226E4(72u, &child);
+            object = child.caller_s0 = result;
+            child.caller_s1 = frame + 0x50u;
+            w_u8(object + 34u, child.caller_s5);
+            result = sub_8004F394(child.caller_s6, child.caller_s1, 48u, result);
+            value = (uint32)r_s16(frame + 0x54u) + (uint32)r_s16(frame + 0x60u);
+            w_u32(object + 24u, (uint32)((sint32)(value + (value >> 31u)) >> 1));
+            value = r_u32(frame + 0x50u) + r_u32(frame + 0x5Cu);
+            w_u32(object + 20u, (uint32)((sint32)value >> 1));
+            value = r_u32(frame + 0x58u) + r_u32(frame + 0x64u);
+            w_u32(object + 28u, (uint32)((sint32)value >> 1));
+            value = r_u32(object + 20u);
+            value2 = r_u32(object + 24u);
+            value3 = r_u32(object + 28u);
+            w_u32(frame + 0x80u, value);
+            w_u32(frame + 0x84u, value2);
+            w_u32(frame + 0x88u, value3);
+            child.return_address = 0x800501ECu;
+            sub_8004F340(object + 20u, frame + 0x80u, &child);
+            value = r_u32(object + 24u) + 136u;
+            w_u32(object + 24u, value);
+            if ((sint32)value > 0)
+                w_u32(object + 24u, 0u);
+            w_u32(object + 36u, (uint32)((sint32)(r_u32(frame + 0x5Cu) - r_u32(frame + 0x50u)) >> 1));
+            w_u32(object + 40u, (uint32)((sint32)(r_u32(frame + 0x64u) - r_u32(frame + 0x58u)) >> 1));
+            w_u32(object + 44u, (uint32)r_s16(frame + 0x54u));
+            w_u32(object + 48u, (uint32)r_s16(frame + 0x60u));
+            value = r_u16(frame + 0x6Au);
+            w_u16(object + 34u, value);
+            w_u32(object, (sint16)value < 0 || r_s16(0x800A7F3Eu) < (sint16)value ? 0x8004644Cu : 0x800463F0u);
+            w_u8(object + 64u, 0u);
+            w_u16(object + 68u, r_u16(frame + 0x68u));
+            for (index = 0u; index < 4u; ++index)
+                w_u16(object + 56u + index * 2u, r_u16(child.caller_s1 + 40u + index * 2u));
+            w_u16(object + 32u, r_u16(frame + 0x6Cu));
+            value = r_u16(frame + 0x6Eu);
+            w_u8(object + 65u, child.caller_s4);
+            w_u8(object + 66u, child.caller_s4);
+            w_u16(object + 52u, value);
+            if (r_u8(frame + 0x71u))
+                w_u8(object + 66u, 0u);
+            if (r_u8(frame + 0x70u))
+                w_u8(object + 14u, r_u8(object + 14u) | 8u);
+            w_u8(object + 8u, r_u8(frame + 0x75u));
+            w_u16(object + 54u, r_u16(frame + 0x76u));
+            w_u8(object + 67u, r_u8(frame + 0x74u));
+            w_u8(object + 13u, r_u8(object + 67u) ? 13u : 5u);
+            w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(frame + 0x68u) << 2u), object);
+            w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(frame + 0x68u), 3u);
+            goto advance;
+        case 4u:
+            table = r_u32(0x800A6ED4u);
+            value = (uint32)r_s16(table + 10u);
+            w_u8(table + 18u, 0u);
+            w_u32(0x800A6ED4u, r_u32(0x800A6ED4u) + value);
+            w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(table) << 2u), table);
+            goto advance;
+        case 5u:
+            value = r_u32(0x800A6ED4u);
+            w_u32(frame + 0x98u, value);
+            result = sub_8004F394(child.caller_s6, child.caller_s7, 64u, result);
+            switch (r_s16(frame + 0x40u))
+            {
+                case 7:
+                    child.caller_s1 = record;
+                    child.return_address = 0x8005041Cu;
+                    result = sub_800226E4(364u, &child);
+                    object = child.caller_s0 = result;
+                    child.caller_s2 = 0x800A8740u;
+                    index = 0u;
+                    do
+                    {
+                        w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u);
+                        ++index;
+                    } while ((uint16)index < 308u);
+                    w_u8(object + 34u, child.caller_s5);
+                    value = r_u16(r_u32(0x800A62ECu) + 8u);
+                    w_u32(object, 0x8004F2F8u);
+                    w_u16(object + 32u, value);
+                    child.return_address = 0x80050480u;
+                    sub_8004F340(object + 20u, child.caller_s1, &child);
+                    value = r_u16(object + 32u);
+                    value = r_u8(r_u32(0x800A8548u) + value);
+                    value = r_u16(r_u32(0x800A90ACu) + value * 40u + 32u);
+                    w_u32(object + 24u, r_u32(object + 24u) - (uint32)((sint32)(value << 16u) >> 17));
+                    if (r_u16(child.caller_s1 + 26u) >= 4u)
+                        w_u16(child.caller_s1 + 26u, child.caller_s4);
+                    value = ((uint32)r_s16(child.caller_s1 + 24u) << 2u) + (uint32)r_s16(child.caller_s1 + 26u);
+                    w_u16(object + 178u, r_u16(child.caller_s2 + (value << 1u) - 18u));
+                    value = r_u16(r_u32(0x800A62ECu) + 0x28u);
+                    w_u8(object + 338u, child.caller_s5);
+                    w_u16(object + 336u, value);
+                    child.return_address = 0x80050524u;
+                    sub_80022908(object, object + 324u, 1u);
+                    child.return_address = 0x8005052Cu;
+                    sub_8004ED64(object, &child);
+                    goto type5_bind;
+                case 8:
+                case 9:
+                    child.caller_s1 = record;
+                    child.return_address = 0x80050540u;
+                    result = sub_800226E4(300u, &child);
+                    object = child.caller_s0 = result;
+                    child.caller_s3 = 0x800A8740u;
+                    index = object + 56u;
+                    do
+                    {
+                        w_u8(index, 0u);
+                        ++index;
+                        child.caller_s2 = object + 20u;
+                    } while (index < object + 300u);
+                    w_u8(object + 34u, child.caller_s5);
+                    value = r_u16(0x800A5FF8u + ((uint32)r_s16(child.caller_s1 + 24u) << 1u));
+                    value = r_u16(r_u32(0x800A62ECu) + (value << 1u));
+                    w_u32(object, 0x8004EC84u);
+                    w_u16(object + 32u, value);
+                    child.return_address = 0x800505B0u;
+                    sub_8004F340(child.caller_s2, child.caller_s1, &child);
+                    w_u32(object + 24u, r_u32(object + 24u) - 1200u);
+                    if (r_u16(child.caller_s1 + 26u) >= 4u)
+                        w_u16(child.caller_s1 + 26u, child.caller_s4);
+                    value = ((uint32)r_s16(child.caller_s1 + 24u) << 2u) + (uint32)r_s16(child.caller_s1 + 26u);
+                    w_u16(object + 178u, r_u16(child.caller_s3 + (value << 1u) - 18u));
+                    value = r_u16(r_u32(0x800A62ECu) + 0x24u);
+                    w_u8(object + 214u, child.caller_s5);
+                    w_u16(object + 212u, value);
+                    value = r_u16(r_u32(0x800A62ECu) + 0x26u);
+                    w_u8(object + 250u, child.caller_s5);
+                    w_u16(object + 248u, value);
+                    child.return_address = 0x8005062Cu;
+                    sub_80022908(object, object + 200u, 2u);
+                    child.return_address = 0x8005063Cu;
+                    result = sub_8002E310(child.caller_s2, frame + 0x68u, frame + 0x70u, &child);
+                    child.return_address = 0x8005064Cu;
+                    sub_8004E4F4(object, 0u - result - 1200u);
+                    child.return_address = 0x80050658u;
+                    sub_8004E6A4(object, 0u, &child);
+                    w_u32(object + 276u, 0u);
+                    goto type5_common;
+                case 22:
+                case 23:
+                case 24:
+                    child.caller_s2 = record;
+                    child.return_address = 0x8005066Cu;
+                    result = sub_800226E4(572u, &child);
+                    object = child.caller_s0 = result;
+                    index = 0u;
+                    do
+                    {
+                        w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u);
+                        ++index;
+                    } while ((uint16)index < 516u);
+                    w_u8(object + 34u, child.caller_s5);
+                    signed_value = r_s16(child.caller_s2 + 24u);
+                    choice = 1u;
+                    if (signed_value == 23)
+                        choice = r_s16(child.caller_s2 + 28u) ? 5u : 3u;
+                    else if (signed_value == 24)
+                        choice = r_s16(child.caller_s2 + 28u) ? 6u : 4u;
+                    else if (signed_value == 22)
+                        choice = r_s16(child.caller_s2 + 28u) ? 2u : 1u;
+                    table = 0x800136E8u + choice * 10u;
+                    w_u16(object + 32u, r_u16(r_u32(0x800A62ECu) + (r_u8(table) << 1u)));
+                    index = 0u;
+                    do
+                    {
+                        value = r_u16(r_u32(0x800A62ECu) + (r_u8(table + index + 1u) << 1u));
+                        w_u8(object + index * 36u + 214u, child.caller_s5);
+                        w_u16(object + index * 36u + 212u, value);
+                        ++index;
+                    } while ((sint16)index < 9);
+                    child.return_address = 0x800507C0u;
+                    sub_80055A70(object + 540u, &child);
+                    value = r_u16(r_u32(0x800A62ECu) + 0xAAu);
+                    w_u8(object + 538u, child.caller_s5);
+                    w_u32(object, 0x8004E3F0u);
+                    w_u16(object + 536u, value);
+                    child.return_address = 0x800507ECu;
+                    sub_8004F340(object + 20u, child.caller_s2, &child);
+                    child.caller_s1 = object + 200u;
+                    w_u16(object + 564u, 6u);
+                    child.return_address = 0x80050808u;
+                    sub_80022908(object, child.caller_s1, 10u);
+                    if (r_u16(child.caller_s2 + 26u) >= 4u)
+                        w_u16(child.caller_s2 + 26u, child.caller_s4);
+                    value = (uint32)r_s16(object + 564u);
+                    value2 = (uint32)r_s16(object + 570u);
+                    w_u16(object + 178u, r_u16(0x800A61C0u + ((uint32)r_s16(child.caller_s2 + 26u) << 1u)));
+                    value = (uint32)r_s16(r_u32(0x8008FCFCu + (value << 2u)) + (value2 << 6u));
+                    w_u32(object + 24u, r_u32(object + 24u) - value);
+                    child.return_address = 0x80050878u;
+                    sub_80055D54(object, child.caller_s1, 0u, &child);
+                    w_u16(child.caller_s7 + 24u, 22u);
+                    goto type5_common;
+                default:
+                    child.caller_s1 = record;
+                    child.return_address = 0x80050890u;
+                    result = sub_800226E4(328u, &child);
+                    object = child.caller_s0 = result;
+                    child.caller_s2 = 0x800A8740u;
+                    index = 0u;
+                    do
+                    {
+                        w_u8(object + 56u + (uint32)(sint32)(sint16)index, 0u);
+                        ++index;
+                    } while ((uint16)index < 272u);
+                    w_u8(object + 34u, child.caller_s5);
+                    if (r_s16(child.caller_s1 + 24u) == (sint32)child.caller_s4)
+                        w_u16(child.caller_s1 + 24u, 2u);
+                    value = r_u16(0x800A5FF8u + ((uint32)r_s16(child.caller_s1 + 24u) << 1u));
+                    value = r_u16(r_u32(0x800A62ECu) + (value << 1u));
+                    w_u32(object, 0x8004D874u);
+                    w_u16(object + 32u, value);
+                    child.return_address = 0x80050924u;
+                    sub_8004F340(object + 20u, child.caller_s1, &child);
+                    value = r_u16(object + 32u);
+                    value = r_u8(r_u32(0x800A8548u) + value);
+                    value = r_u16(r_u32(0x800A90ACu) + value * 40u + 32u);
+                    w_u32(object + 24u, r_u32(object + 24u) - (uint32)((sint32)(value << 16u) >> 17));
+                    if (r_u16(child.caller_s1 + 26u) >= 4u)
+                        w_u16(child.caller_s1 + 26u, child.caller_s4);
+                    if (r_u32(0x800A9760u) != 0u && r_u32(0x800A9764u) == 4u)
+                        value = 0xFA00u;
+                    else
+                    {
+                        value = ((uint32)r_s16(child.caller_s1 + 24u) << 2u) + (uint32)r_s16(child.caller_s1 + 26u);
+                        value = r_u16(child.caller_s2 + (value << 1u) - 18u);
+                    }
+                    w_u16(object + 178u, value);
+                    w_u8(object + 324u, 255u);
+                    w_u32(object + 8u, 0u);
+                    if (r_u16(0x800A5FF8u + ((uint32)r_s16(child.caller_s1 + 24u) << 1u)) == 6u)
+                        w_u32(object + 8u, 255u);
+                type5_bind:
+                    child.return_address = 0x80050A14u;
+                    sub_8002B198(object, object + 200u);
+                    goto type5_common;
+            }
+        type5_common:
+            w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(frame + 0x34u) << 2u), object);
+            w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(frame + 0x34u), 5u);
+            w_u8(object + 196u, r_u8(frame + 0x46u));
+            w_u8(object + 197u, r_u8(frame + 0x40u));
+            w_u16(object + 156u, r_u16(frame + 0x64u));
+            value = r_u16(frame + 0x66u);
+            w_u8(object + 65u, child.caller_s4);
+            w_u8(object + 66u, child.caller_s4);
+            w_u16(object + 158u, value);
+            w_u16(object + 68u, r_u16(frame + 0x34u));
+            if (r_s16(frame + 0x66u) == -1)
+            {
+                if (r_u8(frame + 0x51u))
+                    w_u8(object + 66u, 0u);
+                if (r_u8(frame + 0x55u))
+                    w_u8(object + 14u, r_u8(object + 14u) | 2u);
+                sub_80045280(object);
+            }
+            if (r_u8(frame + 0x50u))
+                w_u8(object + 14u, r_u8(object + 14u) | 8u);
+            w_u16(object + 160u, r_u16(frame + 0x4Cu));
+            w_u16(object + 162u, r_u16(frame + 0x4Eu));
+            w_u8(object + 67u, r_u8(frame + 0x54u));
+            w_u16(object + 164u, r_u16(frame + 0x4Au));
+            w_u16(object + 176u, (((uint32)r_s16(frame + 0x3Au) - 1u) << 8u) | 255u);
+            value = r_u16(frame + 0x44u);
+            w_u16(object + 56u, 2u);
+            w_u16(object + 70u, value);
+            w_u16(object + 58u, r_u16(frame + 0x36u));
+            w_u16(object + 166u, r_u16(frame + 0x36u));
+            for (index = 0u; index < 4u; ++index)
+                w_u16(object + 72u + index * 2u, r_u16(child.caller_s7 + 48u + index * 2u));
+            w_u16(object + 170u, 5u);
+            w_u8(object + 87u, child.caller_s4);
+            w_u8(object + 198u, child.caller_s5);
+            w_u8(object + 194u, 255u);
+            w_u32(object + 148u, r_u32(r_u32(frame + 0x98u) + 20u));
+            w_u8(object + 13u, child.caller_s5);
+            w_u16(object + 70u, r_u16(frame + 0x44u));
+            if (!r_s16(frame + 0x44u))
+            {
+                w_u8(object + 13u, 7u);
+                if (!r_u32(0x800A622Cu))
+                    w_u32(0x800A622Cu, object);
+            }
+            value = r_u16(frame + 0x48u);
+            w_u32(object + 144u, 0u);
+            w_u16(object + 192u, value);
+            if (r_s16(frame + 0x48u))
+                w_u32(object + 144u, r_u32(frame + 0x98u) + 64u);
+            value = (90u - (uint32)r_s16(frame + 0x38u)) << 12u;
+            w_u32(object + 16u, 0x80090A84u);
+            w_u16(object + 182u, (uint32)((sint32)value / 360) & 0xFFFu);
+            value = r_u32(object + 20u);
+            value2 = r_u32(object + 24u);
+            value3 = r_u32(object + 28u);
+            w_u32(object + 116u, value);
+            w_u32(object + 120u, value2);
+            w_u32(object + 124u, value3);
+            value = r_u32(object + 20u);
+            value2 = r_u32(object + 24u);
+            value3 = r_u32(object + 28u);
+            w_u32(object + 128u, value);
+            w_u32(object + 132u, value2);
+            w_u32(object + 136u, value3);
+            scene.stack_pointer = frame;
+            scene.return_address = 0x80050CA8u;
+            scene.caller_s0 = child.caller_s0;
+            sub_80054D38(0u, (uint32)r_s16(object + 182u) + 2048u, 0u, object + 36u, &scene);
+            child.caller_s0 = scene.caller_s0;
+            if (r_s16(object + 164u) == -1)
+                w_u16(object + 164u, 0u);
+            if (r_s16(frame + 0x66u) == -1 && r_s16(frame + 0x40u) == 16)
+            {
+                w_u32(frame + 0x10u, 450u);
+                w_u32(frame + 0x14u, 400u);
+                value = (uint32)r_s16(object + 68u);
+                w_u32(frame + 0x18u, value);
+                child.return_address = 0x80050D04u;
+                sub_800535DC(object, 1u, 167u, 500u, &child);
+            }
+            value = r_u16(frame + 0x48u);
+            value2 = r_u32(0x800A622Cu);
+            value = ((value & 1u) + (uint32)(sint32)(sint16)value) << 1u;
+            w_u32(0x800A6ED4u, r_u32(0x800A6ED4u) + value);
+            if (value2 == object && r_u32(0x800A8690u))
+            {
+                w_u32(0x800A9A58u, value2);
+                child.return_address = 0x80050D5Cu;
+                sub_8005BF3C(value2, &child);
+            }
+            goto advance;
+        case 6u:
+            table = r_u32(0x800A6ED4u);
+            value = (uint32)r_s16(table);
+            value2 = r_u16(table + 2u);
+            w_u32(r_u32(0x800A851Cu) + (value << 2u), table);
+            value2 = (uint32)(sint32)(sint16)((((value2 & 1u) + value2) << 1u) + 4u);
+            value = (uint32)r_s16(table);
+            value3 = r_u32(0x800A7F08u);
+            w_u32(0x800A6ED4u, table + value2);
+            w_u8(value3 + value, 6u);
+            goto advance;
+        case 7u:
+            child.return_address = 0x80050DC0u;
+            result = sub_800226E4(72u, &child);
+            object = child.caller_s0 = result;
+            result = sub_8004F394(child.caller_s6, record, 24u, result);
+            w_u8(object + 14u, child.caller_s4);
+            w_u32(object, 0x80047670u);
+            value = r_u32(frame + 0x2Cu);
+            value2 = r_u16(0x800A6EE4u);
+            w_u32(object + 8u, value);
+            w_u16(object + 56u, value2);
+            w_u8(object + 67u, r_u8(frame + 0x37u));
+            value = r_u16(frame + 0x28u);
+            w_u32(object + 52u, 0u);
+            w_u8(object + 64u, 0u);
+            w_u16(object + 68u, value);
+            w_u16(object + 60u, r_u16(frame + 0x30u));
+            value = r_u16(frame + 0x32u);
+            w_u8(object + 65u, child.caller_s4);
+            w_u8(object + 66u, child.caller_s4);
+            w_u16(object + 62u, value);
+            if (r_u8(frame + 0x34u))
+                w_u8(object + 66u, 0u);
+            w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(object + 68u) << 2u), object);
+            w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(object + 68u), 7u);
+            goto advance;
+        case 8u:
+            result = sub_8004F394(child.caller_s6, record, 4u, result);
+            value = (uint32)r_s16(frame + 0x28u);
+            table = r_u32(0x800A6ED4u);
+            value2 = table + (value << 3u);
+            w_u32(0x800A6EECu, table);
+            w_u32(0x800A6EE8u, value2);
+            w_u32(0x800A6EF0u, value);
+            w_u32(0x800A6ED4u, value2);
+            if ((sint32)value > 0)
+            {
+                index = 0u;
+                do
+                {
+                    value2 = table + ((uint32)(sint32)(sint16)index << 3u);
+                    if ((r_u32(value2) & 0x3FFu) != 0u)
+                    {
+                        value3 = r_u32(value2 + 4u);
+                        value2 = r_u32(0x800A6ED4u);
+                        w_u32(0x800A6ED4u, value2 + ((value3 & 15u) << 2u));
+                    }
+                    ++index;
+                } while ((sint32)(sint16)index < (sint32)value);
+            }
+            goto advance;
+        case 9u:
+            child.return_address = 0x80050F10u;
+            result = sub_800226E4(72u, &child);
+            object = child.caller_s0 = result;
+            result = sub_8004F394(child.caller_s6, record, 8u, result);
+            w_u8(object + 14u, child.caller_s4);
+            w_u32(object, 0x80045F94u);
+            value = r_u16(frame + 0x28u);
+            w_u8(object + 64u, 0u);
+            w_u16(object + 68u, value);
+            value = r_u16(frame + 0x2Cu);
+            w_u8(object + 65u, child.caller_s4);
+            w_u16(object + 62u, value);
+            w_u8(object + 66u, r_u8(frame + 0x2Au));
+            w_u32(r_u32(0x800A851Cu) + ((uint32)r_s16(object + 68u) << 2u), object);
+            w_u8(r_u32(0x800A7F08u) + (uint32)r_s16(object + 68u), 9u);
+            goto advance;
+        default:
+            goto advance;
     }
 advance:
     ++child.caller_fp;
-    if ((sint32)(sint16)child.caller_fp < r_s16(0x800A7F3Cu)) goto next_record;
+    if ((sint32)(sint16)child.caller_fp < r_s16(0x800A7F3Cu))
+        goto next_record;
 finish:
     value = (uint32)r_s16(0x800A6096u);
     child.caller_s0 = 1u;
     if (value == 0u)
     {
-        child.return_address = 0x80050FC4u; result = sub_8004F47C(child.caller_s6, 0u, &child);
+        child.return_address = 0x80050FC4u;
+        result = sub_8004F47C(child.caller_s6, 0u, &child);
     }
     result = (uint32)r_s16(0x800A7F48u);
-    w_u16(0x800A6096u, 0u); w_u32(0x800A7E18u, 0u);
-    w_u16(0x800A6ED8u, child.caller_s0); w_u16(0x800A6EDAu, child.caller_s0); w_u16(0x800A6EDCu, child.caller_s0); w_u16(0x800A6EDEu, child.caller_s0);
+    w_u16(0x800A6096u, 0u);
+    w_u32(0x800A7E18u, 0u);
+    w_u16(0x800A6ED8u, child.caller_s0);
+    w_u16(0x800A6EDAu, child.caller_s0);
+    w_u16(0x800A6EDCu, child.caller_s0);
+    w_u16(0x800A6EDEu, child.caller_s0);
     if (result != 0u)
     {
-        child.return_address = 0x80050FF8u; result = sub_800226E4(72u, &child); object = result;
-        w_u8(object + 14u, 1u); value = (uint32)r_s16(0x800A7F48u); value2 = r_u16(0x800A6EE4u);
-        w_u32(0x800A9018u, object); w_u32(object + 52u, 1u); w_u8(object + 67u, 1u);
-        if ((sint32)value < 0) value = 0u - value;
-        w_u32(object + 8u, value); w_u16(object + 56u, value2);
-        if (r_s16(0x800A7F48u) > 0) w_u16(object + 58u, 0u); else w_u16(object + 58u, child.caller_s0);
+        child.return_address = 0x80050FF8u;
+        result = sub_800226E4(72u, &child);
+        object = result;
+        w_u8(object + 14u, 1u);
+        value = (uint32)r_s16(0x800A7F48u);
+        value2 = r_u16(0x800A6EE4u);
+        w_u32(0x800A9018u, object);
+        w_u32(object + 52u, 1u);
+        w_u8(object + 67u, 1u);
+        if ((sint32)value < 0)
+            value = 0u - value;
+        w_u32(object + 8u, value);
+        w_u16(object + 56u, value2);
+        if (r_s16(0x800A7F48u) > 0)
+            w_u16(object + 58u, 0u);
+        else
+            w_u16(object + 58u, child.caller_s0);
         value = r_u16(0x800A7F3Eu);
-        w_u16(object + 60u, 0xFFFFu); w_u16(object + 62u, 0xFFFFu); w_u8(object + 65u, 1u);
-        result = 0x80047670u; w_u8(object + 64u, 0u); w_u8(object + 66u, 0u); w_u32(object, result); w_u16(object + 68u, value + 1u);
+        w_u16(object + 60u, 0xFFFFu);
+        w_u16(object + 62u, 0xFFFFu);
+        w_u8(object + 65u, 1u);
+        result = 0x80047670u;
+        w_u8(object + 64u, 0u);
+        w_u8(object + 66u, 0u);
+        w_u32(object, result);
+        w_u16(object + 68u, value + 1u);
     }
-    else w_u32(0x800A9018u, 0u);
+    else
+        w_u32(0x800A9018u, 0u);
     context->return_address = r_u32(frame + 0xC4u);
     context->caller_fp = r_u32(frame + 0xC0u);
-    context->caller_s7 = r_u32(frame + 0xBCu); context->caller_s6 = r_u32(frame + 0xB8u);
-    context->caller_s5 = r_u32(frame + 0xB4u); context->caller_s4 = r_u32(frame + 0xB0u);
-    context->caller_s3 = r_u32(frame + 0xACu); context->caller_s2 = r_u32(frame + 0xA8u);
-    context->caller_s1 = r_u32(frame + 0xA4u); context->caller_s0 = r_u32(frame + 0xA0u);
+    context->caller_s7 = r_u32(frame + 0xBCu);
+    context->caller_s6 = r_u32(frame + 0xB8u);
+    context->caller_s5 = r_u32(frame + 0xB4u);
+    context->caller_s4 = r_u32(frame + 0xB0u);
+    context->caller_s3 = r_u32(frame + 0xACu);
+    context->caller_s2 = r_u32(frame + 0xA8u);
+    context->caller_s1 = r_u32(frame + 0xA4u);
+    context->caller_s0 = r_u32(frame + 0xA0u);
     return result;
 }
 
@@ -614,7 +864,6 @@ uint32 sub_8004F394(uint32 unused, uint32 destination, uint32 count, uint32 inco
 {
     uint32 result = incoming_v0;
     FUNCTION_MARKER(0x8004F394u, "1.EXE");
-    (void)unused;
     if ((sint32)count > 0)
     {
         uint32 end = destination + count;
@@ -1306,10 +1555,14 @@ uint32 sub_80063888(uint32 object, GameGeometryCallContext *context)
     value = r_u32(child.caller_s0 + 28u);
     w_u32(result, 0x80063904u);
     w_u32(result + 28u, value);
-    context->caller_s1 = child.caller_s1; context->caller_s2 = child.caller_s2;
-    context->caller_s3 = child.caller_s3; context->caller_s4 = child.caller_s4;
-    context->caller_s5 = child.caller_s5; context->caller_s6 = child.caller_s6;
-    context->caller_s7 = child.caller_s7; context->caller_fp = child.caller_fp;
+    context->caller_s1 = child.caller_s1;
+    context->caller_s2 = child.caller_s2;
+    context->caller_s3 = child.caller_s3;
+    context->caller_s4 = child.caller_s4;
+    context->caller_s5 = child.caller_s5;
+    context->caller_s6 = child.caller_s6;
+    context->caller_s7 = child.caller_s7;
+    context->caller_fp = child.caller_fp;
     context->return_address = r_u32(frame + 0x14u);
     context->caller_s0 = r_u32(frame + 0x10u);
     return result;
@@ -1333,14 +1586,20 @@ uint32 sub_80022744(uint32 size, uint32 owner, GameGeometryCallContext *context)
     w_u8(result + 35u, 0u);
     w_u8(result + 15u, 128u);
     previous = r_u32(0x800A567Cu);
-    if (previous != 0u) w_u32(previous + 4u, result);
-    else w_u32(0x800A5678u, result);
+    if (previous != 0u)
+        w_u32(previous + 4u, result);
+    else
+        w_u32(0x800A5678u, result);
     w_u32(0x800A567Cu, result);
     w_u32(result + 4u, 0u);
-    context->caller_s1 = child.caller_s1; context->caller_s2 = child.caller_s2;
-    context->caller_s3 = child.caller_s3; context->caller_s4 = child.caller_s4;
-    context->caller_s5 = child.caller_s5; context->caller_s6 = child.caller_s6;
-    context->caller_s7 = child.caller_s7; context->caller_fp = child.caller_fp;
+    context->caller_s1 = child.caller_s1;
+    context->caller_s2 = child.caller_s2;
+    context->caller_s3 = child.caller_s3;
+    context->caller_s4 = child.caller_s4;
+    context->caller_s5 = child.caller_s5;
+    context->caller_s6 = child.caller_s6;
+    context->caller_s7 = child.caller_s7;
+    context->caller_fp = child.caller_fp;
     context->return_address = r_u32(frame + 0x14u);
     context->caller_s0 = r_u32(frame + 0x10u);
     return result;
@@ -1359,22 +1618,37 @@ uint32 sub_80044E68(void)
     sint32 counter = 3;
     FUNCTION_MARKER(0x80044E68u, "1.EXE");
     source = r_u32(0x800A7BACu);
-    x = r_u32(source + 20u); y = r_u32(source + 24u); z = r_u32(source + 28u);
-    w_u32(0x800A602Cu, x); w_u32(0x800A6030u, y); w_u32(0x800A6034u, z);
+    x = r_u32(source + 20u);
+    y = r_u32(source + 24u);
+    z = r_u32(source + 28u);
+    w_u32(0x800A602Cu, x);
+    w_u32(0x800A6030u, y);
+    w_u32(0x800A6034u, z);
     source = r_u32(0x800A7BACu);
-    w_u16(0x800A6038u, 0u); w_u8(0x800A6086u, 1u);
+    w_u16(0x800A6038u, 0u);
+    w_u8(0x800A6086u, 1u);
     value = r_u32(source + 516u) * 652u;
     value = (uint32)((sint32)value >> 16);
     value *= 360u;
-    if ((sint32)value < 0) value += 4095u;
+    if ((sint32)value < 0)
+        value += 4095u;
     value = (uint32)((sint32)value >> 12) + 90u;
-    first = r_u16(0x800A7E10u); second = r_u16(0x800A8514u);
-    third = r_u16(0x800A86A0u); fourth = r_u32(0x800A7C6Cu);
+    first = r_u16(0x800A7E10u);
+    second = r_u16(0x800A8514u);
+    third = r_u16(0x800A86A0u);
+    fourth = r_u32(0x800A7C6Cu);
     result = 0u - value;
-    w_u16(0x800A603Cu, result); w_u16(0x800A6084u, first);
-    w_u16(0x800A603Eu, second); w_u16(0x800A603Au, third);
+    w_u16(0x800A603Cu, result);
+    w_u16(0x800A6084u, first);
+    w_u16(0x800A603Eu, second);
+    w_u16(0x800A603Au, third);
     w_u32(0x800A6090u, fourth);
-    do { w_u16(pointer, 0xFFFFu); --counter; pointer -= 2u; } while (counter >= 0);
+    do
+    {
+        w_u16(pointer, 0xFFFFu);
+        --counter;
+        pointer -= 2u;
+    } while (counter >= 0);
     return result;
 }
 
