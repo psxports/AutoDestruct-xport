@@ -89,8 +89,10 @@ uint32 sub_8007FF6C(uint32 mode)
 
 uint32 sub_8007FED0(uint32 enabled)
 {
+#ifndef NDEBUG
     if (r_u8(0x80093B66u) >= 2u)
         fprintf(stderr, "SetDispMask(%d)...\n", (sint32)enabled);
+#endif
     if (!enabled)
         xport_guest_fill(0x80093BD0u, 255u, 20u);
     SetDispMask((sint32)enabled);
@@ -466,7 +468,9 @@ void native_sdk_dispatch_callback(uint32 target, uint32 argument0, uint32 argume
             return;
         }
         default:
+#ifndef NDEBUG
             fprintf(stderr, "Unbound SDK guest callback %08X\n", target);
+#endif
             abort();
     }
 }

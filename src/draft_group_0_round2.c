@@ -493,6 +493,18 @@ uint32 sub_8002ACCC(uint32 object, uint32 mask, uint32 velocity)
     draft_scratch_release(native_stack_mark);
 }
 
+static int64 d02_div64(int64 numerator, int32 denominator)
+{
+    if (!denominator)
+        abort();
+    uint64 magnitude = numerator < 0 ? 0 - (uint64)numerator : (uint64)numerator;
+    uint64 divisor = denominator < 0 ? (uint32)(0 - (uint32)denominator) : (uint32)denominator;
+    uint64 quotient = magnitude / divisor;
+    if ((numerator < 0) != (denominator < 0))
+        quotient = 0 - quotient;
+    return (int64)quotient;
+}
+
 // FUNCTION_MARKER sub_8006B198
 uint32 sub_8006B198(uint32 object, uint32 step)
 {
@@ -507,16 +519,19 @@ uint32 sub_8006B198(uint32 object, uint32 step)
         uint32 elapsed = (int32)step < remaining ? step : (uint32)remaining;
         int32 delta = (int32)(r_u32(object + 12u) - r_u32(object));
         int64 product = (int64)remaining * (int32)r_u32(object + 4u), value;
-        uint64 weighted = (uint64)product * (uint32)(t - 1024);
-        value = ((int64)((1024 - 2 * t) * delta) >> 10) + (int64)(weighted >> 10);
+        // Keep signed factors and arithmetic shifts across wrapped 64-bit products
+        uint64 weighted = (uint64)product * (uint64)(t - 1024);
+        uint64 linear = (uint64)(1024 - 2 * t) * (uint64)(int64)delta;
+        value = (int64)((uint64)((int64)linear >> 10) + (uint64)((int64)weighted >> 10));
         value = (int64)((uint64)value * (uint64)(t - 1024));
-        value = (value >> 10) + delta;
+        value = (int64)((uint64)(value >> 10) + (uint64)(int64)delta);
         value = (int64)((uint64)value * (uint64)t);
         value >>= 10;
-        w_u32(object + 4u, (uint32)d02_div((uint32)value, elapsed));
-        // TODO Preserve the full 64-bit quotient across the external compiler helper
-        w_u32(object, r_u32(object) + (uint32)value);
-        w_u32(object + 8u, r_u32(object + 8u) - elapsed);
+        w_u32(object + 4u, (uint32)d02_div64(value, (int32)elapsed));
+        uint32 next_remaining = r_u32(object + 8u) - elapsed;
+        uint32 next_position = r_u32(object) + (uint32)value;
+        w_u32(object + 8u, next_remaining);
+        w_u32(object, next_position);
     }
     return draft_scratch_result(native_stack_mark, (uint64)((uint32)((int32)(r_u32(object) + 512u) >> 10)));
 
@@ -748,9 +763,10 @@ uint32 sub_80070B88(uint32 index)
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 x = r_u32(0x800A75C8u) + 46u, menu = r_u32(0x800A645Cu), entry = r_u32(0x80091EE0u + 12u * menu) + 16u * index;
-    sub_80070D6C(x, 12u * (index + 1u) + 32u, 64u, 8u, 100u);
-    // TODO Preserve the selected entry parameter at the menu-decoration boundary
-    return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80070C48u, 199u, 65280u, 255u, 3u, x, 12u * (index + 1u) + 32u, (uint32)(int32)(int16)r_u16(entry + 14u))));
+    uint32 y = 12 * (index + 1);
+    uint32 width = (uint32)(int32)(int16)r_u16(entry + 14);
+    sub_80070D6C(x, y + 32, 64, 8, 100);
+    return draft_scratch_result(native_stack_mark, (uint64)sub_80070C48(199, 65280, 255, 3, x, y + 33, width + 3, 7));
 
     draft_scratch_release(native_stack_mark);
 }

@@ -47,6 +47,8 @@ uint32 sub_8006F22C(void)
     uint32 native_stack_mark = draft_scratch_mark();
 
     FUNCTION_MARKER(0x8006F22Cu, "1.EXE");
+    // Deliver elapsed native interrupts before reading the original completion flag
+    psx_native_poll_events();
     return draft_scratch_result(native_stack_mark, (uint64)(r_u32(0x800A8550u)));
 
     draft_scratch_release(native_stack_mark);

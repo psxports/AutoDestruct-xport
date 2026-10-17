@@ -1,5 +1,6 @@
 #include <string.h>
 #include "psx.h"
+#include "native_debug_memory.h"
 uint32 sub_800805E0(uint32 environment);
 
 #include "game_scene.h"
@@ -1095,6 +1096,7 @@ inspect:
 allocate:
     offset = r_u32(0x800A748Cu) << 3;
     available = r_u32(0x800AC6ACu + offset);
+    native_debug_heap_region(block, available);
     w_u32(0x800AC6ACu + offset, available - child.caller_s1);
     second = r_u32(block + 4u);
     first = r_u32(block);
@@ -1120,6 +1122,7 @@ allocate:
     w_u32(following + 4u, (second & 0xFFF00000u) | remainder);
     w_u32(0x800AC6A8u + offset, node);
 finish:
+    native_debug_heap_event(1, result, size);
     context->caller_s4 = child.caller_s4;
     context->caller_s5 = child.caller_s5;
     context->caller_s6 = child.caller_s6;

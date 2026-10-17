@@ -1,4 +1,4 @@
-#include "draft_signatures.h"
+#include "native_call_dispatch.h"
 
 /* FUNCTION_MARKER: sub_800375A4 */
 uint32 sub_800375A4(void)
@@ -352,7 +352,7 @@ uint32 sub_8006AFF4(uint32 a1)
     target = r_u32(a1 + 88u);
     distance = sub_80069BE0(r_u32(target + 20u) - r_u32(a1 + 20u), r_u32(target + 28u) - r_u32(a1 + 28u));
     span = (int32)(distance * 2u) / 3;
-    targetY = r_u32(target + 24u);
+    targetY = r_u32(r_u32(a1 + 88u) + 24u);
     objectY = r_u32(a1 + 24u);
     difference = (int32)(targetY - objectY);
     if (difference < 0)
@@ -361,7 +361,11 @@ uint32 sub_8006AFF4(uint32 a1)
         span = (int32)((uint32)difference * 2u);
     localRise = (r_u32(scratch + 4u) - objectY) << 10;
     rise = (targetY - objectY) << 10;
-    targetSlope = (int32)((int64)(int32)rise / span);
+    if (!span)
+        xport_mips_break(7);
+    if (span == -1 && rise == 0x80000000)
+        xport_mips_break(6);
+    targetSlope = (int32)rise / span;
     localSlope = (int32)localRise / 200;
     if (localSlope < targetSlope)
     {
@@ -705,11 +709,17 @@ uint32 sub_80034868(uint32 a1)
             goto record;
         }
         object = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(a1) * 4u);
-        follower = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(r_u32(a1 + 8u)) * 4u);
         if (!r_u8(object + 17u))
         {
-            uint32 flags = r_u8(follower + 14u), type = r_u8(follower + 13u) & 15u;
-            rejected = !(flags & 8u) || (!(flags & 2u) && type != 5u && type != 13u);
+            uint32 flags, type;
+            follower = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(r_u32(a1 + 8u)) * 4u);
+            flags = r_u8(follower + 14u);
+            rejected = !(flags & 8u);
+            if (!rejected && !(flags & 2u))
+            {
+                type = r_u8(follower + 13u) & 15u;
+                rejected = type != 5u && type != 13u;
+            }
         }
         if (rejected)
         {
@@ -724,15 +734,26 @@ uint32 sub_80034868(uint32 a1)
         else
         {
             if (!r_u32(0x800A84D4u) && r_u32(0x800A8E70u) == 1u)
+            {
+                object = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(a1) * 4u);
+                follower = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(r_u32(a1 + 8u)) * 4u);
                 sub_80034820((uint32)(int32)(int16)r_u16(object + 6u) - 1u, follower + 20u);
+            }
             if (!r_u32(0x800A84D4u) && !r_u32(0x800A8E70u))
+            {
+                follower = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(r_u32(a1 + 8u)) * 4u);
                 draft_call_adapter(0x8005CBC8u, 2u, follower + 20u);
+            }
         }
         mode = r_u32(0x800A84D4u);
         if (mode == 1u)
         {
             if (r_u32(0x800A9A38u) != 4u)
+            {
+                if (!rejected)
+                    follower = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(r_u32(a1 + 8u)) * 4u);
                 sub_80034820(2u, rejected ? r_u32(r_u32(0x800A851Cu)) + 20u : follower + 20u);
+            }
             if (mode == r_u32(0x800A84D4u) && r_u32(0x800A9A38u) == 4u)
                 sub_80034820(2u, r_u32(r_u32(0x800A851Cu)) + 20u);
         }
@@ -807,7 +828,7 @@ uint32 sub_8006A948(uint32 a1, uint32 a2)
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 scratch = draft_scratch_adapter(36u), vector = scratch + 12u, normal = scratch + 20u, extra = scratch + 28u, result;
-    int32 speed = (int32)(a2 * 10u), offset = (int32)((uint32)(int32)(int16)r_u16(a1 + 80u) << 10), terrain, savedY = (int32)r_u32(a1 + 24u), candidate, current;
+    int32 speed = (int32)(a2 * 10u), offset = (int32)((uint32)(int32)(int16)r_u16(a1 + 80u) << 10), terrain, savedY = (int32)r_u32(a1 + 24u), candidate, current, difference;
     w_u32(vector, r_u32(0x800A63ECu));
     w_u32(vector + 4u, r_u32(0x800A63F0u));
     terrain = (int32)(0u - (uint32)draft_call_adapter(0x8002E310u, a1 + 20u, normal, extra) * 1024u);
@@ -826,13 +847,14 @@ uint32 sub_8006A948(uint32 a1, uint32 a2)
     w_u32(scratch + 4u, (uint32)((int32)(r_u32(a1 + 120u) + 512u) >> 10));
     candidate = (int32)((uint32)offset - ((uint32)draft_call_adapter(0x8002E310u, scratch, normal, extra) << 10));
     current = (int32)r_u32(a1 + 120u);
+    difference = (int32)((uint32)candidate - (uint32)current);
     if (candidate == offset)
     {
         result = (int32)a2 < (int32)r_u32(a1 + 116u);
         if (!result)
             w_u32(a1 + 116u, (uint32)speed);
     }
-    else if (candidate < current && (int32)(current - (uint32)candidate) < (int32)((uint32)speed << 10))
+    else if (candidate < current && (difference >= 0 ? difference < (int32)((uint32)speed << 10) : (int32)((uint32)current - (uint32)candidate) < (int32)((uint32)speed << 10)))
     {
         w_u32(a1 + 120u, (uint32)candidate);
         w_u16(a1 + 124u, 1u);
@@ -875,16 +897,20 @@ uint32 sub_8006ABE8(uint32 a1, uint32 a2)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 scratch = draft_scratch_adapter(36u), vector = scratch + 12u, normal = scratch + 20u, extra = scratch + 28u, target = r_u32(a1 + 88u), result;
-    int32 offset = (int32)((uint32)(int32)(int16)r_u16(a1 + 80u) << 10), speed = (int32)(a2 * 10u), maximum, savedY = (int32)r_u32(a1 + 24u), candidate, ground, current, difference;
+    uint32 scratch = draft_scratch_adapter(36u), vector = scratch + 12u, normal = scratch + 20u, extra = scratch + 28u, target, result;
+    int32 offset = (int32)((uint32)(int32)(int16)r_u16(a1 + 80u) << 10), speed = (int32)(a2 * 10u), maximum, savedY, candidate, ground, current, difference;
     w_u32(vector, r_u32(0x800A63ECu));
     w_u32(vector + 4u, r_u32(0x800A63F0u));
+    target = r_u32(a1 + 88u);
     maximum = (int32)((sub_80069BE0(r_u32(target + 20u) - r_u32(a1 + 20u), r_u32(target + 28u) - r_u32(a1 + 28u)) * 2u) / 3u);
+    savedY = (int32)r_u32(a1 + 24u);
     w_u32(a1 + 24u, (uint32)savedY - 1360u);
-    if ((int32)r_u32(a1 + 108u) >= (int32)(0u - (uint32)draft_call_adapter(0x8002E310u, a1 + 20u, normal, extra) * 1024u))
+    uint32 terrain = (uint32)draft_call_adapter(0x8002E310u, a1 + 20u, normal, extra);
+    if ((int32)r_u32(a1 + 108u) >= (int32)(0u - terrain * 1024u))
         maximum = 400;
-    if ((int32)(r_u16(a1 + 128u) + 100u) < speed)
-        speed = (int32)(r_u16(a1 + 128u) + 100u);
+    uint32 previous_speed = r_u16(a1 + 128u) + 100u;
+    if ((int32)previous_speed < speed)
+        speed = (int32)previous_speed;
     if (speed < (int32)a2)
         speed = (int32)a2;
     if (speed < 400)
@@ -895,11 +921,14 @@ uint32 sub_8006ABE8(uint32 a1, uint32 a2)
     w_u16(vector + 4u, (uint16)(0u - (uint32)speed));
     draft_call_adapter(0x80031CE8u, a1 + 36u, a1 + 20u, vector, scratch);
     current = (int32)(r_u32(a1 + 120u) + 512u) >> 10;
-    if ((int32)r_u32(target + 24u) < current)
-        current = (int32)r_u32(target + 24u);
+    target = r_u32(a1 + 88u);
+    int32 target_y = (int32)r_u32(target + 24u);
+    if (target_y < current)
+        current = target_y;
     w_u32(scratch + 4u, (uint32)current);
     candidate = (int32)((uint32)offset - ((uint32)draft_call_adapter(0x8002E310u, scratch, normal, extra) << 10));
     ground = (int32)((uint32)offset - ((uint32)draft_call_adapter(0x8002E310u, a1 + 20u, normal, extra) << 10));
+    target = r_u32(a1 + 88u);
     current = (int32)(r_u32(target + 24u) << 10);
     if (current < candidate)
         candidate = (int32)((uint32)current + 10u);
@@ -1325,89 +1354,130 @@ uint32 sub_800410E4(uint32 a1, uint32 a2)
     draft_scratch_release(native_stack_mark);
 }
 
+static sint32 guided_missile_div(sint32 numerator, sint32 denominator)
+{
+    if (denominator == 0)
+    {
+        xport_mips_break(7);
+        return 0;
+    }
+    if (denominator == -1 && numerator == (sint32)0x80000000)
+    {
+        xport_mips_break(6);
+        return 0;
+    }
+    return numerator / denominator;
+}
+
 /* FUNCTION_MARKER: sub_8006B410 */
 uint32 sub_8006B410(uint32 a1, uint32 a2, uint32 a3, uint32 a4)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 dx = r_u32(a2) - r_u32(a1 + 20u), dz = r_u32(a2 + 8u) - r_u32(a1 + 28u), oldX = r_u32(a1 + 60u), oldZ = r_u32(a1 + 68u), speed = sub_80069BE0(oldX, oldZ), bearing = sub_80055A9C(dx, dz), dt = r_u32(0x800A9010u), correction = 0u;
-    int32 difference = (int16)((sub_80055A9C(oldX, oldZ) - bearing) & 4095u), turn, limit;
-    uint32 heading, accelerationX, accelerationZ, velocityX, velocityZ, distance, displacementX, displacementZ, result;
+    uint32 oldX = r_u32(a1 + 60), oldZ = r_u32(a1 + 68);
+    uint32 targetX = r_u32(a2), originX = r_u32(a1 + 20);
+    uint32 targetZ = r_u32(a2 + 8), originZ = r_u32(a1 + 28);
+    uint32 dx = targetX - originX, dz = targetZ - originZ;
+    uint32 speed = sub_80069BE0(oldX, oldZ), bearing = sub_80055A9C(dx, dz);
+    uint32 correction = 0, heading, accelerationX, accelerationZ, velocityX, velocityZ;
+    uint32 distance, displacementX, displacementZ, result, dt;
+    oldX = r_u32(a1 + 60);
+    oldZ = r_u32(a1 + 68);
+    sint32 difference = (sub_80055A9C(oldX, oldZ) - bearing) & 4095;
+    sint32 turn, limit;
     if (difference >= 2049)
         difference -= 4096;
-    w_u32(a1 + 72u, r_u32(a1 + 72u) - (uint32)(int32)(int16)bearing);
-    if ((int32)speed >= 10240 && (difference < 0 ? -difference : difference) < 1025)
+    w_u32(a1 + 72, r_u32(a1 + 72) - (uint32)(sint32)(sint16)bearing);
+    if ((sint32)speed >= 10240 && (difference < 0 ? -difference : difference) < 1025)
     {
-        uint32 index = ((uint32)(307 * difference) + 512u) >> 10;
-        int32 lateral = (int32)(speed * (uint32)(int32)(int16)r_u16(0x800102E0u + (index & 4095u) * 2u) + 2048u) >> 12;
-        int32 required = (int32)((int64)(int32)(0u - (uint32)lateral * 2u) / (int32)(dt + 1u));
-        int32 magnitude = required < 0 ? (int32)(0u - (uint32)required) : required;
-        if (magnitude >= (int32)a4)
-            correction = lateral < 0 ? 1024u : (uint32)-1024;
+        uint32 index = ((uint32)(307 * difference) + 512) >> 10;
+        sint32 lateral = (sint32)(speed * (uint32)r_s16(0x800102E0 + (index & 4095) * 2) + 2048) >> 12;
+        sint32 required = guided_missile_div((sint32)(0 - ((uint32)lateral << 1)), (sint32)(r_u32(0x800A9010) + 1));
+        sint32 magnitude = required < 0 ? (sint32)(0 - (uint32)required) : required;
+        if (magnitude >= (sint32)a4)
+            correction = lateral < 0 ? 1024 : (uint32)-1024;
         else if (a4)
         {
-            int32 position = (int32)((int64)(int32)((uint32)magnitude << 9) / (int32)a4);
-            correction = (uint32)(int32)(int16)r_u16(0x800132E4u + (uint32)position * 2u);
+            uint32 numerator = (uint32)required << 9;
             if (required <= 0)
-                correction = 0u - correction;
+                numerator = 0 - numerator;
+            sint32 position = guided_missile_div((sint32)numerator, (sint32)a4);
+            correction = (uint32)r_s16(0x800132E4 + ((uint32)position << 1));
+            if (required <= 0)
+                correction = 0 - correction;
         }
     }
-    difference = (int16)((correction - r_u16(a1 + 72u)) & 4095u);
+    difference = (correction - r_u16(a1 + 72)) & 4095;
     if (difference >= 2049)
         difference -= 4096;
-    if (((int32)dx < 0 ? (int32)(0u - dx) : (int32)dx) < 2720 && ((int32)dz < 0 ? (int32)(0u - dz) : (int32)dz) < 2720)
-        limit = (int32)(61u * dt) / 2;
-    else
+    if (((sint32)dx < 0 ? (sint32)(0 - dx) : (sint32)dx) < 2720 && ((sint32)dz < 0 ? (sint32)(0 - dz) : (sint32)dz) < 2720)
     {
-        int32 handling = (int16)r_u16(a1 + 82u);
-        if (handling <= 0)
-            limit = (int16)dt;
-        else if (handling >= 20)
-            limit = (int16)(60u * dt);
-        else
-            limit = (int16)(((uint32)(int32)(int16)((59u * (uint32)((handling << 10) / 20) + 1u) * dt) + 512u) >> 10);
+        uint32 product = 61 * r_u32(0x800A9010);
+        limit = (sint16)((product + (product >> 31)) >> 1);
     }
-    turn = difference < 0 ? (int32)(0u - (uint32)difference) : difference;
-    if ((int16)limit < turn)
-        heading = difference >= 0 ? r_u32(a1 + 72u) + (uint32)(int32)(int16)limit : r_u32(a1 + 72u) - (uint32)(int32)(int16)limit;
     else
-        heading = correction;
-    heading += (uint32)(int32)(int16)bearing;
-    w_u32(a1 + 72u, heading);
-    heading &= 4095u;
-    accelerationX = (uint32)((int32)(a4 * (uint32)(int32)(int16)r_u16(0x800102E0u + heading * 2u) + 2048u) >> 12);
-    accelerationZ = (uint32)((int32)(a4 * (uint32)(int32)(int16)r_u16(0x80010AE0u + heading * 2u) + 2048u) >> 12);
-    velocityX = accelerationX * dt + oldX;
-    velocityZ = accelerationZ * dt + oldZ;
-    distance = sub_80069BE0(velocityX, velocityZ);
-    if ((int32)a3 < (int32)distance && (int32)distance >= 17)
     {
-        int32 scale = (int32)((int64)(int32)(a3 << 10) / (int32)distance);
-        uint32 nextX, nextZ;
+        sint32 handling = r_s16(a1 + 82);
+        if (handling <= 0)
+            limit = (sint16)r_u16(0x800A9010);
+        else if (handling >= 20)
+            limit = (sint16)(60 * r_u32(0x800A9010));
+        else
+            limit = (sint16)(((uint32)(sint32)(sint16)((59 * (uint32)((handling << 10) / 20) + 1) * r_u32(0x800A9010)) + 512) >> 10);
+    }
+    turn = difference < 0 ? -difference : difference;
+    if (limit < turn)
+        heading = difference >= 0 ? r_u32(a1 + 72) + (uint32)limit : r_u32(a1 + 72) - (uint32)limit;
+    else
+        heading = (uint32)(sint32)(sint16)correction;
+    w_u32(a1 + 72, heading);
+    heading = (uint32)(sint32)(sint16)bearing + r_u32(a1 + 72);
+    w_u32(a1 + 72, heading);
+    heading &= 4095;
+    uint32 forceX = a4 * (uint32)r_s16(0x800102E0 + heading * 2);
+    uint32 forceZ = a4 * (uint32)r_s16(0x80010AE0 + heading * 2);
+    dt = r_u32(0x800A9010);
+    accelerationX = (uint32)((sint32)(forceX + 2048) >> 12);
+    accelerationZ = (uint32)((sint32)(forceZ + 2048) >> 12);
+    velocityX = accelerationX * dt + r_u32(a1 + 60);
+    velocityZ = accelerationZ * dt + r_u32(a1 + 68);
+    distance = sub_80069BE0(velocityX, velocityZ);
+    if ((sint32)a3 < (sint32)distance && (sint32)distance >= 17)
+    {
+        sint32 scale = guided_missile_div((sint32)(a3 << 10), (sint32)distance);
         if (scale < 0)
-            scale = (int32)(0u - (uint32)scale);
-        nextX = (uint32)((int32)((uint32)scale * velocityX + 512u) >> 10);
-        nextZ = (uint32)((int32)((uint32)scale * velocityZ + 512u) >> 10);
-        accelerationX = (uint32)((int64)(int32)(nextX - velocityX) / (int32)dt);
-        accelerationZ = (uint32)((int64)(int32)(nextZ - velocityZ) / (int32)dt);
+            scale = (sint32)(0 - (uint32)scale);
+        uint32 productX = (uint32)scale * velocityX, productZ = (uint32)scale * velocityZ;
+        dt = r_u32(0x800A9010);
+        uint32 nextX = (uint32)((sint32)(productX + 512) >> 10);
+        accelerationX = (uint32)guided_missile_div((sint32)(nextX - velocityX), (sint32)dt);
         velocityX = nextX;
+        uint32 nextZ = (uint32)((sint32)(productZ + 512) >> 10);
+        accelerationZ = (uint32)guided_missile_div((sint32)(nextZ - velocityZ), (sint32)dt);
         velocityZ = nextZ;
     }
-    displacementX = (uint32)((int32)((velocityX + oldX + accelerationX) * dt + 1024u) >> 11);
-    displacementZ = (uint32)((int32)((velocityZ + oldZ + accelerationZ) * dt + 1024u) >> 11);
-    w_u32(a1 + 60u, velocityX);
-    w_u32(a1 + 64u, 0u);
-    w_u32(a1 + 68u, velocityZ);
-    w_u32(a1 + 20u, r_u32(a1 + 20u) + displacementX);
-    w_u32(a1 + 28u, r_u32(a1 + 28u) + displacementZ);
+    oldX = r_u32(a1 + 60);
+    dt = r_u32(0x800A9010);
+    uint32 productX = (velocityX + oldX + accelerationX) * dt;
+    oldZ = r_u32(a1 + 68);
+    uint32 productZ = (velocityZ + oldZ + accelerationZ) * dt;
+    w_u32(a1 + 60, velocityX);
+    w_u32(a1 + 64, 0);
+    w_u32(a1 + 68, velocityZ);
+    displacementX = (uint32)((sint32)(productX + 1024) >> 11);
+    w_u32(a1 + 20, r_u32(a1 + 20) + displacementX);
+    displacementZ = (uint32)((sint32)(productZ + 1024) >> 11);
+    w_u32(a1 + 28, r_u32(a1 + 28) + displacementZ);
     distance = sub_80069BE0(displacementX, displacementZ);
-    if ((int32)distance < 30)
-        distance = 30u;
+    if ((sint32)distance < 30)
+        distance = 30;
     sub_8006ABE8(a1, distance);
-    w_u32(a1 + 24u, sub_8006B198(a1 + 108u, distance));
-    w_u32(a1 + 64u, 0u);
-    result = sub_80055A9C(r_u32(a1 + 112u), 1024u);
-    w_u32(a1 + 76u, result);
+    uint32 height = sub_8006B198(a1 + 108, distance);
+    uint32 rate = r_u32(a1 + 112);
+    w_u32(a1 + 24, height);
+    w_u32(a1 + 64, 0);
+    result = sub_80055A9C(rate, 1024);
+    w_u32(a1 + 76, result);
     return draft_scratch_result(native_stack_mark, (uint64)(result));
 
     draft_scratch_release(native_stack_mark);

@@ -170,8 +170,8 @@ uint32 sub_800345B0(uint32 object)
                     w_u16(player + 12u, 0xFFFFu);
                 }
             }
-            if (!r_u16(0x800A6CE0u))
-                w_u16(0x800A6CE0u, 1u);
+            if (!r_u32(0x800A6CE0u))
+                w_u32(0x800A6CE0u, 1u);
             if (!r_u32(0x800A84D4u) && r_u32(0x800A975Cu))
             {
                 player = r_u32(r_u32(0x800A851Cu) + 4u * (uint32)(int32)(int16)r_u16(object));
@@ -600,7 +600,6 @@ uint32 sub_8001DDA4(uint32 screen, uint32 packet, uint32 table, uint32 vertices,
                 d = vertices + 8u * indices[part][3];
                 xport_gte_write_data(0u, r_u32(d));
                 xport_gte_write_data(1u, r_u32(d + 4u));
-                draft_gte_command_adapter(0x1400006u);
                 if (1)
                 {
                     for (j = 0; j < 3u; ++j)
@@ -914,7 +913,7 @@ uint32 sub_800784F4(uint32 text, uint32 top, uint32 baseline)
         {
             ++index;
             control = 1u;
-            x += (int32)r_u8(r_u32(0x800A5F68u) + 2u);
+            x += (int32)r_u8(r_u32(0x800A5F68u) + 162);
         }
         if (glyph == 10u)
         {

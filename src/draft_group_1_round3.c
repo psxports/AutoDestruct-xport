@@ -1,6 +1,7 @@
 #include "psx.h"
 #include "draft_signatures.h"
 #include "draft_adapters.h"
+#include <stdlib.h>
 
 static sint32 draft_r3_abs(sint32 x)
 {

@@ -1,4 +1,4 @@
-#include "draft_signatures.h"
+#include "native_call_dispatch.h"
 #include "game_scene.h"
 
 uint32 sub_800329EC(void);
@@ -1143,14 +1143,21 @@ uint32 sub_80061628(uint32 object)
 uint32 sub_80061174(uint32 object)
 {
     uint32 mark = draft_scratch_mark();
-    uint32 step = r_u32(0x800A9010u), scratch, material, angle, old_angle, result;
-    sint32 divisor = (sint16)r_u16(object + 16u), increment;
+    uint32 step, scratch, material, models, angle, old_angle, result;
+    sint32 life, divisor, increment;
     FUNCTION_MARKER(0x80061174u, "1.EXE");
-    material = r_u16(r_u32(0x800A62ECu) + 60u);
-    if ((sint16)r_u16(object + 18u) < 36)
+    life = r_s16(object + 18);
+    models = r_u32(0x800A62EC);
+    step = r_u32(0x800A9010);
+    material = (uint32)r_s16(models + 60) & 0xFFFF;
+    if (life < 36)
         return draft_scratch_result(mark, sub_8002289C(object));
+    divisor = r_s16(object + 16);
     if (divisor == 0)
-        abort();
+    {
+        xport_mips_break(7);
+        return draft_scratch_result(mark, 0);
+    }
     increment = 4096 / divisor;
     angle = 4096u - (uint32)increment;
     scratch = draft_scratch_adapter(16u);
@@ -1187,12 +1194,14 @@ void sub_80061308(uint32 position, uint32 count, uint32 parameter, uint32 size, 
         w_u16(child + 36u, size);
         w_u32(child + 20u, r_u32(position));
         w_u32(child + 24u, r_u32(position + 4u));
+        uint32 z = r_u32(position + 8u);
+        uint32 flags = r_u8(child + 14u);
+        --count;
         w_u16(child + 32u, material);
         w_u32(child, 0x800613D0u);
         w_u16(child + 8u, parameter);
-        w_u8(child + 14u, r_u8(child + 14u) | 2u);
-        w_u32(child + 28u, r_u32(position + 8u));
-        --count;
+        w_u8(child + 14u, flags | 2u);
+        w_u32(child + 28u, z);
     }
 }
 

@@ -1,4 +1,5 @@
 #include "draft_signatures.h"
+#include "native_debug_memory.h"
 #include <stdlib.h>
 
 // FUNCTION_MARKER sub_80064D60
@@ -26,9 +27,6 @@ uint32 sub_80065124(void)
             return draft_scratch_result(native_stack_mark, (uint64)(result));
         if (draft_call_adapter(r_u32(callbacks)))
             callbacks += 4u;
-        /* Service native VBlank after the original scheduler callback */
-        if (VSync(0) < 0)
-            abort();
     }
 
     draft_scratch_release(native_stack_mark);
@@ -449,6 +447,7 @@ uint32 sub_80064E78(void)
     if (index == r_u32(0x800A7484u))
         return draft_scratch_result(native_stack_mark, (uint64)(1u));
     pointer = r_u32(0x800AA6A8u + 4u * index);
+    native_debug_heap_event(3, pointer, 0);
     block = pointer - 8u;
     left = block - (r_u32(pointer - 4u) & 0xFFFFFu);
     right = block + (r_u32(block) & 0xFFFFFu);

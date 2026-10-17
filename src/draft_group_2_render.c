@@ -73,7 +73,7 @@ uint32 sub_8001EABC(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
         w_u32(a2 + 12u, a8 | r_u32(a6 + 4u * first));
         area = (int32)draft_gte_control_adapter(31u);
         draft_gte_command_adapter(0x1400006u);
-        if (area >= 0 && (int32)xport_gte_read_data(24u) < 1024)
+        if (area >= 0 && xport_gte_read_data(24u) < 1024)
         {
             draft_gte_command_adapter(0x158002Du);
             w_u32(a2 + 20u, a9 | r_u32(a6 + 4u * second));
@@ -105,10 +105,13 @@ uint32 sub_8001EABC(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
                         draft_gte_command_adapter(0x1400006u);
                         if ((int32)xport_gte_read_data(24u) >= 0)
                         {
+                            uint32 entry = a5 + 4 * (depth >> 3) + 4 * a10;
                             draft_group2_screens(a2 + 8u, 8u);
-                            draft_group2_link(a2, a5, depth, a10, 0x07000000u);
+                            w_u32(a2, (r_u32(entry) & 0xFFFFFF) | 0x07000000);
+                            w_u32(entry, (r_u32(entry) & 0xFF000000) | (a2 & 0xFFFFFF));
                             w_u32(a2 + 20u, a9 | r_u32(a6 + 4u * i1));
                             w_u32(a2 + 28u, r_u32(a6 + 4u * i2));
+                            w_u32(a2 + 4, xport_gte_read_data(22));
                             a2 += 32u;
                         }
                     }

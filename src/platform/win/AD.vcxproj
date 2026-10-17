@@ -1,60 +1,467 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32"><Configuration>Debug</Configuration><Platform>Win32</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32"><Configuration>Release</Configuration><Platform>Win32</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="Globals"><VCProjectVersion>17.0</VCProjectVersion><ProjectGuid>{2464AE3F-27B0-4B03-AA74-EEE114168495}</ProjectGuid><RootNamespace>AD</RootNamespace><WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion></PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{2464AE3F-27B0-4B03-AA74-EEE114168495}</ProjectGuid>
+    <RootNamespace>AD</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration"><ConfigurationType>Application</ConfigurationType><UseDebugLibraries>true</UseDebugLibraries><PlatformToolset>v143</PlatformToolset><CharacterSet>MultiByte</CharacterSet></PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration"><ConfigurationType>Application</ConfigurationType><UseDebugLibraries>false</UseDebugLibraries><PlatformToolset>v143</PlatformToolset><CharacterSet>MultiByte</CharacterSet><WholeProgramOptimization>true</WholeProgramOptimization></PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <PropertyGroup><OutDir>$(ProjectDir)..\..\..\bin\</OutDir><IntDir>$(ProjectDir)..\..\..\_build\x86\$(Configuration)\</IntDir><TargetName>AD</TargetName><LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory><LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand><DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor><LinkIncremental>false</LinkIncremental></PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"><TargetName>AD_debug</TargetName></PropertyGroup>
+  <PropertyGroup>
+    <OutDir>$(ProjectDir)..\..\..\bin\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\_build\x86\$(Configuration)\</IntDir>
+    <TargetName>AD</TargetName>
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>AD_debug</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile><WarningLevel>Level3</WarningLevel><DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings><SDLCheck>true</SDLCheck><PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_WARNINGS;WND_TITLE=&quot;Auto Destruct&quot;;WND_WIDTH=960;WND_HEIGHT=768;FIELD_RATE=50;%(PreprocessorDefinitions)</PreprocessorDefinitions><AdditionalIncludeDirectories>$(ProjectDir)..\..;$(ProjectDir)..\..\..\..\xport\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories><CompileAs>CompileAsC</CompileAs><Optimization>Disabled</Optimization><RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary><DebugInformationFormat>ProgramDatabase</DebugInformationFormat><ProgramDataBaseFileName>$(IntDir)AD-compile.pdb</ProgramDataBaseFileName><MultiProcessorCompilation>true</MultiProcessorCompilation></ClCompile>
-    <Link><SubSystem>Windows</SubSystem><GenerateDebugInformation>true</GenerateDebugInformation><ProgramDatabaseFile>$(IntDir)AD.pdb</ProgramDatabaseFile><ImportLibrary>$(IntDir)AD.lib</ImportLibrary><AdditionalDependencies>user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies></Link>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GAPI_OGL;_CRT_SECURE_NO_WARNINGS;WND_TITLE="Auto Destruct";WND_WIDTH=960;WND_HEIGHT=720;FIELD_RATE=50;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..;$(ProjectDir)..\..\..\..\xport\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(IntDir)AD-compile.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)AD.pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(IntDir)AD.lib</ImportLibrary>
+      <AdditionalDependencies>opengl32.lib;user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile><WarningLevel>Level3</WarningLevel><DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings><SDLCheck>true</SDLCheck><PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS;WND_TITLE=&quot;Auto Destruct&quot;;WND_WIDTH=960;WND_HEIGHT=768;FIELD_RATE=50;%(PreprocessorDefinitions)</PreprocessorDefinitions><AdditionalIncludeDirectories>$(ProjectDir)..\..;$(ProjectDir)..\..\..\..\xport\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories><CompileAs>CompileAsC</CompileAs><Optimization>MaxSpeed</Optimization><RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary><FunctionLevelLinking>true</FunctionLevelLinking><IntrinsicFunctions>true</IntrinsicFunctions><MultiProcessorCompilation>true</MultiProcessorCompilation></ClCompile>
-    <Link><SubSystem>Windows</SubSystem><GenerateDebugInformation>true</GenerateDebugInformation><ProgramDatabaseFile>$(IntDir)AD.pdb</ProgramDatabaseFile><ImportLibrary>$(IntDir)AD.lib</ImportLibrary><EnableCOMDATFolding>true</EnableCOMDATFolding><OptimizeReferences>true</OptimizeReferences><AdditionalDependencies>user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies></Link>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GAPI_OGL;_CRT_SECURE_NO_WARNINGS;WND_TITLE="Auto Destruct";WND_WIDTH=960;WND_HEIGHT=720;FIELD_RATE=50;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..;$(ProjectDir)..\..\..\..\xport\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)AD.pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(IntDir)AD.lib</ImportLibrary>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
-  <ItemGroup><ClCompile Include="..\..\game_main.c" /><ClCompile Include="..\..\render_frontier.c" /><ClCompile Include="..\..\..\..\xport\src\psx.c" /><ClCompile Include="..\..\..\..\xport\src\psx_gpu.c" /><ClCompile Include="..\..\..\..\xport\src\psx_spu.c" /><ClCompile Include="..\..\..\..\xport\src\xport_trace.c" /><ClCompile Include="..\..\..\..\xport\src\platform\win\main.c"><ObjectFileName>$(IntDir)xport_main.obj</ObjectFileName></ClCompile></ItemGroup>
-  <ItemGroup><ClInclude Include="..\..\..\..\xport\src\xport.h" /><ClInclude Include="..\..\..\..\xport\src\psx.h" /><ClInclude Include="..\..\..\..\xport\src\psx_gpu.h" /><ClInclude Include="..\..\..\..\xport\src\psx_spu.h" /></ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\game_main.c" />
+    <ClCompile Include="..\..\render_frontier.c" />
+    <ClCompile Include="..\..\..\..\xport\src\psx.c" />
+    <ClCompile Include="..\..\..\..\xport\src\psx_gpu.c" />
+    <ClCompile Include="..\..\..\..\xport\src\psx_spu.c" />
+    <ClCompile Include="..\..\..\..\xport\src\xport_trace.c" />
+    <ClCompile Include="..\..\..\..\xport\src\platform\win\main.c">
+      <PreprocessorDefinitions>SHORT_NAME="AD";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)xport_main.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\xport\src\xport.h" />
+    <ClInclude Include="..\..\..\..\xport\src\psx.h" />
+    <ClInclude Include="..\..\..\..\xport\src\psx_gpu.h" />
+    <ClInclude Include="..\..\..\..\xport\src\psx_spu.h" />
+  </ItemGroup>
+  <PropertyGroup Label="XportTemplateSync">
+    <UseXcrt Condition="'$(UseXcrt)'==''">true</UseXcrt>
+    <XcrtEnabled>false</XcrtEnabled>
+    <XcrtEnabled Condition="'$(Configuration)|$(Platform)'=='Release|Win32' and '$(UseXcrt)'=='true' and '$(LockstepDebug)'!='true'">true</XcrtEnabled>
+    <OutDir>$(ProjectDir)..\..\..\bin\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\_build\x86\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="XportTemplateSync">
+    <TargetName>AD_debug</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="XportTemplateSync">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SDLCheck>true</SDLCheck>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(IntDir)AD-compile.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4100;4244;4554;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>FULL_NAME="Auto Destruct";GAPI_OGL;_DEBUG;XPORT_ENABLE_AUDIT;XPORT_MEMORY_DIAGNOSTICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)AD_debug.pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(IntDir)AD_debug.lib</ImportLibrary>
+      <AdditionalDependencies>opengl32.lib;user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="XportTemplateSync">
+    <TargetName>AD</TargetName>
+    <GenerateManifest>false</GenerateManifest>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="XportTemplateSync">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SDLCheck>false</SDLCheck>
+      <Optimization>MinSpace</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/Gw /Gs2147483647 %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <OmitFramePointers>true</OmitFramePointers>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <DisableSpecificWarnings>4100;4244;4554;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>FULL_NAME="Auto Destruct";GAPI_OGL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>$(IntDir)AD.lib</ImportLibrary>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <FixedBaseAddress>true</FixedBaseAddress>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <GenerateManifest>false</GenerateManifest>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <AdditionalDependencies>opengl32.lib;user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32' and '$(LockstepDebug)'!='true'" Label="XportTemplateSync">
+    <ClCompile>
+      <PreprocessorDefinitions>XPORT_DISABLE_FUNCTION_MARKERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(XcrtEnabled)'=='true'" Label="XportTemplateSync">
+    <ClCompile>
+      <PreprocessorDefinitions>GAPI_OGL;XPORT_XCRT;_NO_CRT_STDIO_INLINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MERGE:.rdata=.text %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>kernel32.lib;opengl32.lib;user32.lib;gdi32.lib;winmm.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup Label="XportTemplateSync">
+    <ResourceCompile Include="icon.rc">
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Image Include="icon.ico" />
+    <ClCompile Include="..\..\..\..\xport\src\platform\win\xcrt.c">
+      <ExcludedFromBuild Condition="'$(XcrtEnabled)'!='true'">true</ExcludedFromBuild>
+      <CompileAs>CompileAsC</CompileAs>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <ForcedIncludeFiles />
+    </ClCompile>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-<ItemGroup><ClCompile Include="..\..\game_batch1.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\game_batch2.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\game_batch3.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\game_batch4.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\game_batch5.c" /></ItemGroup>
-
-<ItemGroup><ClCompile Include="..\..\draft_adapters.c" /><ClCompile Include="..\..\draft_group_0.c" /><ClCompile Include="..\..\draft_group_0_round1.c" /><ClCompile Include="..\..\draft_group_0_round2.c" /><ClCompile Include="..\..\draft_group_0_round3.c" /><ClCompile Include="..\..\draft_group_0_tail.c" /><ClCompile Include="..\..\draft_group_1.c" /><ClCompile Include="..\..\draft_group_1_round1.c" /><ClCompile Include="..\..\draft_group_1_round2.c" /><ClCompile Include="..\..\draft_group_1_round3.c" /><ClCompile Include="..\..\draft_group_2.c" /><ClCompile Include="..\..\draft_group_2_render.c" /><ClCompile Include="..\..\draft_group_2_round1.c" /><ClCompile Include="..\..\draft_group_2_round1_render.c" /><ClCompile Include="..\..\draft_group_2_round2.c" /><ClCompile Include="..\..\draft_group_2_round2_render.c" /><ClCompile Include="..\..\draft_group_2_round3.c" /><ClCompile Include="..\..\draft_root_0.c" /><ClCompile Include="..\..\draft_root_1.c" /><ClCompile Include="..\..\draft_root_10.c" /><ClCompile Include="..\..\draft_root_11.c" /><ClCompile Include="..\..\draft_root_12.c" /><ClCompile Include="..\..\draft_root_13.c" /><ClCompile Include="..\..\draft_root_14.c" /><ClCompile Include="..\..\draft_root_15.c" /><ClCompile Include="..\..\draft_root_16.c" /><ClCompile Include="..\..\draft_root_17.c" /><ClCompile Include="..\..\draft_root_18.c" /><ClCompile Include="..\..\draft_root_19.c" /><ClCompile Include="..\..\draft_root_2.c" /><ClCompile Include="..\..\draft_root_3.c" /><ClCompile Include="..\..\draft_root_4.c" /><ClCompile Include="..\..\draft_root_5.c" /><ClCompile Include="..\..\draft_root_6.c" /><ClCompile Include="..\..\draft_root_7.c" /><ClCompile Include="..\..\draft_root_8.c" /><ClCompile Include="..\..\draft_root_9.c" /></ItemGroup>
-
-<ItemGroup><ClCompile Include="..\..\native_missing_1.c" /><ClCompile Include="..\..\native_missing_2.c" /><ClCompile Include="..\..\native_sdk_bindings.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_call_dispatch.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_call_dispatch_0.c" /><ClCompile Include="..\..\native_call_dispatch_1.c" /><ClCompile Include="..\..\native_call_dispatch_2.c" /><ClCompile Include="..\..\native_call_dispatch_3.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_mdec.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_disabled_services.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_input.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_spu_binding.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_spu_common.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_spu_reverb.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_bios_callbacks.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_terrain_1ABB0.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_effects.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_effect_60404.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_collision_helpers.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_collision_effects.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_collision_effect_helpers.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_3F814.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_collision_particles.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_impact_effects.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_3DB40.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_2E190.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_impact_dependencies.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_40478.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_impact_trails.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\native_3F5CC.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\..\..\xport\src\psx_xa.c" /></ItemGroup>
-<ItemGroup><ClCompile Include="..\..\..\..\xport\src\psx_mdec.c" /><ClCompile Include="..\..\..\..\xport\src\psx_press.c" /><ClCompile Include="..\..\..\..\xport\src\psx_vlc.c" /></ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\game_batch1.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\game_batch2.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\game_batch3.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\game_batch4.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\game_batch5.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\draft_adapters.c" />
+    <ClCompile Include="..\..\draft_group_0.c" />
+    <ClCompile Include="..\..\draft_group_0_round1.c" />
+    <ClCompile Include="..\..\draft_group_0_round2.c" />
+    <ClCompile Include="..\..\draft_group_0_round3.c" />
+    <ClCompile Include="..\..\draft_group_0_tail.c" />
+    <ClCompile Include="..\..\draft_group_1.c" />
+    <ClCompile Include="..\..\draft_group_1_round1.c" />
+    <ClCompile Include="..\..\draft_group_1_round2.c" />
+    <ClCompile Include="..\..\draft_group_1_round3.c" />
+    <ClCompile Include="..\..\draft_group_2.c" />
+    <ClCompile Include="..\..\draft_group_2_render.c" />
+    <ClCompile Include="..\..\draft_group_2_round1.c" />
+    <ClCompile Include="..\..\draft_group_2_round1_render.c" />
+    <ClCompile Include="..\..\draft_group_2_round2.c" />
+    <ClCompile Include="..\..\draft_group_2_round2_render.c" />
+    <ClCompile Include="..\..\draft_group_2_round3.c" />
+    <ClCompile Include="..\..\draft_root_0.c" />
+    <ClCompile Include="..\..\draft_root_1.c" />
+    <ClCompile Include="..\..\draft_root_10.c" />
+    <ClCompile Include="..\..\draft_root_11.c" />
+    <ClCompile Include="..\..\draft_root_12.c" />
+    <ClCompile Include="..\..\draft_root_13.c" />
+    <ClCompile Include="..\..\draft_root_14.c" />
+    <ClCompile Include="..\..\draft_root_15.c" />
+    <ClCompile Include="..\..\draft_root_16.c" />
+    <ClCompile Include="..\..\draft_root_17.c" />
+    <ClCompile Include="..\..\draft_root_18.c" />
+    <ClCompile Include="..\..\draft_root_19.c" />
+    <ClCompile Include="..\..\draft_root_2.c" />
+    <ClCompile Include="..\..\draft_root_3.c" />
+    <ClCompile Include="..\..\draft_root_4.c" />
+    <ClCompile Include="..\..\draft_root_5.c" />
+    <ClCompile Include="..\..\draft_root_6.c" />
+    <ClCompile Include="..\..\draft_root_7.c" />
+    <ClCompile Include="..\..\draft_root_8.c" />
+    <ClCompile Include="..\..\draft_root_9.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_missing_1.c" />
+    <ClCompile Include="..\..\native_missing_2.c" />
+    <ClCompile Include="..\..\native_sdk_bindings.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_call_dispatch.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_call_dispatch_0.c" />
+    <ClCompile Include="..\..\native_call_dispatch_1.c" />
+    <ClCompile Include="..\..\native_call_dispatch_2.c" />
+    <ClCompile Include="..\..\native_call_dispatch_3.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_mdec.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_disabled_services.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_input.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_spu_binding.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_spu_common.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_spu_reverb.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_bios_callbacks.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_terrain_1ABB0.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_effects.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_effect_60404.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_collision_helpers.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_collision_effects.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_collision_effect_helpers.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_3F814.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_collision_particles.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_impact_effects.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_3DB40.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_2E190.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_impact_dependencies.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_40478.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_impact_trails.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_3F5CC.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\xport\src\psx_xa.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\xport\src\psx_mdec.c" />
+    <ClCompile Include="..\..\..\..\xport\src\psx_press.c" />
+    <ClCompile Include="..\..\..\..\xport\src\psx_vlc.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\xport\src\vid_ogl.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_destruction_effect.c" />
+    <ClCompile Include="..\..\native_player_destruction.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_camera_modes.c" />
+    <ClCompile Include="..\..\native_menu_frontier.c" />
+    <ClCompile Include="..\..\native_reverb_bindings.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_camera_follow.c" />
+    <ClCompile Include="..\..\native_menu_music.c" />
+    <ClCompile Include="..\..\native_object_motion_modes.c" />
+    <ClCompile Include="..\..\native_frontier_scalars.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_motion_update.c" />
+    <ClCompile Include="..\..\native_object_state_transfer.c" />
+    <ClCompile Include="..\..\native_frontier_effects.c" />
+    <ClCompile Include="..\..\native_text_frontier.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_motion_angles.c" />
+    <ClCompile Include="..\..\native_motion_contacts.c" />
+    <ClCompile Include="..\..\native_effect_callbacks.c" />
+    <ClCompile Include="..\..\native_frontier_actions.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_hud_frontier.c" />
+    <ClCompile Include="..\..\native_object_frontier.c" />
+    <ClCompile Include="..\..\native_remaining_wrappers.c" />
+    <ClCompile Include="..\..\native_final_frontier.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_terrain_query.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_stored_callbacks.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_attachment_motion.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_actor_steering.c" />
+    <ClCompile Include="..\..\native_actor_state.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_object_table_methods.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_projectile_volleys.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_projectile_motion.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_projectile_bounces.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_world_weapon_effects.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_map_effect_entries.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_map_effect_particles.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_map_effect_records.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_map_effect_physics.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_map_emitters.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_map_interactive_effects.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_menu_settings.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_proximity_callback.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_actor_remaining_motion.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_stream_object_entries.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_remaining_game_entries.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_input_remaining.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_analog_calibration.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_menu_calibration.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\native_debug_memory.c" />
+  </ItemGroup>
 </Project>

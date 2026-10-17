@@ -456,9 +456,11 @@ uint32 sub_80038CDC(uint32 a1)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 mode = sub_80037BB8(), bits, result = 0, masks = r_u16(0x800A5C94u) | r_u16(0x800A5C96u) | r_u16(0x800A5C92u) | 0x900u;
+    uint32 mode, bits, result = 0, masks;
     w_u32(0x800A7C74u, 0);
     w_u32(0x800A7E4Cu, 0);
+    mode = sub_80037BB8();
+    masks = r_u16(0x800A5C94u) | r_u16(0x800A5C96u) | r_u16(0x800A5C92u) | 0x900u;
     if ((int16)mode != 2)
         masks |= r_u16(0x800A5C9Cu);
     bits = (uint16)(a1 & ~masks) | (uint32)(int32)(int16)sub_80038970(256);
@@ -470,14 +472,14 @@ uint32 sub_80038CDC(uint32 a1)
     bits = (uint16)(bits | sub_80038970(r_u16(0x800A5C94u)));
     if (bits & 256u)
     {
-        if (!r_u16(0x800A9760u) && (!r_u32(0x800A625Cu) || r_u32(0x800A625Cu) == 3))
+        if (!r_u32(0x800A9760u) && (!r_u32(0x800A625Cu) || r_u32(0x800A625Cu) == 3))
             w_u16(0x800A967Cu, 1);
         return draft_scratch_result(native_stack_mark, (uint64)(0));
     }
     if (bits & 2048u)
     {
         if (!r_u16(0x800A901Cu))
-            w_u16(0x800A8B30u, 1);
+            w_u32(0x800A8B30u, 1);
         return draft_scratch_result(native_stack_mark, (uint64)(0));
     }
     if (!r_u16(0x800A901Cu))

@@ -241,7 +241,7 @@ uint32 sub_8001CB7C(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
         flag = (int32)draft_gte_control_adapter(31u);
         draft_gte_command_adapter(0x1400006u);
         area = (int32)xport_gte_read_data(24u);
-        if (flag >= 0 && area < 1024)
+        if (flag >= 0 && (uint32)area < 1024)
         {
             draft_round1_screens(a2 + 8u, 8u);
             draft_gte_command_adapter(0x180001u);

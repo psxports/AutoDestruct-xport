@@ -1,4 +1,7 @@
 #include "psx.h"
+#include "psx_spu.h"
+
+uint32 _SpuInit(uint32 mode);
 
 #include <string.h>
 #include "game_scene.h"
@@ -835,7 +838,7 @@ uint32 sub_80036348(GameGeometryCallContext *context)
     child.stack_pointer = frame;
     child.return_address = 0x80036360u;
     sub_80089218(&child);
-    SpuInitMalloc(72u, 0x800A9A84u);
+    SpuInitMalloc(72, (char *)psx_addr(0x800A9A84u, 73u * 8u));
     w_u32(frame + 0x10u, 0x3C3u);
     w_u16(frame + 0x20u, 0x3FFFu);
     w_u16(frame + 0x22u, 0x3FFFu);

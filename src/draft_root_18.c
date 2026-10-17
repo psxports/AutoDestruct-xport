@@ -18,7 +18,7 @@ uint32 sub_80024C9C(uint32 object)
     uint32 native_stack_mark = draft_scratch_mark();
 
     int32 sign = r_s8(object + 581), speed = (int32)r_u32(object + 472), maximum = (int32)r_u32(0x800A8538u), difference = draft18_wrapsub(maximum, speed), segment = maximum / 6, input = 0, value, temp, divisor;
-    uint32 index, target, flags, counter;
+    uint32 index, target, counter;
     FUNCTION_MARKER(0x80024C9Cu, "1.EXE");
     w_u32(0x800A5758u, 0);
     w_u8(object + 580, 1);
@@ -269,20 +269,20 @@ uint32 sub_8001937C(uint32 packet, uint32 vertices, uint32 polygons, uint32 ot, 
         }
         else
         {
-            // TODO Bind addressable projected corners and subdivision grid without guest stack recreation
+            // Keep projected corners beyond all subdivision vertices
             if (!scratch)
-                scratch = draft_scratch_adapter(96);
+                scratch = draft_scratch_adapter(128);
             for (i = 0; i < 3; i++)
-                w_u32(scratch + 72 + 4 * i, xport_gte_read_data(12 + i));
+                w_u32(scratch + 112 + 4 * i, xport_gte_read_data(12 + i));
             draft_gte_command_adapter(0x180001);
             p = vertices + 8 * r_u16(pointer - 8);
             xport_gte_write_data(0, r_u32(p));
             xport_gte_write_data(1, r_u32(p + 4));
-            w_u32(scratch + 84, xport_gte_read_data(14));
+            w_u32(scratch + 124, xport_gte_read_data(14));
             left = right = top = bottom = 0;
             for (i = 0; i < 4; i++)
             {
-                screen = r_u32(scratch + 72 + 4 * i);
+                screen = r_u32(scratch + 112 + 4 * i);
                 a = (int16)screen;
                 b = (int16)(screen >> 16);
                 left |= a < 320;
@@ -310,7 +310,7 @@ uint32 sub_8001937C(uint32 packet, uint32 vertices, uint32 polygons, uint32 ot, 
                     w_u16(scratch + 56 + 2 * j, (c + d) >> 1);
                     w_u16(scratch + 64 + 2 * j, d);
                 }
-                packet = sub_8001DDA4(scratch + 72, packet, ot, scratch, depth);
+                packet = sub_8001DDA4(scratch + 112, packet, ot, scratch, depth);
             }
         }
         pointer += 20;

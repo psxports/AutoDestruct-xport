@@ -23,11 +23,18 @@ static sint32 draft12_sin(uint32 a)
     return (sint16)r_u16(0x80010AE0u + (a & 4095u) * 2u);
 }
 
-static sint32 draft12_div(sint32 n, sint32 d, uint32 owner)
+static sint32 draft12_div(sint32 n, sint32 d)
 {
-    // TODO Preserve original division break exception
-    if (!d || (d == -1 && n == (sint32)0x80000000u))
-        return (sint32)draft_call_adapter(owner, (uint32)n, (uint32)d);
+    if (d == 0)
+    {
+        xport_mips_break(7);
+        return 0;
+    }
+    if (d == -1 && n == (sint32)0x80000000)
+    {
+        xport_mips_break(6);
+        return 0;
+    }
     return n / d;
 }
 
@@ -214,11 +221,11 @@ uint32 sub_8003708C(void)
     if (r_u32(0x800A5C60u) == 1u)
     {
         scratch = draft_scratch_adapter(8u);
-        w_u32(0x800A9A64u, 1);
+        w_u16(0x800A9A64u, 1);
         w_u32(0x800A9308u, r_u32(0x800A5C30u));
         w_u32(0x800A7EE0u, r_u32(0x800A5C34u));
         w_u32(0x800A7FA8u, r_u32(0x800A5C38u));
-        w_u32(0x800A9A40u, r_u32(0x800A9678u));
+        w_u8(0x800A9A40u, r_u8(0x800A9678u));
         w_u8(0x800A9A41u, r_u8(0x800A9679u));
         // TODO Bind original CD SDK targets
         w_u32(0x800A7BE0u, (uint32)draft_call_adapter(0x8007B4A0u, 13u, 0x800A9A40u));
@@ -296,41 +303,43 @@ uint32 sub_80048F9C(uint32 position, uint32 velocity, uint32 direction, uint32 k
 uint32 sub_8006BA1C(uint32 object, uint32 maximum, uint32 force)
 {
     uint32 native_stack_mark = draft_scratch_mark();
-
-    sint32 age = (sint16)r_u16(object + 82u), wiggle = 0, angle, xforce, zforce, tick = ((sint32)r_u32(0x800A63D8u) + 512) >> 10, x, z, length, factor, dx, dz, movement;
-    uint32 result;
+    sint32 age = r_s16(object + 82), wiggle = 0, angle, xforce, zforce, tick, x, z, length, factor, dx, dz, movement;
+    uint32 result, vertical, rate;
     if (age >= 11)
-        wiggle = ((draft12_cos((uint32)(80 * age - 800)) << 7) + 2048) >> 12;
-    angle = (wiggle + r_u16(object + 72u)) & 4095;
-    xforce = ((sint32)force * draft12_cos((uint32)angle) + 2048) >> 12;
-    zforce = ((sint32)force * draft12_sin((uint32)angle) + 2048) >> 12;
-    x = ((tick * xforce + 32) >> 6) + (sint32)r_u32(object + 60u);
-    z = ((tick * zforce + 32) >> 6) + (sint32)r_u32(object + 68u);
-    // TODO Bind original distance target
-    length = (sint32)draft_call_adapter(0x80069BE0u, (uint32)x, (uint32)z);
+        wiggle = (sint32)(((uint32)draft12_cos((uint32)(80 * age - 800)) << 7) + 2048) >> 12;
+    angle = ((uint32)wiggle + r_u32(object + 72)) & 4095;
+    xforce = (sint32)(force * (uint32)draft12_cos((uint32)angle) + 2048) >> 12;
+    zforce = (sint32)(force * (uint32)draft12_sin((uint32)angle) + 2048) >> 12;
+    tick = (sint32)(r_u32(0x800A63D8) + 512) >> 10;
+    x = (sint32)((uint32)((sint32)((uint32)tick * (uint32)xforce + 32) >> 6) + r_u32(object + 60));
+    z = (sint32)((uint32)((sint32)((uint32)tick * (uint32)zforce + 32) >> 6) + r_u32(object + 68));
+    length = (sint32)draft_call_adapter(0x80069BE0, (uint32)x, (uint32)z);
     if ((sint32)maximum < length && (sint32)maximum > 0)
     {
-        factor = draft12_div((sint32)(maximum << 10), length, 0x8006BA1Cu);
-        x = (factor * x + 512) >> 10;
-        z = (factor * z + 512) >> 10;
+        factor = draft12_div((sint32)(maximum << 10), length);
+        x = (sint32)((uint32)factor * (uint32)x + 512) >> 10;
+        z = (sint32)((uint32)factor * (uint32)z + 512) >> 10;
     }
-    dx = (((tick * (x + (sint32)r_u32(object + 60u) + xforce) + 32) >> 6) + 1024) >> 11;
-    dz = (((tick * (z + (sint32)r_u32(object + 68u) + zforce) + 32) >> 6) + 1024) >> 11;
-    w_u32(object + 20u, r_u32(object + 20u) + (uint32)dx);
-    w_u32(object + 28u, r_u32(object + 28u) + (uint32)dz);
-    movement = (sint32)draft_call_adapter(0x80069BE0u, (uint32)dx, (uint32)dz);
+    uint32 xsum = (uint32)x + r_u32(object + 60) + (uint32)xforce;
+    tick = (sint32)(r_u32(0x800A63D8) + 512) >> 10;
+    uint32 zsum = (uint32)z + r_u32(object + 68) + (uint32)zforce;
+    dx = (sint32)((uint32)((sint32)((uint32)tick * xsum + 32) >> 6) + 1024) >> 11;
+    dz = (sint32)((uint32)((sint32)((uint32)tick * zsum + 32) >> 6) + 1024) >> 11;
+    w_u32(object + 20, r_u32(object + 20) + (uint32)dx);
+    w_u32(object + 28, r_u32(object + 28) + (uint32)dz);
+    movement = (sint32)draft_call_adapter(0x80069BE0, (uint32)dx, (uint32)dz);
     if (movement < 30)
         movement = 30;
     sub_8006A948(object, (uint32)movement);
-    w_u32(object + 24u, sub_8006B198(object + 108u, (uint32)movement));
-    w_u32(object + 64u, 0);
-    result = sub_80055A9C(r_u32(object + 112u), 1024u);
-    w_u32(object + 76u, result);
-    w_u32(object + 60u, (uint32)x);
-    w_u32(object + 68u, (uint32)z);
-    return draft_scratch_result(native_stack_mark, (uint64)(result));
-
-    draft_scratch_release(native_stack_mark);
+    vertical = sub_8006B198(object + 108, (uint32)movement);
+    rate = r_u32(object + 112);
+    w_u32(object + 24, vertical);
+    w_u32(object + 64, 0);
+    result = sub_80055A9C(rate, 1024);
+    w_u32(object + 76, result);
+    w_u32(object + 60, (uint32)x);
+    w_u32(object + 68, (uint32)z);
+    return draft_scratch_result(native_stack_mark, result);
 }
 
 // FUNCTION_MARKER sub_8003D338
@@ -338,7 +347,8 @@ uint32 sub_8003D338(uint32 state, uint32 kind)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    sint32 stage = (sint16)r_u16(state) >> 8, value = r_u8(state), x, y, z, scale, next;
+    uint32 packed = r_u16(state);
+    sint32 stage = (sint16)packed >> 8, value = packed & 255, x, y, z, scale, next, result;
     uint32 descriptor = r_u32(0x800901DCu + 12u * (uint32)(sint32)(sint16)kind), table;
     if (stage)
     {
@@ -348,9 +358,9 @@ uint32 sub_8003D338(uint32 state, uint32 kind)
         if (stage > 9)
             stage = 9;
         table = 0x80090168u + (uint32)stage * 6u;
-        x = draft12_div((sint32)((r_u16(descriptor + 6u) + 1u) << 16), r_u16(table), 0x8003D338u);
-        y = draft12_div((sint32)((r_u16(descriptor + 8u) + 1u) << 16), r_u16(table + 2u), 0x8003D338u);
-        z = draft12_div((sint32)((r_u16(descriptor + 10u) + 1u) << 16), r_u16(table + 4u), 0x8003D338u);
+        x = draft12_div((sint32)((r_u16(descriptor + 6u) + 1u) << 16), r_u16(table));
+        y = draft12_div((sint32)((r_u16(descriptor + 8u) + 1u) << 16), r_u16(table + 2u));
+        z = draft12_div((sint32)((r_u16(descriptor + 10u) + 1u) << 16), r_u16(table + 4u));
         scale = (value ^ 255) >> 2;
     }
     else
@@ -374,8 +384,12 @@ uint32 sub_8003D338(uint32 state, uint32 kind)
     next = value - ((value ^ 255) >> 3) - 1;
     if (next < 0)
         next = 0;
+    x = (sint32)((uint32)(x / 256) * (uint32)scale) >> 16;
+    y = (sint32)((uint32)(y / 256) * (uint32)scale) >> 16;
+    z = (sint32)((uint32)(z / 256) * (uint32)scale) >> 16;
+    result = (sint16)((x + y + z) / 3);
     w_u16(state, (uint32)(((stage + 1) << 8) + next));
-    return draft_scratch_result(native_stack_mark, (uint64)((uint32)(sint32)(sint16)((((x / 256 * scale) >> 16) + ((y / 256 * scale) >> 16) + ((z / 256 * scale) >> 16)) / 3)));
+    return draft_scratch_result(native_stack_mark, (uint32)result);
 
     draft_scratch_release(native_stack_mark);
 }
@@ -1141,14 +1155,15 @@ uint32 sub_8006C3D4(uint32 object)
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 scratch = draft_scratch_adapter(28u), category = scratch + 12u, previous = scratch + 16u, target, i, force = 819, result;
-    sint32 age, dy, tick = (sint32)r_u32(0x800A9010u);
-    if (!r_u8(object + 12u) || r_u16(object + 56u))
+    sint32 age;
+    uint32 alive = r_u8(object + 12u);
+    if (!alive || r_u16(object + 56u))
     {
         target = r_u32(object + 88u);
         if (target)
             w_u8(target + 15u, r_u8(target + 15u) - 1u);
         sub_80036CFC(object + 130u);
-        return draft_scratch_result(native_stack_mark, (uint64)(r_u8(object + 12u) ? sub_8002A5DC(object, r_u16(object + 56u)) : sub_8002289C(object)));
+        return draft_scratch_result(native_stack_mark, (uint64)(alive ? sub_8002A5DC(object, (uint32)r_s16(object + 56u)) : sub_8002289C(object)));
     }
     if ((sint16)r_u16(object + 82u) >= 10)
     {
@@ -1160,13 +1175,13 @@ uint32 sub_8006C3D4(uint32 object)
         w_u32(scratch + i, r_u32(object + 20u + i));
     if ((sint8)r_u8(object + 84u) >= 0)
     {
-        w_u8(object + 84u, r_u8(object + 84u) - (uint32)tick);
+        w_u8(object + 84u, r_u8(object + 84u) - r_u8(0x800A9010));
         if ((sint8)r_u8(object + 84u) < 0)
         {
             target = r_u32(object + 88u);
             if (target)
                 w_u8(target + 15u, r_u8(target + 15u) - 1u);
-            target = sub_8006BD08(object + 20u, r_u16(object + 76u), r_u16(object + 72u), r_u8(r_u32(object + 16u) + 13u), category);
+            target = sub_8006BD08(object + 20u, (uint32)r_s16(object + 76u), (uint32)r_s16(object + 72u), r_u8(r_u32(object + 16u) + 13u), category);
             w_u32(object + 88u, target);
             if (target)
                 w_u8(target + 15u, r_u8(target + 15u) + 1u);
@@ -1179,17 +1194,22 @@ uint32 sub_8006C3D4(uint32 object)
         sub_8006B410(object, target + 20u, 122880, force);
     else
         sub_8006BA1C(object, 122880, force);
-    dy = draft12_abs((sint32)(r_u32(scratch + 4u) - r_u32(object + 24u)));
-    age = dy > (tick << 7) ? 1200 : (sint16)(r_u16(object + 82u) + (uint32)tick);
+    sint32 threshold = (sint32)(r_u32(0x800A9010) << 7);
+    uint32 previous_y = r_u32(scratch + 4u), current_y = r_u32(object + 24u);
+    sint32 delta = (sint32)(previous_y - current_y);
+    if (delta < 0 ? threshold < (sint32)(current_y - previous_y) : threshold < delta)
+        age = 1200;
+    else
+        age = (sint16)(r_u16(object + 82u) + r_u16(0x800A9010));
     w_u16(object + 82u, (uint32)age);
     for (i = 0; i < 12; i += 4)
         w_u32(previous + i, r_u32(scratch + i));
     if ((sub_8002F3FC(previous, object + 20u) << 16) || (sub_80030678(previous, object + 20u) << 16) || (sint16)r_u16(object + 82u) >= 1200)
         sub_8002A8F0(object);
     // TODO Bind original angle matrix target
-    draft_call_adapter(0x80054D38u, r_u32(object + 76u), r_u16(object + 72u) + 2048u, 0u, object + 36u);
+    draft_call_adapter(0x80054D38u, r_u32(object + 76u), r_u32(object + 72u) + 2048u, 0u, object + 36u);
     sub_80029970(object, 136, 6, 1, scratch);
-    result = sub_800620A4(object, object + 92u, object + 20u, scratch, r_u16(r_u32(0x800A62ECu) + 66u), 150, 100, r_u8(object + 13u));
+    result = sub_800620A4(object, object + 92u, object + 20u, scratch, (uint32)r_s16(r_u32(0x800A62ECu) + 0x6A), 150, 100, r_u8(object + 13u));
     return draft_scratch_result(native_stack_mark, (uint64)(result));
 
     draft_scratch_release(native_stack_mark);
@@ -1364,9 +1384,9 @@ uint32 sub_8006FCB4(void)
             draft_call_adapter(0x80035A08u, 50u, 2048u, 192u, 0u);
             menu = r_u32(0x80091EE0u + 12u * r_u32(0x800A645Cu));
             w_u32(0x800A854Cu, (uint32)(sint32)(sint16)r_u16(menu + 16u * r_u32(0x800A6460u) + 14u));
+            result = r_u32(0x800A854Cu);
             sub_8007040C();
-            // TODO Preserve original undefined V0 from void menu setter
-            return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8007040Cu)));
+            return draft_scratch_result(native_stack_mark, (uint64)result);
         case 19:
             return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80035A08u, 2u, 2048u, 255u, 0u)));
         case 20:
@@ -1419,7 +1439,7 @@ uint32 sub_8006FCB4(void)
         case 29:
             w_u32(0x800A7BF8u, 1);
             sub_8007040C();
-            return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8007040Cu)));
+            return draft_scratch_result(native_stack_mark, (uint64)1);
         case 30:
             draft_call_adapter(0x80076FF4u, (uint32)setting);
             return draft_scratch_result(native_stack_mark, (uint64)(sub_800703B4()));
@@ -1452,8 +1472,8 @@ uint32 sub_8006FCB4(void)
             draft_call_adapter((sint16)result == 2 ? 0x8006F690u : 0x8006F6BCu);
             break;
         default:
-            // TODO Preserve original jump-table V0 on unhandled menu actions
-            return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8006FCB4u, type)));
+            // The unused table slot returns directly through the original epilogue
+            return draft_scratch_result(native_stack_mark, (uint64)(type == 36 ? 0x800702C0 : 0));
     }
     if (toggle)
     {

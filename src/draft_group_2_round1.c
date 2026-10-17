@@ -140,6 +140,9 @@ uint32 sub_80070A0C(uint32 a1)
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 address;
+    // TODO Enable memory-card menu entries with the card implementation
+    if (a1 == 259)
+        return draft_scratch_result(native_stack_mark, 0);
     if (a1 == 256u)
         return draft_scratch_result(native_stack_mark, (uint64)((int16)(uint32)draft_call_adapter(0x80037BB8u) == 2));
     if (a1 == 261u)
@@ -176,7 +179,8 @@ uint32 sub_800727B0(void)
         table = r_u32(0x800921F8u + 4u * (uint32)(int32)(int16)r_u16(0x800A645Au));
     else
         table = r_u32(0x80092208u + 4u * (uint32)(int32)(int16)r_u16(0x800A6458u));
-    destination = r_u32(0x800A5C90u) + 2u * count;
+    // MIPS loads the array address rather than its first two button masks
+    destination = 0x800A5C90 + 2 * count;
     cursor = table + count;
     do
     {
@@ -622,16 +626,17 @@ uint32 sub_80049AC0(uint32 a1, uint32 a2)
     for (pass = 0u; pass < 2u; ++pass)
     {
         uint32 x, y, z;
+        w_u16(temporary + 18, 0);
         model = r_u32(0x800A90ACu) + 40u * r_u8(r_u32(0x800A8548u) + r_u16(r_u32(a1) + 32u));
         if (!pass)
-            w_u16(temporary + 16u, (uint16)((int16)(19u * (r_u16(model) + r_u16(model + 24u))) / 40));
+            w_u16(temporary + 16u, (uint16)((19 * (r_s16(model) + r_s16(model + 24))) / 40));
         else
-            w_u16(temporary + 16u, (uint16)((int16)(19u * (r_u16(model + 8u) + r_u16(model + 16u))) / 40));
+            w_u16(temporary + 16u, (uint16)((19 * (r_s16(model + 8) + r_s16(model + 16))) / 40));
         model = r_u32(0x800A90ACu) + 40u * r_u8(r_u32(0x800A8548u) + r_u16(r_u32(a1) + 32u));
         if (!pass)
-            w_u16(temporary + 20u, (uint16)((int16)(19u * (r_u16(model + 4u) + r_u16(model + 28u))) / 40));
+            w_u16(temporary + 20u, (uint16)((19 * (r_s16(model + 4) + r_s16(model + 28))) / 40));
         else
-            w_u16(temporary + 20u, (uint16)((int16)(19u * (r_u16(model + 12u) + r_u16(model + 20u))) / 40));
+            w_u16(temporary + 20u, (uint16)((19 * (r_s16(model + 12) + r_s16(model + 20))) / 40));
         object = r_u32(a1);
         x = r_u32(object + 20u);
         y = r_u32(object + 24u);
@@ -990,6 +995,11 @@ uint32 sub_8004CAD4(uint32 a1, uint32 a2, uint32 a3, uint32 a4)
         {
             bearing = sub_80055A9C(r_u32(a1 + 100u), r_u32(a1 + 104u));
             sine = -(int16)r_u16(0x800102E0u + 2u * ((r_u16(a1 + 182u) - bearing) & 0xFFFu));
+        }
+        else
+        {
+            bearing = sub_80055A9C(r_u32(a1 + 100u), r_u32(a1 + 104u));
+            sine = (int16)r_u16(0x800102E0u + 2u * ((r_u16(a1 + 182u) - bearing) & 0xFFFu));
         }
         if (sine >= 2101 || r_u8(a1 + 89u) || r_u8(a1 + 199u))
             force = 3u;

@@ -72,6 +72,20 @@ uint32 sub_8005E198(uint32 mode)
     draft_scratch_release(native_stack_mark);
 }
 
+// FUNCTION_MARKER sub_8005E2BC
+uint32 sub_8005E2BC(uint32 mode)
+{
+    if ((sint32)mode < 0)
+        mode = 0u;
+    if ((sint32)mode >= 4)
+        mode = 3u;
+    if (r_u8(0x800A7E83u) >= mode)
+        return 0u;
+    sub_8005E198(mode);
+    w_u16(0x800A7E7Au, 50u);
+    return 50u;
+}
+
 // FUNCTION_MARKER sub_8005E258
 uint32 sub_8005E258(uint32 mode)
 {
@@ -337,12 +351,14 @@ uint32 sub_800219E8(void)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 counts[4], i, column = r_u32(0x800A5648u), row = r_u32(0x800A564Cu);
+    uint32 counts[5], i, column = r_u32(0x800A5648u), row = r_u32(0x800A564Cu);
     uint32 dx = r_u32(0x800A5650u) - r_u32(0x800A6784u);
     uint32 dz = r_u32(0x800A5658u) - r_u32(0x800A678Cu);
     int32 threshold = (int32)r_u32(0x800A5664u), tile;
     for (i = 0; i < 4u; ++i)
         counts[i] = r_u32(0x800A6370u + 4u * i);
+    // Original SP+10 holds a temporary counter for the scratchpad list
+    counts[4] = 0;
     for (tile = 195; tile >= 0; --tile)
     {
         uint32 cell = 0x800A9D78u + 12u * (column + 14u * row);
@@ -356,8 +372,8 @@ uint32 sub_800219E8(void)
             if ((int8)r_u8(0x8008B794u + (uint32)tile) >= threshold)
             {
                 uint32 category = r_u8(entry + 3u);
-                // TODO Original category is expected to select one of four lists
-                if (category >= 4u)
+                // TODO Diagnose corrupt records outside the five original categories
+                if (category >= 5)
                     abort();
                 w_u32(r_u32(0x800A6380u + 4u * category) + 4u * counts[category], entry);
                 ++counts[category];
@@ -1043,17 +1059,34 @@ static uint32 draft0_gt4(uint32 cursor, uint32 vertices, uint32 uv, uint32 color
     for (i = 0; i < 3u; ++i)
         w_u32(cursor + 8u + 12u * i, xport_gte_read_data(12u + i));
     draft_gte_command_adapter(0x180001u);
-    w_u32(cursor + 48u, r_u32(uv + 4u * i3));
-    draft_gte_command_adapter(0x168002Eu);
-    depth = xport_gte_read_data(7u);
-    if (require_depth && !depth)
-        return cursor;
-    for (i = 0; i < 4u; ++i)
+    if (require_depth)
     {
-        w_u32(cursor + 4u + 12u * i, (r_u32(colors + 4u * indices[i]) & (i ? 0xFFFFFFFFu : 0xFFFFFFu)) | (i ? 0u : 0x3C000000u));
-        w_u32(cursor + 12u + 12u * i, r_u32(uv + 4u * indices[i]) | (i == 0u ? clut : i == 1u ? page : 0u));
+        w_u32(cursor + 48, r_u32(uv + 4 * i3));
+        draft_gte_command_adapter(0x168002E);
+        depth = xport_gte_read_data(7);
+        if (!depth)
+            return cursor;
+        w_u32(cursor + 12, clut | r_u32(uv + 4 * i0));
+        w_u32(cursor + 24, page | r_u32(uv + 4 * i1));
+        w_u32(cursor + 36, r_u32(uv + 4 * i2));
+        w_u32(cursor + 44, xport_gte_read_data(14));
+        w_u32(cursor + 4, (r_u32(colors + 4 * i0) & 0xFFFFFF) | 0x3C000000);
+        for (i = 1; i < 4; ++i)
+            w_u32(cursor + 4 + 12 * i, r_u32(colors + 4 * indices[i]));
     }
-    w_u32(cursor + 44u, xport_gte_read_data(14u));
+    else
+    {
+        w_u32(cursor + 12, clut | r_u32(uv + 4 * i0));
+        w_u32(cursor + 24, page | r_u32(uv + 4 * i1));
+        w_u32(cursor + 36, r_u32(uv + 4 * i2));
+        w_u32(cursor + 48, r_u32(uv + 4 * i3));
+        draft_gte_command_adapter(0x168002E);
+        w_u32(cursor + 4, (r_u32(colors + 4 * i0) & 0xFFFFFF) | 0x3C000000);
+        depth = xport_gte_read_data(7);
+        w_u32(cursor + 44, xport_gte_read_data(14));
+        for (i = 1; i < 4; ++i)
+            w_u32(cursor + 4 + 12 * i, r_u32(colors + 4 * indices[i]));
+    }
     draft0_link(cursor, ordering_table, depth_bias, depth, 12u);
     return cursor + 52u;
 }
@@ -1085,11 +1118,31 @@ uint32 sub_8001E2C0(uint32 screen, uint32 cursor, uint32 ordering_table, uint32 
             {
                 uint32 buffer = j == 0u ? vertices : j == 1u ? uv : colors;
                 uint32 stride = j == 0u ? 8u : 4u, channels = j == 1u ? 2u : 3u, width = j == 0u ? 2u : 1u;
-                draft0_midpoint(buffer + 9u * stride, buffer + base * stride, buffer + (base + 1u) * stride, channels, width);
-                draft0_midpoint(buffer + 10u * stride, buffer + base * stride, buffer + (base + 3u) * stride, channels, width);
-                draft0_midpoint(buffer + 11u * stride, buffer + (base + 1u) * stride, buffer + (base + 3u) * stride, channels, width);
-                draft0_midpoint(buffer + 12u * stride, buffer + (base + 1u) * stride, buffer + (base + 4u) * stride, channels, width);
-                draft0_midpoint(buffer + 13u * stride, buffer + (base + 3u) * stride, buffer + (base + 4u) * stride, channels, width);
+                for (uint32 component = 0; component < channels; ++component)
+                {
+                    uint32 offset = width * component;
+                    int32 v0 = width == 2 ? r_s16(buffer + base * stride + offset) : r_u8(buffer + base * stride + offset);
+                    int32 v1 = width == 2 ? r_s16(buffer + (base + 1) * stride + offset) : r_u8(buffer + (base + 1) * stride + offset);
+                    int32 v2 = width == 2 ? r_s16(buffer + (base + 3) * stride + offset) : r_u8(buffer + (base + 3) * stride + offset);
+                    if (width == 2)
+                    {
+                        w_u16(buffer + 9 * stride + offset, (v0 + v1) >> 1);
+                        w_u16(buffer + 10 * stride + offset, (v0 + v2) >> 1);
+                        w_u16(buffer + 11 * stride + offset, (v1 + v2) >> 1);
+                        int32 v3 = r_s16(buffer + (base + 4) * stride + offset);
+                        w_u16(buffer + 13 * stride + offset, (v3 + v2) >> 1);
+                        w_u16(buffer + 12 * stride + offset, (v1 + v3) >> 1);
+                    }
+                    else
+                    {
+                        w_u8(buffer + 9 * stride + offset, (v0 + v1) >> 1);
+                        w_u8(buffer + 10 * stride + offset, (v0 + v2) >> 1);
+                        w_u8(buffer + 11 * stride + offset, (v1 + v2) >> 1);
+                        int32 v3 = r_u8(buffer + (base + 4) * stride + offset);
+                        w_u8(buffer + 13 * stride + offset, (v2 + v3) >> 1);
+                        w_u8(buffer + 12 * stride + offset, (v1 + v3) >> 1);
+                    }
+                }
             }
             cursor = draft0_gt4(cursor, vertices, uv, colors, base, 9u, 10u, 11u, clut, texture_page, ordering_table, depth_bias, 1u, 1u);
             cursor = draft0_gt4(cursor, vertices, uv, colors, 9u, base + 1u, 11u, 12u, clut, texture_page, ordering_table, depth_bias, 1u, 1u);
@@ -1098,7 +1151,6 @@ uint32 sub_8001E2C0(uint32 screen, uint32 cursor, uint32 ordering_table, uint32 
         }
         else
         {
-            // TODO Avoid repeating projection when GTE adapters gain concrete bindings
             cursor = draft0_gt4(cursor, vertices, uv, colors, base, base + 1u, base + 3u, base + 4u, clut, texture_page, ordering_table, depth_bias, 0u, 0u);
         }
     }
@@ -1112,7 +1164,8 @@ uint32 sub_800170D0(uint32 cursor, uint32 vertices, uint32 source, uint32 orderi
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 temporary = draft_scratch_adapter(64u), screen = temporary + 48u;
+    // Include the second subdivision vertices before the projected coordinates
+    uint32 temporary = draft_scratch_adapter(128), screen = temporary + 112;
     xport_gte_write_data(6u, 0x24808080u);
     while (count--)
     {
@@ -1132,15 +1185,18 @@ uint32 sub_800170D0(uint32 cursor, uint32 vertices, uint32 source, uint32 orderi
             if (draft0_visible(screen, 3u))
             {
                 draft_gte_command_adapter(0xE80413u);
-                for (i = 0; i < 3u; ++i)
+                for (i = 0; i < 3; ++i)
                 {
-                    uint32 j;
-                    for (j = 0; j < 3u; ++j)
-                        w_u16(temporary + 8u * i + 2u * j, r_u16(p[i] + 2u * j));
+                    int32 first = r_s16(p[0] + 2 * i);
+                    w_u16(temporary + 2 * i, first);
+                    int32 second = r_s16(p[1] + 2 * i);
+                    w_u16(temporary + 8 + 2 * i, second);
+                    int32 third = r_s16(p[2] + 2 * i);
+                    w_u16(temporary + 24 + 2 * i, (first + second) >> 1);
+                    w_u16(temporary + 32 + 2 * i, (second + third) >> 1);
+                    w_u16(temporary + 16 + 2 * i, third);
+                    w_u16(temporary + 40 + 2 * i, (first + third) >> 1);
                 }
-                draft0_midpoint(temporary + 24u, temporary, temporary + 8u, 3u, 2u);
-                draft0_midpoint(temporary + 32u, temporary + 8u, temporary + 16u, 3u, 2u);
-                draft0_midpoint(temporary + 40u, temporary, temporary + 16u, 3u, 2u);
                 w_u32(uv, r_u16(record - 8u));
                 w_u32(uv + 4u, r_u16(record - 4u));
                 w_u32(uv + 8u, r_u32(record));
@@ -1285,7 +1341,7 @@ uint32 sub_8001545C(uint32 cursor, uint32 vertices, uint32 source, uint32 orderi
                 xport_gte_write_data(0u, r_u32(vertices + 8u * r_u16(source)));
                 xport_gte_write_data(1u, r_u32(vertices + 8u * r_u16(source) + 4u));
                 if ((int32)flag >= 0)
-                    flag = draft_gte_control_adapter(31u);
+                    (void)draft_gte_control_adapter(31u);
                 w_u32(screen + 12u, xport_gte_read_data(14u));
                 if (draft0_visible(screen, 4u))
                 {
@@ -1298,7 +1354,6 @@ uint32 sub_8001545C(uint32 cursor, uint32 vertices, uint32 source, uint32 orderi
                     draft0_quad_grid(uv, uv, uv + 8u, uv + 24u, uv + 32u, 2u, 1u);
                     if ((int32)flag < 0)
                     {
-                        // TODO Bind the clipped quad subdivision helper outside this draft set
                         cursor = (uint32)draft_call_adapter(0x8001CB7Cu, screen, cursor, vertices, source, ordering_table, uv, temporary, r_u32(header + 4u) & 0xFFFF0000u, r_u32(header + 8u) & 0xFFFF0000u, depth_bias);
                     }
                     else

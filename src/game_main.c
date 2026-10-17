@@ -1,5 +1,6 @@
 #include "xport.h"
 #include "psx.h"
+#include "psx_gpu.h"
 #include "game_scene.h"
 #include "game_entry.h"
 uint32 sub_8007FAAC(uint32 mode);
@@ -472,18 +473,21 @@ uint32 sub_80063C3C(uint32 destination, uint32 entry_sp)
 extern sint32 cd_mount_cue(const char *path);
 void native_spu_init_binding(void);
 void native_bios_init_callbacks(void);
+void native_debug_memory_init(void);
 void sub_800394B8(GameMainCallContext *context);
 
 void xport_main(void)
 {
     PSX_EXE image = {"../orig/1.EXE", 0x80010000u, 0x800A6720u, 0x800C15E8u, 0x8009242Cu, 0x800C15E8u, 0x001FFBF8u - 0x000C15E8u};
     GameMainCallContext context = {0};
+    gpu_set_frame_skip(0);
     if (!xport_psx_exe_load(&image))
     {
         xport_message_error("Auto Destruct", "Cannot load ../orig/1.EXE");
         xport_set_exit_code(1);
         return;
     }
+    native_debug_memory_init();
     if (!cd_mount_cue("../iso/Auto Destruct (USA).cue"))
     {
         xport_message_error("Auto Destruct", "Cannot mount Auto Destruct disc image");
@@ -2473,6 +2477,7 @@ void sub_800394B8(GameMainCallContext *context)
                             w_u32(0x800A6E54u, 0);
                             sub_80057A90();
                         }
+                        v14 = (sint32)r_u32(0x800A6E20);
                         if (v14 == 4)
                         {
                             w_u16(0x800A9A64u, 1);
@@ -2699,6 +2704,8 @@ void game_call_scene_initializer_context(uint32 target, uint32 destination, Game
 
 void game_call_scene_initializer_other(uint32 target, uint32 destination, uint32 entry_sp)
 {
+#ifndef NDEBUG
     fprintf(stderr, "Unbound scene initializer %08X\n", target);
+#endif
     abort();
 }

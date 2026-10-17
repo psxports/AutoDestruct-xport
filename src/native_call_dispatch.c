@@ -4,7 +4,9 @@ void native_dispatch_require(uint32 target, uint32 count, uint32 minimum)
 {
     if (count < minimum)
     {
+#ifndef NDEBUG
         fprintf(stderr, "Native call %08X needs %u arguments, received %u\n", target, minimum, count);
+#endif
         abort();
     }
 }
@@ -448,7 +450,9 @@ uint32 native_dispatch_stack(uint32 target, uint32 count, uint32 consumed, va_li
             local_bytes = 24u;
             break;
         default:
+#ifndef NDEBUG
             fprintf(stderr, "Unknown native callee frame %08X\n", target);
+#endif
             abort();
     }
     frame = draft_scratch_adapter(local_bytes + argument_bytes) + local_bytes;
@@ -468,7 +472,9 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
     va_list args;
     if (argument_count > 24u)
     {
+#ifndef NDEBUG
         fprintf(stderr, "Native call %08X exceeds 24 arguments\n", target);
+#endif
         abort();
     }
     va_start(args, target);
@@ -1143,6 +1149,7 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
         case 0x8002DC94u:
         case 0x8002DFF8u:
         case 0x8002E310u:
+        case 0x8002E640:
         case 0x8002EAE4u:
         case 0x8002EDDCu:
         case 0x8002F3FCu:
@@ -1158,6 +1165,8 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
         case 0x80031290u:
         case 0x800313ECu:
         case 0x800314A8u:
+        case 0x80028F78u:
+        case 0x80028E98u:
         case 0x80031754u:
         case 0x80031A54u:
         case 0x80031B20u:
@@ -1498,6 +1507,13 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
         case 0x80057CB8u:
         case 0x80057D14u:
         case 0x80057DD8u:
+        case 0x8005E2BCu:
+        case 0x800608F8u:
+        case 0x800609A4u:
+        case 0x80060A60u:
+        case 0x8005CBC8u:
+        case 0x8005CC08u:
+        case 0x8005CC34u:
         case 0x80057FFCu:
         case 0x80058418u:
         case 0x80058430u:
@@ -1865,11 +1881,1554 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
         case 0x80089118u:
         case 0x80089218u:
         case 0x80089490u:
+        case 0x80070700u:
+        case 0x80070938u:
+        case 0x80086F78u:
+        case 0x80089138u:
+        case 0x80089238u:
         case 0x8008A3E4u:
             result = native_dispatch_group_3(target, argument_count, args);
             break;
+        case 0x80037BD0u:
+        case 0x80037D14u:
+        case 0x80037D44u:
+        case 0x80037B3Cu:
+        case 0x800371C4u:
+        case 0x8003D5DCu:
+        case 0x8003D6C4u:
+        case 0x80043BA0u:
+            result = native_dispatch_group_1(target, argument_count, args);
+            break;
+        case 0x8005B76Cu:
+        case 0x8005B32Cu:
+        case 0x8005DBA4u:
+        case 0x80052988u:
+        case 0x80052B28u:
+        case 0x80052C00u:
+        case 0x80052C58u:
+        case 0x80052C78u:
+            result = native_dispatch_group_2(target, argument_count, args);
+            break;
+        case 0x80065588u:
+            result = native_dispatch_group_3(target, argument_count, args);
+            break;
+        case 0x800325BCu:
+        case 0x80032E6Cu:
+            result = native_dispatch_group_0(target, argument_count, args);
+            break;
+        case 0x8004561Cu:
+        case 0x80044588u:
+        case 0x80044040u:
+            result = native_dispatch_group_1(target, argument_count, args);
+            break;
+        case 0x80052284u:
+        case 0x80060B84u:
+        case 0x80060078u:
+        case 0x80063450u:
+            result = native_dispatch_group_2(target, argument_count, args);
+            break;
+        case 0x800665E0u:
+        case 0x80076FE8u:
+        case 0x80076FF4u:
+        case 0x80077000u:
+            result = native_dispatch_group_3(target, argument_count, args);
+            break;
+        case 0x8002A364u:
+        case 0x80026F98u:
+        case 0x80033418u:
+            result = native_dispatch_group_0(target, argument_count, args);
+            break;
+        case 0x8003D13Cu:
+        case 0x8003AC24u:
+        case 0x8003AC84u:
+            result = native_dispatch_group_1(target, argument_count, args);
+            break;
+        case 0x800514A0u:
+        case 0x800518C4u:
+        case 0x80051BA4u:
+        case 0x80051A8Cu:
+        case 0x80051D54u:
+        case 0x80051C70u:
+        case 0x8006027Cu:
+        case 0x80060154u:
+        case 0x80053890u:
+            result = native_dispatch_group_2(target, argument_count, args);
+            break;
+        case 0x800666E8u:
+        case 0x8006EC70u:
+        case 0x80070484u:
+        case 0x8006E604u:
+            result = native_dispatch_group_3(target, argument_count, args);
+            break;
+        case 0x8002230Cu:
+        case 0x80022528u:
+        case 0x800225D8u:
+        case 0x80029538u:
+        case 0x80031770u:
+        case 0x80032388u:
+        case 0x80032620u:
+        case 0x800326BCu:
+            result = native_dispatch_group_0(target, argument_count, args);
+            break;
+        case 0x800446D8u:
+        case 0x80044988u:
+        case 0x80043BBCu:
+        case 0x80041E10u:
+        case 0x8003E2F0u:
+        case 0x8003E338u:
+        case 0x8004BC18u:
+            result = native_dispatch_group_1(target, argument_count, args);
+            break;
+        case 0x800582D4u:
+        case 0x80062D90u:
+        case 0x80062DD0u:
+            result = native_dispatch_group_2(target, argument_count, args);
+            break;
+        case 0x80068C74u:
+        case 0x80068BF0u:
+        case 0x80068CC8u:
+        case 0x80067604u:
+        case 0x8006749Cu:
+        case 0x80067494u:
+        case 0x8006DFF8u:
+        case 0x8006E2B8u:
+        case 0x8006E3A4u:
+            result = native_dispatch_group_3(target, argument_count, args);
+            break;
+        case 0x80046DD4:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80046DD4((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8004674C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8004674C((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80061FF8:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80061FF8((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80045F94:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80045F94((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80040E94:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80040E94((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80068DD8:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80068DD8((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80062E70:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80062E70((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80067690:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80067690((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x800677A4:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_800677A4((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8003E454:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8003E454((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80052FB0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_80052FB0((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x800487C0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_800487C0((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8004DBD4:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8004DBD4((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8004DC00:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8004DC00((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8004DC5C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8004DC5C((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8004E130:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 object = (uint32)va_arg(args, uint32);
+            uint32 velocity = (uint32)va_arg(args, uint32);
+            result = sub_8004E130(object, velocity);
+            break;
+        }
+        case 0x8004E244:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8004E244((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8004E3F0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8004E3F0((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x800297FC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800297FC(p0);
+            break;
+        }
+        case 0x80029838:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80029838(p0);
+            break;
+        }
+        case 0x80022F20:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80022F20(p0, p1, p2);
+            break;
+        }
+        case 0x80029948:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            sub_80029948(p0, p1, p2);
+            result = 0;
+            break;
+        }
+        case 0x80029954:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            sub_80029954(p0, p1, p2);
+            result = 0;
+            break;
+        }
+        case 0x80029960:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            sub_80029960();
+            result = 0;
+            break;
+        }
+        case 0x8002E308:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            sub_8002E308();
+            result = 0;
+            break;
+        }
+        case 0x800464A8:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            sub_800464A8();
+            result = 0;
+            break;
+        }
+        case 0x80052E88:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80052E88(p0);
+            break;
+        }
+        case 0x80052ED4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80052ED4(p0, p1);
+            break;
+        }
+        case 0x80052F20:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80052F20(p0);
+            break;
+        }
+        case 0x80052F54:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80052F54(p0);
+            break;
+        }
+        case 0x80052F88:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            sub_80052F88(p0, p1);
+            result = 0;
+            break;
+        }
+        case 0x80052F98:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80052F98(p0, p1);
+            break;
+        }
+        case 0x80051258:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80051258(p0);
+            break;
+        }
+        case 0x8005128C:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8005128C(p0, p1);
+            break;
+        }
+        case 0x800512C8:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800512C8(p0);
+            break;
+        }
+        case 0x800512DC:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_800512DC(p0, p1);
+            break;
+        }
+        case 0x800512F8:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_800512F8(p0, p1);
+            break;
+        }
+        case 0x800454C0:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_800454C0(p0, p1);
+            break;
+        }
+        case 0x800454F8:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800454F8(p0);
+            break;
+        }
+        case 0x8006D4C8:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 owner = (uint32)va_arg(args, uint32);
+            uint32 damage = (uint32)va_arg(args, uint32);
+            result = sub_8006D4C8(owner, damage);
+            break;
+        }
+        case 0x8006D908:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 owner = (uint32)va_arg(args, uint32);
+            uint32 damage = (uint32)va_arg(args, uint32);
+            result = sub_8006D908(owner, damage);
+            break;
+        }
+        case 0x8006A474:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 vector = (uint32)va_arg(args, uint32);
+            uint32 yaw = (uint32)va_arg(args, uint32);
+            uint32 pitch = (uint32)va_arg(args, uint32);
+            result = sub_8006A474(vector, yaw, pitch);
+            break;
+        }
+        case 0x8006C94C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 object = (uint32)va_arg(args, uint32);
+            uint32 limit = (uint32)va_arg(args, uint32);
+            uint32 acceleration = (uint32)va_arg(args, uint32);
+            result = sub_8006C94C(object, limit, acceleration);
+            break;
+        }
+        case 0x8006CC30:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 normal = (uint32)va_arg(args, uint32);
+            uint32 velocity = (uint32)va_arg(args, uint32);
+            result = sub_8006CC30(normal, velocity);
+            break;
+        }
+        case 0x8006A5AC:
+        {
+            native_dispatch_require(target, argument_count, 4);
+            uint32 object = (uint32)va_arg(args, uint32);
+            uint32 ignored = (uint32)va_arg(args, uint32);
+            uint32 normal = (uint32)va_arg(args, uint32);
+            uint32 tag = (uint32)va_arg(args, uint32);
+            result = sub_8006A5AC(object, ignored, normal, tag);
+            break;
+        }
+        case 0x8006CF20:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 owner = (uint32)va_arg(args, uint32);
+            uint32 damage = (uint32)va_arg(args, uint32);
+            result = sub_8006CF20(owner, damage);
+            break;
+        }
+        case 0x8006D3D4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 owner = (uint32)va_arg(args, uint32);
+            uint32 damage = (uint32)va_arg(args, uint32);
+            result = sub_8006D3D4(owner, damage);
+            break;
+        }
+        case 0x8006CE00:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8006CE00((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x8006D010:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            result = sub_8006D010((uint32)va_arg(args, uint32));
+            break;
+        }
+        case 0x80040E64:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80040E64(p0, p1);
+            break;
+        }
+        case 0x800537B0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800537B0(p0);
+            break;
+        }
+        case 0x8005381C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8005381C(p0);
+            break;
+        }
+        case 0x80053830:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80053830(p0, p1);
+            break;
+        }
+        case 0x8005384C:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8005384C(p0, p1);
+            break;
+        }
+        case 0x8005386C:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            sub_8005386C(p0, p1);
+            result = 0;
+            break;
+        }
+        case 0x8005387C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8005387C(p0);
+            break;
+        }
+        case 0x8005413C:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            sub_8005413C(p0, p1);
+            result = 0;
+            break;
+        }
+        case 0x80055F98:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80055F98(p0);
+            break;
+        }
+        case 0x80056010:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80056010(p0);
+            break;
+        }
+        case 0x80040224:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80040224(p0, p1);
+            break;
+        }
+        case 0x80040294:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80040294(p0, p1);
+            break;
+        }
+        case 0x8003E8C8:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003E8C8(p0, p1);
+            break;
+        }
+        case 0x8003E928:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003E928(p0, p1);
+            break;
+        }
+        case 0x8003DE24:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003DE24(p0, p1);
+            break;
+        }
+        case 0x8003DDC4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003DDC4(p0, p1);
+            break;
+        }
+        case 0x8003EDF4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003EDF4(p0, p1);
+            break;
+        }
+        case 0x8003EDB4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003EDB4(p0, p1);
+            break;
+        }
+        case 0x8003E278:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003E278(p0, p1);
+            break;
+        }
+        case 0x8003F038:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003F038(p0, p1);
+            break;
+        }
+        case 0x80040088:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80040088(p0, p1);
+            break;
+        }
+        case 0x80040304:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80040304(p0);
+            break;
+        }
+        case 0x800403EC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800403EC(p0);
+            break;
+        }
+        case 0x8003DE6C:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            sub_8003DE6C(p0, p1);
+            result = 0;
+            break;
+        }
+        case 0x8003EC9C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            sub_8003EC9C(p0, p1, p2);
+            result = 0;
+            break;
+        }
+        case 0x8003DFB0:
+        {
+            native_dispatch_require(target, argument_count, 5);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            uint32 p4 = (uint32)va_arg(args, uint32);
+            sub_8003DFB0(p0, p1, p2, p3, p4);
+            result = 0;
+            break;
+        }
+        case 0x8003E07C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8003E07C(p0);
+            break;
+        }
+        case 0x8003E0C8:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8003E0C8(p0);
+            break;
+        }
+        case 0x8003EE34:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8003EE34(p0);
+            break;
+        }
+        case 0x80065220:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80065220(p0, p1);
+            break;
+        }
+        case 0x800660B0:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_800660B0(p0, p1, p2);
+            break;
+        }
+        case 0x8006754C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_8006754C(p0, p1, p2);
+            break;
+        }
+        case 0x80068B64:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80068B64(p0, p1, p2);
+            break;
+        }
+        case 0x80068B94:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80068B94(p0, p1, p2);
+            break;
+        }
+        case 0x80068BC0:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80068BC0(p0, p1, p2);
+            break;
+        }
+        case 0x80068C44:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80068C44(p0, p1, p2);
+            break;
+        }
+        case 0x80067220:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80067220(p0);
+            break;
+        }
+        case 0x80067284:
+        {
+            native_dispatch_require(target, argument_count, 4);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            result = sub_80067284(p0, p1, p2, p3);
+            break;
+        }
+        case 0x80067200:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80067200(p0, p1, p2);
+            break;
+        }
+        case 0x80067CF4:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80067CF4(p0);
+            break;
+        }
+        case 0x80067B0C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            sub_80067B0C(p0);
+            result = 0;
+            break;
+        }
+        case 0x80067950:
+        {
+            native_dispatch_require(target, argument_count, 6);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            uint32 p4 = (uint32)va_arg(args, uint32);
+            uint32 p5 = (uint32)va_arg(args, uint32);
+            result = sub_80067950(p0, p1, p2, p3, p4, p5);
+            break;
+        }
+        case 0x80067A94:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80067A94(p0, p1);
+            break;
+        }
+        case 0x80067BB4:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80067BB4(p0);
+            break;
+        }
+        case 0x800678D8:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800678D8(p0);
+            break;
+        }
+        case 0x80065308:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80065308(p0, p1);
+            break;
+        }
+        case 0x800653C4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_800653C4(p0, p1);
+            break;
+        }
+        case 0x80065458:
+        {
+            native_dispatch_require(target, argument_count, 4);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            result = sub_80065458(p0, p1, p2, p3);
+            break;
+        }
+        case 0x80052C98:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80052C98(p0, p1);
+            break;
+        }
+        case 0x80067898:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80067898(p0);
+            break;
+        }
+        case 0x80067D7C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80067D7C(p0, p1, p2);
+            break;
+        }
+        case 0x80067F70:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80067F70(p0, p1, p2);
+            break;
+        }
+        case 0x80067F94:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80067F94(p0, p1, p2);
+            break;
+        }
+        case 0x80067FBC:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80067FBC(p0, p1, p2);
+            break;
+        }
+        case 0x80067ED0:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80067ED0(p0, p1, p2);
+            break;
+        }
+        case 0x80068084:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80068084(p0, p1, p2);
+            break;
+        }
+        case 0x80068988:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80068988(p0, p1, p2);
+            break;
+        }
+        case 0x800682B4:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800682B4(p0);
+            break;
+        }
+        case 0x80068124:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80068124(p0);
+            break;
+        }
+        case 0x800686BC:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_800686BC(p0, p1, p2);
+            break;
+        }
+        case 0x800688AC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800688AC(p0);
+            break;
+        }
+        case 0x800687EC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800687EC(p0);
+            break;
+        }
+        case 0x800682CC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800682CC(p0);
+            break;
+        }
+        case 0x80065610:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80065610(p0, p1, p2);
+            break;
+        }
+        case 0x800656AC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800656AC(p0);
+            break;
+        }
+        case 0x80065704:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80065704(p0);
+            break;
+        }
+        case 0x800657F8:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800657F8(p0);
+            break;
+        }
+        case 0x800659AC:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_800659AC(p0, p1, p2);
+            break;
+        }
+        case 0x80065B84:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80065B84(p0, p1);
+            break;
+        }
+        case 0x80065C10:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80065C10(p0);
+            break;
+        }
+        case 0x80065A4C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80065A4C(p0);
+            break;
+        }
+        case 0x80065C7C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80065C7C(p0, p1, p2);
+            break;
+        }
+        case 0x80060540:
+        {
+            native_dispatch_require(target, argument_count, 4);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            result = sub_80060540(p0, p1, p2, p3);
+            break;
+        }
+        case 0x80060498:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80060498(p0);
+            break;
+        }
+        case 0x800689DC:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_800689DC(p0, p1, p2);
+            break;
+        }
+        case 0x80068AD0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80068AD0(p0);
+            break;
+        }
+        case 0x8006909C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_8006909C(p0, p1, p2);
+            break;
+        }
+        case 0x8006922C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8006922C(p0);
+            break;
+        }
+        case 0x800692B0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800692B0(p0);
+            break;
+        }
+        case 0x8006946C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_8006946C(p0, p1, p2);
+            break;
+        }
+        case 0x800695C0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800695C0(p0);
+            break;
+        }
+        case 0x80072E40:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80072E40(p0);
+            break;
+        }
+        case 0x8006F898:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8006F898(p0);
+            break;
+        }
+        case 0x80072CAC:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80072CAC(p0, p1, p2);
+            break;
+        }
+        case 0x80072D70:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80072D70(p0, p1);
+            break;
+        }
+        case 0x80072D9C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80072D9C(p0);
+            break;
+        }
+        case 0x8007135C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8007135C(p0);
+            break;
+        }
+        case 0x80071274:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80071274(p0);
+            break;
+        }
+        case 0x8007306C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8007306C(p0);
+            break;
+        }
+        case 0x80051124:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            sub_80051124(p0, p1);
+            result = 0;
+            break;
+        }
+        case 0x8007313C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            sub_8007313C(p0);
+            result = 0;
+            break;
+        }
+        case 0x800719B0:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_800719B0();
+            break;
+        }
+        case 0x80042560:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80042560(p0);
+            break;
+        }
+        case 0x8006F670:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_8006F670();
+            break;
+        }
+        case 0x8002E250:
+        {
+            native_dispatch_require(target, argument_count, 4);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            result = sub_8002E250(p0, p1, p2, p3);
+            break;
+        }
+        case 0x8004EDF0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8004EDF0(p0);
+            break;
+        }
+        case 0x80047194:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80047194(p0);
+            break;
+        }
+        case 0x8004F3D4:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_8004F3D4();
+            break;
+        }
+        case 0x8002E0B4:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_8002E0B4(p0, p1, p2);
+            break;
+        }
+        case 0x8001BED0:
+        {
+            native_dispatch_require(target, argument_count, 5);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            uint32 p4 = (uint32)va_arg(args, uint32);
+            result = sub_8001BED0(p0, p1, p2, p3, p4);
+            break;
+        }
+        case 0x8002298C:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_8002298C(p0, p1, p2);
+            break;
+        }
+        case 0x800229D4:
+        {
+            native_dispatch_require(target, argument_count, 5);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            uint32 p4 = (uint32)va_arg(args, uint32);
+            result = sub_800229D4(p0, p1, p2, p3, p4);
+            break;
+        }
+        case 0x80040A38:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80040A38(p0);
+            break;
+        }
+        case 0x80067A1C:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_80067A1C(p0, p1);
+            break;
+        }
+        case 0x80035730:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80035730();
+            break;
+        }
+        case 0x800375CC:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_800375CC();
+            break;
+        }
+        case 0x80059A48:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80059A48(p0);
+            break;
+        }
+        case 0x80059A68:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80059A68(p0);
+            break;
+        }
+        case 0x80031F20:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80031F20();
+            break;
+        }
+        case 0x8005E178:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8005E178(p0);
+            break;
+        }
+        case 0x800623B0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800623B0(p0);
+            break;
+        }
+        case 0x8005A08C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8005A08C(p0);
+            break;
+        }
+        case 0x80044074:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80044074(p0);
+            break;
+        }
+        case 0x8003C580:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = sub_8003C580(p0, p1);
+            break;
+        }
+        case 0x80038A30:
+        {
+            native_dispatch_require(target, argument_count, 4);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            uint32 p3 = (uint32)va_arg(args, uint32);
+            result = sub_80038A30(p0, p1, p2, p3);
+            break;
+        }
+        case 0x80038AC4:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80038AC4(p0, p1, p2);
+            break;
+        }
+        case 0x80038B98:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80038B98(p0);
+            break;
+        }
+        case 0x80038BBC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80038BBC(p0);
+            break;
+        }
+        case 0x80038BE0:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80038BE0(p0);
+            break;
+        }
+        case 0x80038C30:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80038C30(p0);
+            break;
+        }
+        case 0x80038C58:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_80038C58(p0);
+            break;
+        }
+        case 0x80071988:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = sub_80071988(p0, p1, p2);
+            break;
+        }
+        case 0x8007035C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8007035C(p0);
+            break;
+        }
+        case 0x8006F690:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_8006F690();
+            break;
+        }
+        case 0x8006F6BC:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_8006F6BC();
+            break;
+        }
+        case 0x80037DC8:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80037DC8();
+            break;
+        case 0x80037DDC:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80037DDC();
+            break;
+        case 0x80037F2C:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80037F2C();
+            break;
+        case 0x80037E2C:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80037E2C();
+            break;
+        case 0x80037F7C:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80037F7C();
+            break;
+        case 0x80037EE4:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80037EE4();
+            break;
+        case 0x8003800C:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_8003800C();
+            break;
+        case 0x800510C8:
+            native_dispatch_require(target, argument_count, 0);
+            sub_800510C8();
+            result = 0;
+            break;
+        case 0x8007288C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_8007288C(p0);
+            break;
+        }
+        case 0x8007326C:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_8007326C();
+            break;
+        }
+        case 0x800732C4:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 p0 = (uint32)va_arg(args, uint32);
+            result = sub_800732C4(p0);
+            break;
+        }
+        case 0x80073330:
+        {
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80073330();
+            break;
+        }
+        case 0x80070FF8:
+            native_dispatch_require(target, argument_count, 0);
+            result = sub_80070FF8();
+            break;
+        case 0x8007104C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 item = (uint32)va_arg(args, uint32);
+            sub_8007104C(item);
+            result = 0;
+            break;
+        }
+        case 0x80072F6C:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 item = (uint32)va_arg(args, uint32);
+            result = sub_80072F6C(item);
+            break;
+        }
+        case 0x800781CC:
+        {
+            native_dispatch_require(target, argument_count, 5);
+            uint32 glyph = (uint32)va_arg(args, uint32);
+            uint32 color = (uint32)va_arg(args, uint32);
+            uint32 x = (uint32)va_arg(args, uint32);
+            uint32 y = (uint32)va_arg(args, uint32);
+            uint32 depth = (uint32)va_arg(args, uint32);
+            result = sub_800781CC(glyph, color, x, y, depth);
+            break;
+        }
         default:
+#ifndef NDEBUG
             fprintf(stderr, "Unbound native call %08X\n", target);
+#endif
             abort();
     }
     va_end(args);

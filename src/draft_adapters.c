@@ -25,7 +25,9 @@ uint32 draft_scratch_adapter(uint32 bytes)
     uint32 bottom = draft_stack_cursor - rounded;
     if (rounded < bytes || bottom > draft_stack_cursor || bottom < 0x800C15E8u || bottom < r_u32(0x800A63E0u))
     {
+#ifndef NDEBUG
         fprintf(stderr, "Native temporary stack exhausted: %08X bytes %u\n", draft_stack_cursor, bytes);
+#endif
         abort();
     }
     draft_stack_cursor = bottom;
@@ -42,7 +44,9 @@ void draft_scratch_guest_frame(uint32 entry_sp, uint32 bytes)
     bottom = entry_sp - bytes;
     if (bottom > entry_sp || bottom < r_u32(0x800A63E0u))
     {
+#ifndef NDEBUG
         fprintf(stderr, "Native guest frame overlaps heap: SP %08X bytes %u\n", entry_sp, bytes);
+#endif
         abort();
     }
     if (bottom < draft_stack_cursor)

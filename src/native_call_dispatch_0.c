@@ -5,6 +5,120 @@ uint64 native_dispatch_group_0(uint32 target, uint32 argument_count, va_list arg
     uint64 result;
     switch (target)
     {
+        case 0x8002230Cu:
+        {
+            native_dispatch_require(target, argument_count, 2u);
+            uint32 slot = (uint32)va_arg(args, uint32);
+            uint32 tile = (uint32)va_arg(args, uint32);
+            result = sub_8002230C(slot, tile);
+            break;
+        }
+        case 0x80022528u:
+        {
+            native_dispatch_require(target, argument_count, 0u);
+            result = sub_80022528();
+            break;
+        }
+        case 0x800225D8u:
+        {
+            native_dispatch_require(target, argument_count, 1u);
+            uint32 packed = (uint32)va_arg(args, uint32);
+            result = sub_800225D8(packed);
+            break;
+        }
+        case 0x80029538u:
+        {
+            native_dispatch_require(target, argument_count, 1u);
+            uint32 index = (uint32)va_arg(args, uint32);
+            result = sub_80029538(index);
+            break;
+        }
+        case 0x80031770u:
+        {
+            native_dispatch_require(target, argument_count, 0u);
+            sub_80031770();
+            result = 0u;
+            break;
+        }
+        case 0x80032388u:
+        {
+            native_dispatch_require(target, argument_count, 1u);
+            uint32 password = (uint32)va_arg(args, uint32);
+            result = sub_80032388(password);
+            break;
+        }
+        case 0x80032620u:
+        {
+            native_dispatch_require(target, argument_count, 0u);
+            result = sub_80032620();
+            break;
+        }
+        case 0x800326BCu:
+        {
+            native_dispatch_require(target, argument_count, 0u);
+            result = sub_800326BC();
+            break;
+        }
+
+        case 0x8002A364u:
+        {
+            native_dispatch_require(target, argument_count, 1u);
+            uint32 object = (uint32)va_arg(args, uint32);
+            result = sub_8002A364(object);
+            break;
+        }
+        case 0x80026F98u:
+        {
+            native_dispatch_require(target, argument_count, 1u);
+            uint32 object = (uint32)va_arg(args, uint32);
+            result = sub_80026F98(object);
+            break;
+        }
+        case 0x80033418u:
+        {
+            native_dispatch_require(target, argument_count, 1u);
+            uint32 selection = (uint32)va_arg(args, uint32);
+            result = sub_80033418(selection);
+            break;
+        }
+
+        case 0x800325BCu:
+        {
+            native_dispatch_require(target, argument_count, 2u);
+            uint32 text = (uint32)va_arg(args, uint32);
+            uint32 value = (uint32)va_arg(args, uint32);
+            result = sub_800325BC(text, value);
+            break;
+        }
+        case 0x80032E6Cu:
+        {
+            native_dispatch_require(target, argument_count, 7u);
+            uint32 unused = (uint32)va_arg(args, uint32);
+            uint32 color = (uint32)va_arg(args, uint32);
+            uint32 first = (uint32)va_arg(args, uint32);
+            uint32 second = (uint32)va_arg(args, uint32);
+            uint32 third = (uint32)va_arg(args, uint32);
+            uint32 x = (uint32)va_arg(args, uint32);
+            uint32 y = (uint32)va_arg(args, uint32);
+            result = sub_80032E6C(unused, color, first, second, third, x, y);
+            break;
+        }
+
+        case 0x80028F78u:
+        {
+            native_dispatch_require(target, argument_count, 2u);
+            uint32 object = (uint32)va_arg(args, uint32);
+            uint32 reason = (uint32)va_arg(args, uint32);
+            result = sub_80028F78(object, reason);
+            break;
+        }
+        case 0x80028E98u:
+        {
+            native_dispatch_require(target, argument_count, 1u);
+            uint32 object = (uint32)va_arg(args, uint32);
+            result = sub_80028E98(object);
+            break;
+        }
         case 0x8001545Cu:
         {
             native_dispatch_require(target, argument_count, 8u);
@@ -197,7 +311,9 @@ uint64 native_dispatch_group_0(uint32 target, uint32 argument_count, va_list arg
             // Original eight-argument terrain ABI includes an unused fifth argument
             if (argument_count != 7u && argument_count != 8u)
             {
+#ifndef NDEBUG
                 fprintf(stderr, "Native terrain call %08X requires 7 scalar or 8 original arguments\n", target);
+#endif
                 abort();
             }
             if (argument_count == 8u)
@@ -341,7 +457,9 @@ uint64 native_dispatch_group_0(uint32 target, uint32 argument_count, va_list arg
             // Original eight-argument terrain ABI includes an unused fifth argument
             if (argument_count != 7u && argument_count != 8u)
             {
+#ifndef NDEBUG
                 fprintf(stderr, "Native terrain call %08X requires 7 scalar or 8 original arguments\n", target);
+#endif
                 abort();
             }
             if (argument_count == 8u)
@@ -1715,6 +1833,16 @@ uint64 native_dispatch_group_0(uint32 target, uint32 argument_count, va_list arg
             uint32 p2 = (uint32)va_arg(args, uint32);
             sub_80033EF8(p0, p1, p2);
             result = 0;
+            break;
+        }
+        case 0x8002E640:
+        {
+            native_dispatch_require(target, argument_count, 4);
+            uint32 position = (uint32)va_arg(args, uint32);
+            uint32 normal = (uint32)va_arg(args, uint32);
+            uint32 mode = (uint32)va_arg(args, uint32);
+            uint32 tag = (uint32)va_arg(args, uint32);
+            result = sub_8002E640(position, normal, mode, tag);
             break;
         }
         default:

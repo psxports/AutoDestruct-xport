@@ -11,7 +11,9 @@ static sint32 native_bios_callback(void *context, uint32 target)
             draft_call_adapter(target);
             return 1;
         default:
+#ifndef NDEBUG
             fprintf(stderr, "Unbound native BIOS callback %08X\n", target);
+#endif
             abort();
     }
 }
