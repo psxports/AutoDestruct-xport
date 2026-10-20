@@ -100,7 +100,7 @@ uint32 sub_8005B614(uint32 a1, uint32 a2, uint32 a3)
 
     FUNCTION_MARKER(0x8005B614u, "1.EXE");
     // TODO Bind the original height helper
-    uint32 result = (uint32)draft_call_adapter(0x8005B47Cu, a1) - a3;
+    uint32 result = (uint32)draft_call_adapter(0x8005B47Cu, a1, a3) - a3;
     if ((sint32)result < (sint32)a2)
         w_u32(a1 + 4u, result);
     return draft_scratch_result(native_stack_mark, (uint64)(result));
@@ -767,7 +767,6 @@ uint32 sub_8005EBE4(void)
         color = (uint32)((int32)((uint32)x * 17u) >> 6);
         draft_call_adapter(0x80020C60u, 201u, r_u32(0x800A9A74u), color | (color << 8) | (color << 16), 1u, (uint32)-160, (uint32)-120, 320u, 240u);
     }
-    /* TODO: 5E95C trailing volatile and stack values are unspecified at the original boundary */
     result = (uint32)draft_call_adapter(0x8005E95Cu, r_u32(0x800A865Cu), 0u);
     w_u32(0x800A865Cu, result);
     return draft_scratch_result(native_stack_mark, (uint64)(result));

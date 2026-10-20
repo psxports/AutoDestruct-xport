@@ -480,6 +480,48 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
     va_start(args, target);
     switch (target)
     {
+        case 0x8003D0BC:
+        {
+            native_dispatch_require(target, argument_count, 1);
+            uint32 weapon = (uint32)va_arg(args, uint32);
+            result = decrement_weapon_stock(weapon);
+            break;
+        }
+        case 0x8003D0D4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 destination = (uint32)va_arg(args, uint32);
+            uint32 value = (uint32)va_arg(args, uint32);
+            result = sub_8003D0D4(destination, value);
+            break;
+        }
+        case 0x800558C4:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 matrix = (uint32)va_arg(args, uint32);
+            uint32 scale = (uint32)va_arg(args, uint32);
+            scale_rotation_columns(matrix, scale);
+            /* Adapter placeholder without an original scalar-result claim */
+            result = 0;
+            break;
+        }
+        case 0x800559C4:
+        {
+            native_dispatch_require(target, argument_count, 3);
+            uint32 angle = (uint32)va_arg(args, uint32);
+            uint32 matrix = (uint32)va_arg(args, uint32);
+            uint32 scale = (uint32)va_arg(args, uint32);
+            result = build_scaled_yaw_matrix(angle, matrix, scale);
+            break;
+        }
+        case 0x80055A44:
+        {
+            native_dispatch_require(target, argument_count, 2);
+            uint32 matrix = (uint32)va_arg(args, uint32);
+            uint32 product = (uint32)va_arg(args, uint32);
+            result = sub_80055A44(matrix, product);
+            break;
+        }
         case 0x800805E0u:
             native_dispatch_require(target, argument_count, 1u);
             result = sub_800805E0(va_arg(args, uint32));
@@ -838,7 +880,7 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
             else if (target == 0x8005F69Cu)
                 result = sub_8005F69C(object);
             else
-                result = sub_80060320(object);
+                result = sub_80060320(object, 0);
             break;
         }
         case 0x80061500u:
@@ -881,12 +923,13 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...)
         }
         case 0x8005B434u:
         {
-            uint32 position, offset_x, offset_z;
-            native_dispatch_require(target, argument_count, 3u);
+            uint32 position, offset_x, offset_z, query_y;
+            native_dispatch_require(target, argument_count, 4u);
             position = va_arg(args, uint32);
             offset_x = va_arg(args, uint32);
             offset_z = va_arg(args, uint32);
-            result = sub_8005B434(position, offset_x, offset_z);
+            query_y = va_arg(args, uint32);
+            result = sub_8005B434(position, offset_x, offset_z, query_y);
             break;
         }
         case 0x80049D98u:

@@ -767,12 +767,8 @@ uint64 native_dispatch_group_2(uint32 target, uint32 argument_count, va_list arg
         }
         case 0x80057A90u:
         {
-            native_dispatch_require(target, argument_count, 4u);
-            uint32 p0 = (uint32)va_arg(args, uint32);
-            uint32 p1 = (uint32)va_arg(args, uint32);
-            uint32 p2 = (uint32)va_arg(args, uint32);
-            uint32 p3 = (uint32)va_arg(args, uint32);
-            result = (uint64)sub_80057A90(p0, p1, p2, p3);
+            native_dispatch_require(target, argument_count, 0u);
+            result = (uint64)sub_80057A90();
             break;
         }
         case 0x80057AB0u:
@@ -1208,9 +1204,10 @@ uint64 native_dispatch_group_2(uint32 target, uint32 argument_count, va_list arg
         }
         case 0x8005B47Cu:
         {
-            native_dispatch_require(target, argument_count, 1u);
+            native_dispatch_require(target, argument_count, 2u);
             uint32 p0 = (uint32)va_arg(args, uint32);
-            result = (uint64)sub_8005B47C(p0);
+            uint32 p1 = (uint32)va_arg(args, uint32);
+            result = (uint64)sub_8005B47C(p0, p1);
             break;
         }
         case 0x8005B5D8u:
@@ -1893,7 +1890,7 @@ uint64 native_dispatch_group_2(uint32 target, uint32 argument_count, va_list arg
             uint32 p1 = (uint32)va_arg(args, uint32);
             uint32 p2 = (uint32)va_arg(args, uint32);
             uint32 p3 = (uint32)va_arg(args, uint32);
-            result = (uint64)sub_800623F8(p0, p1, p2, p3);
+            result = (uint64)sub_800623F8(p0, p1, p2, p3, 0);
             break;
         }
         case 0x80062588u:

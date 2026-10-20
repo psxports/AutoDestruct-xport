@@ -75,7 +75,7 @@ uint32 sub_8003B8E8(uint32 index, uint32 mode)
         if (result == 0xFFFFFFFFu)
             w_u32(0x800A8690u, 0u);
     }
-    w_u32(0x800A6DE0u, d02_call(0x8003BA80u, index, 1u, 0u, 0u));
+    w_u16(0x800A6DE0u, d02_call(0x8003BA80u, index, 1u, 0u, 0u));
     draft_call_adapter(0x8003C394u, 0u);
     draft_call_adapter(0x80069B84u, 3u);
     draft_call_adapter(0x800649E4u);
@@ -344,98 +344,117 @@ uint32 sub_8002A908(uint32 source, uint32 target)
 uint32 sub_800465A8(uint32 object, uint32 flag)
 {
     uint32 native_stack_mark = draft_scratch_mark();
+    uint32 objects, player;
+    sint32 controlled, index;
 
-    if (d02_call(0x80045E18u, object, object + 72u, 0u, 0u) || d02_call(0x80045DD4u, object, 0u, 0u, 0u))
+    if (d02_call(0x80045E18, object, object + 72, 0, 0) || d02_call(0x80045DD4, object, 0, 0, 0))
     {
-        w_u16(0x800A60A8u, 0u);
-        w_u32(object, 0x80029968u);
-        if (r_u8(object + 67u) && r_u32(r_u32(0x800A851Cu) + 4u * r_u32(0x800A9730u)) == object)
-            draft_call_adapter(0x8004525Cu);
-        return draft_scratch_result(native_stack_mark, (uint64)(1u));
+        w_u16(0x800A60A8, 0);
+        controlled = r_s8(object + 67);
+        w_u32(object, 0x80029968);
+        if (controlled)
+        {
+            index = r_s16(0x800A9730);
+            objects = r_u32(0x800A851C);
+            if (r_u32(objects + 4 * (uint32)index) == object)
+                sub_8004525C();
+        }
+        return draft_scratch_result(native_stack_mark, 1);
     }
-    if (r_u32(0x800A9734u))
-        return draft_scratch_result(native_stack_mark, (uint64)(1u));
+    if (r_s16(0x800A9734))
+        return draft_scratch_result(native_stack_mark, 1);
     if (!(uint16)sub_800464B0(object))
-        return draft_scratch_result(native_stack_mark, (uint64)(0u));
-    w_u8(object + 65u, 0u);
-    w_u8(object + 64u, 0u);
-    w_u32(object, 0x800469E8u);
-    if (r_u8(object + 67u) && r_u32(r_u32(0x800A851Cu) + 4u * r_u32(0x800A9730u)) == object)
-        draft_call_adapter(0x8004525Cu);
-    if (r_u32(0x800A8690u))
-        return draft_scratch_result(native_stack_mark, (uint64)(1u));
+        return draft_scratch_result(native_stack_mark, 0);
+    controlled = r_s8(object + 67);
+    w_u8(object + 65, 0);
+    w_u8(object + 64, 0);
+    w_u32(object, 0x800469E8);
+    if (controlled)
     {
-        uint32 player = r_u32(0x800A7BACu);
-        if (flag)
-        {
-            draft_call_adapter(0x80052988u, player);
-            draft_call_adapter(0x800608F8u, player);
-        }
-        else
-        {
-            w_u8(0x800A9030u, r_u8(0x800A7E83u));
-            draft_call_adapter(0x8005E2BCu, 2u);
-            w_u8(player + 14u, r_u8(player + 14u) | 130u);
-            w_u32(0x800A9734u, 2u);
-            sub_80030F08((uint32)(int32)(int16)r_u16(player + 78u), 0u, 3u);
-        }
+        index = r_s16(0x800A9730);
+        objects = r_u32(0x800A851C);
+        if (r_u32(objects + 4 * (uint32)index) == object)
+            sub_8004525C();
     }
-    return draft_scratch_result(native_stack_mark, (uint64)(1u));
-
-    draft_scratch_release(native_stack_mark);
+    if (r_u32(0x800A8690))
+        return draft_scratch_result(native_stack_mark, 1);
+    if (flag)
+    {
+        draft_call_adapter(0x80052988, r_u32(0x800A7BAC));
+        draft_call_adapter(0x800608F8, r_u32(0x800A7BAC));
+    }
+    else
+    {
+        w_u16(0x800A9030, r_u8(0x800A7E83));
+        draft_call_adapter(0x8005E2BC, 2);
+        player = r_u32(0x800A7BAC);
+        w_u8(player + 14, r_u8(player + 14) | 130);
+        player = r_u32(0x800A7BAC);
+        index = r_s16(player + 78);
+        w_u16(0x800A9734, 2);
+        sub_80030F08((uint32)index, 0, 3);
+    }
+    return draft_scratch_result(native_stack_mark, 1);
 }
 
 // FUNCTION_MARKER sub_80046004
 uint32 sub_80046004(uint32 object, uint32 index)
 {
     uint32 native_stack_mark = draft_scratch_mark();
+    sint32 slot, event;
+    uint32 other, table, kind;
 
-    int32 slot;
-    uint32 other, table;
-    sub_80030F08((uint32)(int32)(int16)r_u16(object + 58u), r_u16(object + 68u), 1u);
-    w_u8(object + 65u, 0u);
-    slot = (int16)r_u16(object + 52u);
-    table = r_u32(0x800A851Cu);
+    event = r_s16(object + 58);
+    kind = (uint32)r_s16(object + 68);
+    sub_80030F08((uint32)event, kind, 1);
+    slot = r_s16(object + 52);
+    w_u8(object + 65, 0);
     if (slot != -1)
     {
-        other = r_u32(table + 4u * (uint32)slot);
-        if (!r_u8(other + 64u))
+        table = r_u32(0x800A851C);
+        other = r_u32(table + 4 * (uint32)slot);
+        if (!r_u8(other + 64))
         {
-            w_u8(other + 66u, r_u8(other + 66u) - 1u);
-            w_u16(object + 52u, 0xFFFFu);
+            w_u8(other + 66, r_u8(other + 66) - 1);
+            w_u16(object + 52, 0xFFFF);
         }
     }
-    slot = (int16)r_u16(object + 54u);
+    slot = r_s16(object + 54);
     if (slot != -1)
     {
-        other = r_u32(table + 4u * (uint32)slot);
-        w_u8(other + 14u, 1u);
-        other = r_u32(r_u32(0x800A851Cu) + 4u * (uint32)(int32)(int16)r_u16(object + 54u));
-        if (r_u8(other + 64u))
-            w_u8(other + 66u, 136u);
+        table = r_u32(0x800A851C);
+        other = r_u32(table + 4 * (uint32)slot);
+        w_u8(other + 14, 1);
+        slot = r_s16(object + 54);
+        table = r_u32(0x800A851C);
+        other = r_u32(table + 4 * (uint32)slot);
+        if (r_u8(other + 64))
+            w_u8(other + 66, 136);
         else
         {
-            w_u32(other, 0x80029968u);
-            w_u8(r_u32(table + 4u * (uint32)(int32)(int16)r_u16(object + 54u)) + 66u, 1u);
+            w_u32(other, 0x80029968);
+            slot = r_s16(object + 54);
+            w_u8(r_u32(table + 4 * (uint32)slot) + 66, 1);
         }
-        w_u16(object + 54u, 0xFFFFu);
+        w_u16(object + 54, 0xFFFF);
     }
-    if (r_u8(object + 67u) && r_u32(r_u32(0x800A851Cu) + 4u * r_u32(0x800A9730u)) == object)
-        draft_call_adapter(0x8004525Cu);
+    if (r_u8(object + 67))
     {
-        uint32 mode = r_u8(object + 67u);
-        if (mode == 1u || mode == 2u)
-        {
-            uint32 p = 0x800A7F54u + 2u * (uint32)(int32)(int16)index + (mode == 1u ? 0u : 4u);
-            w_u16(p, r_u16(p) - 1u);
-            draft_call_adapter(0x80044F8Cu, (uint32)(int32)(int16)index);
-        }
+        slot = r_s16(0x800A9730);
+        table = r_u32(0x800A851C);
+        if (r_u32(table + 4 * (uint32)slot) == object)
+            sub_8004525C();
     }
-    w_u8(object + 64u, 0u);
-    w_u32(object, 0x80029968u);
-    return draft_scratch_result(native_stack_mark, (uint64)(0x80029968u));
-
-    draft_scratch_release(native_stack_mark);
+    kind = r_u8(object + 67);
+    if (kind == 1 || kind == 2)
+    {
+        uint32 counter = 0x800A7F54 + 2 * (uint32)(sint32)(sint16)index + (kind == 1 ? 0 : 4);
+        w_u16(counter, r_u16(counter) - 1);
+        draft_call_adapter(0x80044F8C, (uint32)(sint32)(sint16)index);
+    }
+    w_u8(object + 64, 0);
+    w_u32(object, 0x80029968);
+    return draft_scratch_result(native_stack_mark, 0x80029968);
 }
 
 // FUNCTION_MARKER sub_8002B6A8
@@ -792,11 +811,12 @@ uint32 sub_800723C4(void)
     }
     width = max + 52u;
     height = 12u * (count + 1u) + 12u;
-    options = alternate ? r_u32(0x800921F8u + 4u * (uint32)(int32)(int16)r_u16(0x800A645Au)) : r_u32(0x80092208u + 4u * r_u32(0x800A6458u));
+    options = alternate ? r_u32(0x800921F8u + 4u * (uint32)(int32)(int16)r_u16(0x800A645Au)) : r_u32(0x80092208u + 4u * (uint32)r_s16(0x800A6458u));
     for (i = 0; i < count; ++i)
     {
         uint32 choice = r_u8(options + i);
         sub_80043820(r_u32(table + 4u * choice), 0x7F7F7Fu, width + 104u, 12u * (i + 1u) + 75u, 99u, 0u);
+        choice = r_u8(options + i);
         w_u16(0x800A5C90u + 2u * i, r_u16(0x8009219Cu + 2u * choice));
     }
     return draft_scratch_result(native_stack_mark, (uint64)(sub_80070D6C(130u, 75u, width, height, 101u)));
@@ -982,22 +1002,22 @@ uint32 sub_8006C714(uint32 object, uint32 kind)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 scratch = draft_scratch_adapter(32u), p, target, angle, model;
+    uint32 scratch = draft_scratch_adapter(32u), p, target, angle, model, flags, pitch;
     w_u32(scratch + 8u, 0u);
     w_u32(scratch + 12u, 0u);
     w_u16(scratch + 10u, (uint16)-50);
     w_u16(scratch + 12u, (uint16)-200);
-    w_u16(scratch + 8u, (uint16)(300u * r_u32(0x800A640Cu) - 150u));
+    w_u16(scratch + 8u, (uint16)(300 * r_s16(0x800A640C) - 150));
     w_u32(scratch, r_u32(scratch + 8u));
     w_u32(scratch + 4u, r_u32(scratch + 12u));
     p = sub_8006C094(object, scratch, 5120u, 0u, 0u, 1u, 0u - 16u, 0u, 0u - 32u, 6144u);
-    w_u32(0x800A640Cu, r_u32(0x800A640Cu) ^ 1u);
+    w_u16(0x800A640C, r_u16(0x800A640C) ^ 1);
     draft_call_adapter(r_u32(r_u32(object + 16u) + 20u), object, scratch + 16u);
     angle = (r_u16(scratch + 18u) + 2048u) & 4095u;
     if (angle >= 2049u)
         angle |= 0xF000u;
     w_u16(scratch + 18u, (uint16)angle);
-    target = (uint32)draft_call_adapter(0x8006BD08u, object + 20u, (uint32)(int32)(int16)r_u16(scratch + 16u), angle, r_u8(object + 13u), scratch + 24u);
+    target = (uint32)draft_call_adapter(0x8006BD08u, object + 20u, (uint32)(int32)(int16)r_u16(scratch + 16u), (uint32)(int32)(int16)angle, r_u8(object + 13u), scratch + 24u);
     w_u16(p + 80u, (uint16)-272);
     w_u32(p + 88u, target);
     if (target)
@@ -1007,15 +1027,18 @@ uint32 sub_8006C714(uint32 object, uint32 kind)
     }
     else
         w_u8(p + 84u, (d02_rand() & 31u) + 5u);
+    model = r_u32(0x800A62EC);
     w_u32(p, 0x8006C3D4u);
+    flags = r_u8(p + 14u);
     w_u32(p + 16u, object);
-    model = r_u16(r_u32(0x800A62ECu) + 200u);
-    w_u8(p + 14u, r_u8(p + 14u) | 2u);
+    model = r_u16(model + 200);
+    w_u8(p + 14u, flags | 2);
     w_u16(p + 32u, (uint16)model);
-    w_u32(p + 72u, (uint32)(int32)(int16)angle);
+    w_u32(p + 72u, (uint32)r_s16(scratch + 18));
+    pitch = (uint32)r_s16(scratch + 16);
     w_u16(p + 82u, 0u);
     w_u8(p + 104u, 0u);
-    w_u32(p + 76u, (uint32)(int32)(int16)r_u16(scratch + 16u));
+    w_u32(p + 76u, pitch);
     draft_call_adapter(target ? 0x8006AFF4u : 0x8006AF08u, p);
     w_u8(p + 130u, 255u);
     draft_call_adapter(0x80035A08u, 20u, 1024u, 255u, p + 20u);

@@ -921,14 +921,15 @@ uint32 sub_80049D98(uint32 wrapper)
     return 1u;
 }
 
-uint32 sub_8005B434(uint32 position, uint32 offset_x, uint32 offset_z)
+uint32 sub_8005B434(uint32 position, uint32 offset_x, uint32 offset_z, uint32 query_y)
 {
     uint32 mark = draft_scratch_mark();
     uint32 temporary = draft_scratch_adapter(32u);
     uint32 height;
     FUNCTION_MARKER(0x8005B434u, "1.EXE");
-    // TODO Resolve the original uninitialized local Y word
+    // Use the terrain-layer Y retained by the preceding query
     w_u32(temporary, r_u32(position) + offset_x);
+    w_u32(temporary + 4, query_y);
     w_u32(temporary + 8u, r_u32(position + 8u) + offset_z);
     height = (uint32)draft_call_adapter(0x8002E310u, temporary, temporary + 16u, temporary + 24u);
     return draft_scratch_result(mark, (uint64)(0u - height));

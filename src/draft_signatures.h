@@ -2,6 +2,10 @@
 #define DRAFT_SIGNATURES_H
 
 #include "psx.h"
+#include "native_impact_sound.h"
+
+uint32 sub_8003D0D4(uint32 destination, uint32 value);
+uint32 sub_80055A44(uint32 matrix, uint32 product);
 #include "native_disabled_services.h"
 #include "draft_adapters.h"
 
@@ -149,6 +153,7 @@ uint32 sub_80041710(void);
 uint32 sub_800418E4(uint32 position);
 uint32 sub_800428B0(void);
 uint64 sub_80044618(void);
+uint32 sub_8004525C(void);
 uint32 sub_800452B8(uint32 a1);
 uint32 sub_8004530C(uint32 a1);
 uint32 sub_80045340(uint32 a1, uint32 a2);
@@ -162,7 +167,7 @@ uint32 sub_80055A9C(uint32 x, uint32 z);
 uint32 sub_80057528(void);
 void sub_800577F4(uint32 enabled);
 uint32 sub_8005B2EC(uint32 a1, uint32 a2, uint32 a3);
-uint32 sub_8005B47C(uint32 a1);
+uint32 sub_8005B47C(uint32 a1, uint32 fallback_y);
 uint32 sub_8005B614(uint32 a1, uint32 a2, uint32 a3);
 uint32 sub_8005B6B4(void);
 void sub_8005B9A0(uint32 matrix, uint32 translation, uint32 vector, uint32 angle, uint32 destination);
@@ -470,7 +475,7 @@ uint32 sub_8006E490(uint32 a0);
 uint32 sub_8006E5B4(uint32 a0);
 uint32 sub_8006E62C(uint32 a0);
 uint32 sub_8004ED64(uint32 a0);
-uint32 sub_80057A90(uint32 a0, uint32 a1, uint32 a2, uint32 a3);
+uint32 sub_80057A90(void);
 uint32 sub_8003B170(void);
 uint32 sub_800290B8(uint32 a0);
 uint32 sub_80063600(uint32 a0);
@@ -568,11 +573,11 @@ uint32 sub_800461DC(uint32 a1);
 uint32 sub_800725D0(uint32 a1);
 uint32 sub_8002BC6C(uint32 a1, uint32 a2, uint32 a3);
 uint32 sub_80048F9C(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
-uint32 sub_800623F8(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
+uint32 sub_800623F8(uint32 a1, uint32 a2, uint32 a3, uint32 a4, IMPACT_SOUND *sound);
 uint32 sub_80062240(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
 uint32 sub_80019220(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
 uint32 sub_8002B7FC(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
-uint32 sub_8003CCE0(uint32 a1, uint32 a2);
+uint32 sub_8003CCE0(uint32 a1, uint32 a2, uint32 fallback_sample, uint32 fallback_pitch);
 uint32 sub_800620A4(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
 uint32 sub_80062588(uint32 a1);
 uint32 sub_8006AF08(uint32 a1);
@@ -581,7 +586,7 @@ uint32 sub_8003E5C4(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 uint32 sub_8003708C(void);
 uint32 sub_8005F3B8(uint32 a1);
 uint32 sub_800734C0(void);
-uint32 sub_80035664(uint32 a1);
+void sub_80035664(uint32 a1);
 uint32 sub_8005A54C(uint32 a1);
 uint32 sub_8001F008(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11);
 uint32 sub_8006B410(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
@@ -888,6 +893,7 @@ void sub_800510C8(void);
 uint32 sub_8007288C(uint32 item);
 uint32 sub_8007326C(void);
 uint32 sub_800732C4(uint32 data);
+uint32 sub_8007233C(void);
 uint32 sub_80073330(void);
 uint32 sub_80070FF8(void);
 void sub_8007104C(uint32 item);

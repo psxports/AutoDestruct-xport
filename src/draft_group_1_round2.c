@@ -53,31 +53,24 @@ uint32 sub_8005A54C(uint32 file)
 }
 
 // FUNCTION_MARKER sub_80035664
-uint32 sub_80035664(uint32 count)
+void sub_80035664(uint32 count)
 {
     uint32 native_stack_mark = draft_scratch_mark();
-
-    uint32 result;
-    if ((sint32)count <= 0)
+    uint32 frames;
+    w_u32(0x800A6C64, 0);
+    if ((sint32)count > 0)
     {
-        w_u32(0x800A6C64u, 0);
-        // TODO Resolve undefined incoming V0 for the empty loop
-        return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80035664u, count)));
+        do
+        {
+            sub_800697BC();
+            sub_8002DC94();
+            sub_80022A68(2);
+            draft_call_adapter(0x8001F850);
+            draft_call_adapter(0x8007F8C8, 0);
+            frames = r_u32(0x800A6C64) + 1;
+            w_u32(0x800A6C64, frames);
+        } while ((sint32)frames < (sint32)count);
     }
-    w_u32(0x800A6C64u, 0);
-    do
-    {
-        sub_800697BC();
-        sub_8002DC94();
-        sub_80022A68(2);
-        // TODO Bind original frame and VSync boundaries
-        draft_call_adapter(0x8001F850u);
-        draft_call_adapter(0x8007F8C8u, 0u);
-        w_u32(0x800A6C64u, r_u32(0x800A6C64u) + 1u);
-        result = (sint32)r_u32(0x800A6C64u) < (sint32)count;
-    } while (result);
-    return draft_scratch_result(native_stack_mark, (uint64)(result));
-
     draft_scratch_release(native_stack_mark);
 }
 
@@ -497,7 +490,7 @@ uint32 sub_8002B7FC(uint32 position, uint32 mask, uint32 offsets, uint32 strengt
     result = (sint32)strength > 0x80000;
     if (result)
     {
-        sub_800623F8(scratch, r_u16(r_u32(0x800A62ECu) + 76u), (uint32)((sint32)strength >> 6), (uint32)(sint32)(sint16)count);
+        sub_800623F8(scratch, r_u16(r_u32(0x800A62ECu) + 76u), (uint32)((sint32)strength >> 6), (uint32)(sint32)(sint16)count, 0);
         // TODO Bind original sound target
         draft_call_adapter(0x80035A08u, 9u, 2048u, 0u, scratch);
         return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80035A08u, 15u, 2048u, 0u, scratch)));
@@ -508,42 +501,45 @@ uint32 sub_8002B7FC(uint32 position, uint32 mask, uint32 offsets, uint32 strengt
 }
 
 // FUNCTION_MARKER sub_800623F8
-uint32 sub_800623F8(uint32 position, uint32 resource, uint32 force, uint32 count)
+uint32 sub_800623F8(uint32 position, uint32 resource, uint32 force, uint32 count, IMPACT_SOUND *sound)
 {
     uint32 native_stack_mark = draft_scratch_mark();
+    uint32 scratch = draft_scratch_adapter(16), object, i, result = count << 16;
+    uint32 ground, scale = (uint32)((sint32)force >> 8), x, y, z, position_z, flags;
 
-    uint32 scratch = draft_scratch_adapter(16u), object, i, result = count << 16;
-    sint32 ground, scale = (sint32)force >> 8, x, y, z;
-    // TODO Bind original ground and allocation targets
-    ground = -(sint32)draft_call_adapter(0x8002E310u, position, scratch, scratch + 8u);
+    ground = 0 - native_impact_ground(position, scratch, scratch + 8, sound);
     if (ground == 0)
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
+        return draft_scratch_result(native_stack_mark, result);
     for (i = 0; (sint32)i < (sint16)count; ++i)
     {
-        object = (uint32)draft_call_adapter(0x800226E4u, 60u);
-        w_u32(object + 20u, r_u32(position));
-        w_u32(object + 24u, r_u32(position + 4u));
-        w_u32(object + 28u, r_u32(position + 8u));
-        w_u16(object + 32u, resource);
-        w_u16(object + 54u, (uint32)ground);
-        w_u8(object + 14u, r_u8(object + 14u) | 2u);
-        w_u8(object + 34u, 11);
-        w_u32(object, 0x80062588u);
-        w_u16(object + 8u, sub_80069A50());
-        w_u16(object + 10u, sub_80069A50());
-        w_u8(object + 13u, sub_80069A50() - 127u);
-        w_u16(object + 16u, (sub_80069A50() & 255u) - 127u);
-        x = (sub_80069A50() & 31u) - 15;
-        y = (sub_80069A50() & 31u) + 7;
-        z = (sub_80069A50() & 31u) - 15;
-        w_u16(object + 18u, (uint32)((x << 8) * scale) >> 16);
-        w_u16(object + 56u, (uint32)((y << 8) * scale) >> 16);
-        result = (uint32)(((z << 8) * scale) >> 16);
-        w_u16(object + 58u, result);
+        object = (uint32)draft_call_adapter(0x800226E4, 60);
+        native_impact_allocated_sound(sound);
+        w_u32(object + 20, r_u32(position));
+        w_u32(object + 24, r_u32(position + 4));
+        position_z = r_u32(position + 8);
+        flags = r_u8(object + 14);
+        w_u16(object + 32, resource);
+        w_u16(object + 54, ground);
+        w_u8(object + 14, flags | 2);
+        w_u8(object + 34, 11);
+        w_u32(object, 0x80062588);
+        w_u32(object + 28, position_z);
+        w_u16(object + 8, sub_80069A50());
+        w_u16(object + 10, sub_80069A50());
+        w_u8(object + 13, sub_80069A50() + 129);
+        w_u16(object + 16, (sub_80069A50() & 255) - 127);
+        x = (sub_80069A50() & 31) - 15;
+        y = (sub_80069A50() & 31) + 7;
+        z = (sub_80069A50() & 31) - 15;
+        // Preserve the low 32 bits before each arithmetic shift
+        result = (uint32)((sint32)((x << 8) * scale) >> 16);
+        w_u16(object + 18, result);
+        result = (uint32)((sint32)((y << 8) * scale) >> 16);
+        w_u16(object + 56, result);
+        result = (uint32)((sint32)((z << 8) * scale) >> 16);
+        w_u16(object + 58, result);
     }
-    return draft_scratch_result(native_stack_mark, (uint64)(result));
-
-    draft_scratch_release(native_stack_mark);
+    return draft_scratch_result(native_stack_mark, result);
 }
 
 // FUNCTION_MARKER sub_80062240
@@ -619,34 +615,34 @@ uint32 sub_80035CD0(uint32 position, uint32 voice)
     sub_80031B6C(0x800A7EF4u, vector, scratch);
     right = (sint32)draft_call_adapter(0x80069BE0u, r_u32(0x800A7EE4u) + r_u32(scratch) - r_u32(position), r_u32(0x800A7EECu) + r_u32(scratch + 8u) - r_u32(position + 8u));
     angle = draft12_angle(sub_80055A9C(r_u32(0x800A7EE4u) - r_u32(position), r_u32(0x800A7EECu) - r_u32(position + 8u)) - r_u16(0x800A7E7Cu));
-    level = (right + left) >> 7;
+    level = (sint32)((uint32)right + (uint32)left) >> 7;
     result = angle >> 3;
     if ((uint32)(level ? level + 126 : 127) < 253u)
     {
         pan = r_u8(0x800A8234u + (uint8)(angle >> 3));
         if (angle > 0)
             pan = -pan;
-        pan = (sint16)(pan << 7);
+        pan = (sint16)((uint32)pan << 7);
         level = (right >> 6) + 128;
         if (level < 0)
             level = 0;
         if (level > 255)
             level = 255;
         value = ((((sint32)r_u8(0x800A83A0u + (uint32)level) << 7) + pan) >> 1) * (sint16)r_u16(0x800A9D6Cu);
-        product = (sint64)value * (sint32)0x80020008u;
+        product = (sint64)value * (sint32)0x80020009u;
         value = (((sint32)(product >> 32) + value) >> 13) - (value >> 31);
         w_u16(hardware + 8u, (value & 0x8000) ? 0u : (uint32)value);
         pan = r_u8(0x800A8234u + (uint8)(angle >> 3));
         if (angle < 0)
             pan = -pan;
-        pan = (sint16)(pan << 7);
+        pan = (sint16)((uint32)pan << 7);
         level = (left >> 6) + 128;
         if (level < 0)
             level = 0;
         if (level > 255)
             level = 255;
         value = ((((sint32)r_u8(0x800A83A0u + (uint32)level) << 7) + pan) >> 1) * (sint16)r_u16(0x800A9D6Cu);
-        product = (sint64)value * (sint32)0x80020008u;
+        product = (sint64)value * (sint32)0x80020009u;
         value = (((sint32)(product >> 32) + value) >> 13) - (value >> 31);
         w_u16(hardware + 10u, (value & 0x8000) ? 0u : (uint32)value);
         result = (sint32)((uint32)value << 16);
@@ -660,69 +656,92 @@ uint32 sub_80035CD0(uint32 position, uint32 voice)
 uint32 sub_8006BD08(uint32 position, uint32 pitch, uint32 yaw, uint32 faction, uint32 category)
 {
     uint32 native_stack_mark = draft_scratch_mark();
-
-    uint32 i, object, kind, best = 0, secondary = 0;
-    sint32 best_cost = 27200, secondary_cost = 27200, dx, dz, angle, distance, vertical, cost, v, w;
-    faction &= 127u;
-    for (i = 0; i < r_u32(0x800A5690u); ++i)
+    uint32 count = r_u32(0x800A5690);
+    uint32 i = 0, object, kind, table, origin, coordinate;
+    uint32 best = 0, secondary = 0;
+    sint32 best_cost = 27200, secondary_cost = 27200;
+    sint32 dx, dz, angle, distance, vertical, cost, v, w;
+    faction &= 127;
+    if (count)
     {
-        object = r_u32(r_u32(0x800A568Cu) + i * 4u);
-        if (r_u32(object + 20u) == r_u32(position) && r_u32(object + 28u) == r_u32(position + 8u))
-            continue;
-        kind = r_u8(object + 13u) & 127u;
-        if (kind == 0 || kind == 8)
+        do
         {
-            if (!r_u16(object + 58u) || (faction != 1 && faction != 7))
-                continue;
-        }
-        else if (kind == 1)
-        {
-            if (faction != 8 && faction != 0)
-                continue;
-        }
-        else if (kind == 2)
-        {
-            if (!r_u16(object + 58u))
-                continue;
-        }
-        else if (kind == 7)
-        {
-            if (!r_u16(object + 58u) || (faction != 8 && faction != 0))
-                continue;
-        }
-        else
-            continue;
-        dx = (sint32)(r_u32(object + 20u) - r_u32(position));
-        dz = (sint32)(r_u32(object + 28u) - r_u32(position + 8u));
-        angle = draft12_angle(sub_80055A9C((uint32)dx, (uint32)dz) - (sint16)yaw);
-        if (draft12_abs(angle) >= 1024)
-            continue;
-        // TODO Bind original distance target
-        distance = (sint32)draft_call_adapter(0x80069BE0u, (uint32)dx, (uint32)dz);
-        vertical = draft12_angle(sub_80055A9C(r_u32(object + 24u) - r_u32(position + 4u), (uint32)distance) - (sint16)pitch);
-        if (distance >= 10001 || (uint16)(vertical + 1023) >= 1423u)
-            continue;
-        v = angle / 32;
-        w = vertical / 16;
-        cost = draft12_abs(v * v * v) + draft12_abs(w * w * w) + distance;
-        if (kind == 2)
-        {
-            if (cost < secondary_cost && (sub_8002EAE4(position, object + 20u, 0) << 16))
+            table = r_u32(0x800A568C);
+            object = r_u32(table + i * 4);
+            origin = r_u32(position);
+            coordinate = r_u32(object + 20);
+            if (coordinate == origin)
             {
-                secondary = object;
-                secondary_cost = cost;
+                coordinate = r_u32(object + 28);
+                origin = r_u32(position + 8);
+                if (coordinate == origin)
+                    goto next_target;
             }
-        }
-        else if (cost < best_cost && (sub_8002EAE4(position, object + 20u, 0) << 16))
-        {
-            best = object;
-            best_cost = cost;
-        }
+            kind = r_u8(object + 13) & 127;
+            switch (kind)
+            {
+                case 0:
+                case 8:
+                    if (!r_s16(object + 58) || (faction != 1 && faction != 7))
+                        goto next_target;
+                    break;
+                case 1:
+                    if (faction != 8 && faction != 0)
+                        goto next_target;
+                    break;
+                case 2:
+                    if (!r_s16(object + 58))
+                        goto next_target;
+                    break;
+                case 7:
+                    if (!r_s16(object + 58) || (faction != 8 && faction != 0))
+                        goto next_target;
+                    break;
+                default:
+                    goto next_target;
+            }
+            coordinate = r_u32(object + 20);
+            origin = r_u32(position);
+            dx = (sint32)(coordinate - origin);
+            coordinate = r_u32(object + 28);
+            origin = r_u32(position + 8);
+            dz = (sint32)(coordinate - origin);
+            angle = draft12_angle(sub_80055A9C((uint32)dx, (uint32)dz) - (uint16)yaw);
+            if (draft12_abs(angle) >= 1024)
+                goto next_target;
+            distance = (sint32)draft_call_adapter(0x80069BE0, (uint32)dx, (uint32)dz);
+            coordinate = r_u32(object + 24);
+            origin = r_u32(position + 4);
+            vertical = draft12_angle(sub_80055A9C(coordinate - origin, (uint32)distance) - (uint16)pitch);
+            if (distance >= 10001 || (uint16)(vertical + 1023) >= 1423)
+                goto next_target;
+            v = angle / 32;
+            w = vertical / 16;
+            kind = r_u8(object + 13) & 127;
+            cost = draft12_abs(v * v * v) + draft12_abs(w * w * w) + distance;
+            if (kind == 2)
+            {
+                if (cost < secondary_cost && (sub_8002EAE4(position, object + 20, 0) << 16))
+                {
+                    secondary = object;
+                    secondary_cost = cost;
+                    goto next_target;
+                }
+                if ((r_u8(object + 13) & 127) == 2)
+                    goto next_target;
+            }
+            if (cost < best_cost && (sub_8002EAE4(position, object + 20, 0) << 16))
+            {
+                best = object;
+                best_cost = cost;
+            }
+        next_target:
+            count = r_u32(0x800A5690);
+            ++i;
+        } while (i < count);
     }
-    w_u16(category, best ? 1u : 0u);
-    return draft_scratch_result(native_stack_mark, (uint64)(best ? best : secondary));
-
-    draft_scratch_release(native_stack_mark);
+    w_u16(category, best ? 1 : 0);
+    return draft_scratch_result(native_stack_mark, best ? best : secondary);
 }
 
 // FUNCTION_MARKER sub_8004915C
@@ -730,19 +749,23 @@ uint32 sub_8004915C(uint32 parameters)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 object = r_u32(parameters), target, limit = 5, begin, end, index, frequency;
+    uint32 object = r_u32(parameters), target, limit = 5, begin, end, index, frequency, random;
     sint32 angle;
     if (!r_u16(object + 70u) && r_u32(0x800A8690u))
         limit = 10;
-    // TODO Bind original distance target
-    if ((uint32)draft_call_adapter(0x80069BE0u, r_u32(object + 100u), r_u32(object + 104u)) < 4096u && ((sint32)limit < (sint8)r_u8(object + 84u) || (r_u8(object + 86u) && limit < 10)))
+    uint32 speed = (uint32)draft_call_adapter(0x80069BE0u, r_u32(object + 100u), r_u32(object + 104u));
+    object = r_u32(parameters);
+    if (speed < 4096u && ((sint32)limit < r_s8(object + 84u) || (r_s8(object + 86u) && limit < 10)))
     {
         if ((sint8)r_u8(object + 85u) <= 0)
         {
             w_u8(object + 198u, r_u8(object + 198u) ? 8u : 16u);
-            w_u8(object + 85u, sub_80069A50() % 6u + 1u);
+            random = sub_80069A50();
+            object = r_u32(parameters);
+            w_u8(object + 85u, random % 6u + 1u);
         }
-        if ((sint16)r_u16(object + 166u) / 2 < (sint16)r_u16(object + 58u))
+        object = r_u32(parameters);
+        if (r_s16(object + 166u) / 2 < r_s16(object + 58u))
             w_u8(object + 86u, 0);
         return draft_scratch_result(native_stack_mark, (uint64)(0));
     }
@@ -750,6 +773,7 @@ uint32 sub_8004915C(uint32 parameters)
     target = r_u32(parameters + 4u);
     if ((sub_8002EAE4(object + 20u, target + 20u, 0) << 16) == 0)
         return draft_scratch_result(native_stack_mark, (uint64)(0));
+    object = r_u32(parameters);
     angle = draft12_abs((sint16)r_u16(parameters + 26u));
     if (angle < 1949 || r_u8(object + 197u) == 22u || r_u8(object + 197u) - 8u < 2u)
     {
@@ -765,19 +789,22 @@ uint32 sub_8004915C(uint32 parameters)
     }
     for (; begin < end; ++begin)
     {
+        object = r_u32(parameters);
         index = r_u8(begin);
         if ((1u << (index & 31u)) & r_u32(object + 148u))
         {
-            frequency = r_u8(0x800A6118u + index);
+            random = sub_80069A50();
+            frequency = r_u8(0x800A6118u + r_u8(begin));
             if (!frequency)
             {
-                // TODO Preserve original modulus break boundary
-                return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8004915Cu, parameters)));
+                xport_mips_break(7);
+                return draft_scratch_result(native_stack_mark, 0);
             }
-            if (sub_80069A50() % frequency == 0)
+            if (random % frequency == 0)
             {
+                object = r_u32(parameters);
                 w_u8(object + 84u, r_u8(object + 84u) + 1u);
-                return draft_scratch_result(native_stack_mark, (uint64)(index + 1u));
+                return draft_scratch_result(native_stack_mark, (uint64)(r_u8(begin) + 1u));
             }
         }
     }
@@ -880,7 +907,7 @@ uint32 sub_80055D54(uint32 object, uint32 animation, uint32 angle)
 }
 
 // FUNCTION_MARKER sub_8003CCE0
-uint32 sub_8003CCE0(uint32 position, uint32 type)
+uint32 sub_8003CCE0(uint32 position, uint32 type, uint32 fallback_sample, uint32 fallback_pitch)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
@@ -913,8 +940,8 @@ uint32 sub_8003CCE0(uint32 position, uint32 type)
             kind = 5;
         else
         {
-            // TODO Resolve original caller-carried T1 on the remaining RNG branch
-            return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8003CCE0u, position, type)));
+            kind = fallback_sample;
+            volume = fallback_pitch;
         }
     }
     else if (target == 0x8003CDDCu)
@@ -928,8 +955,7 @@ uint32 sub_8003CCE0(uint32 position, uint32 type)
         // TODO Resolve additional jump-table destinations
         return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(target, position, type)));
     }
-    // TODO Bind original sound target
-    return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80035A08u, kind, volume, 0u, position)));
+    return draft_scratch_result(native_stack_mark, (uint32)draft_call_adapter(0x80035A08, (uint32)(sint32)(sint16)kind, (uint32)(sint32)(sint16)volume, 0, position, 0));
 
     draft_scratch_release(native_stack_mark);
 }
@@ -938,90 +964,120 @@ uint32 sub_8003CCE0(uint32 position, uint32 type)
 uint32 sub_800461DC(uint32 object)
 {
     uint32 native_stack_mark = draft_scratch_mark();
+    uint32 result, target, table, first, second, difference, callback;
+    sint32 slot, bound, y;
 
-    uint32 result, target, playerlist = r_u32(0x800A851Cu);
-    sint32 difference, y;
-    if (sub_80045E18(object, object + 56u) || sub_80045DD4(object))
+    if (sub_80045E18(object, object + 56) || sub_80045DD4(object))
     {
-        if (r_u8(object + 67u) && r_u32(playerlist + 4u * r_u32(0x800A9730u)) == object)
+        if (r_u8(object + 67))
         {
-            // TODO Bind original selection cleanup target
-            draft_call_adapter(0x8004525Cu);
+            slot = r_s16(0x800A9730);
+            table = r_u32(0x800A851C);
+            if (r_u32(table + 4 * (uint32)slot) == object)
+                sub_8004525C();
         }
-        w_u32(object, 0x80029968u);
-        return draft_scratch_result(native_stack_mark, (uint64)(0x80029968u));
+        w_u32(object, 0x80029968);
+        return draft_scratch_result(native_stack_mark, 0x80029968);
     }
-    target = r_u32(playerlist + 4u * (uint32)(sint32)(sint16)r_u16(object + 34u));
-    result = r_u8(target + 64u);
+    slot = r_s16(object + 34);
+    table = r_u32(0x800A851C);
+    target = r_u32(table + 4 * (uint32)slot);
+    result = r_u8(target + 64);
     if (!result)
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
-    if (r_u8(object + 67u) && !r_u16(object + 34u))
-        sub_800451B4(object + 20u, (uint32)(sint32)(sint16)r_u16(object + 68u));
-    target = r_u32(playerlist + 4u * (uint32)(sint32)(sint16)r_u16(object + 34u));
-    difference = draft12_abs((sint32)(r_u32(target + 20u) - r_u32(object + 20u)));
-    result = (sint32)r_u32(object + 36u) < difference;
+        return draft_scratch_result(native_stack_mark, result);
+    if (r_u8(object + 67) && !slot)
+        sub_800451B4(object + 20, (uint32)r_s16(object + 68));
+    slot = r_s16(object + 34);
+    table = r_u32(0x800A851C);
+    target = r_u32(table + 4 * (uint32)slot);
+    first = r_u32(target + 20);
+    second = r_u32(object + 20);
+    bound = r_s32(object + 36);
+    difference = first - second;
+    if ((sint32)difference < 0)
+        difference = second - first;
+    result = bound < (sint32)difference;
     if (result)
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
-    difference = draft12_abs((sint32)(r_u32(target + 28u) - r_u32(object + 28u)));
-    result = (sint32)r_u32(object + 40u) < difference;
+        return draft_scratch_result(native_stack_mark, result);
+    slot = r_s16(object + 34);
+    table = r_u32(0x800A851C);
+    target = r_u32(table + 4 * (uint32)slot);
+    first = r_u32(target + 28);
+    second = r_u32(object + 28);
+    bound = r_s32(object + 40);
+    difference = first - second;
+    if ((sint32)difference < 0)
+        difference = second - first;
+    result = bound < (sint32)difference;
     if (result)
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
-    y = (sint32)r_u32(target + 24u);
-    result = (sint32)r_u32(object + 44u) < y;
+        return draft_scratch_result(native_stack_mark, result);
+    slot = r_s16(object + 34);
+    table = r_u32(0x800A851C);
+    target = r_u32(table + 4 * (uint32)slot);
+    bound = r_s32(object + 44);
+    y = r_s32(target + 24);
+    result = bound < y;
     if (result)
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
-    result = y < (sint32)r_u32(object + 48u);
+        return draft_scratch_result(native_stack_mark, result);
+    result = y < r_s32(object + 48);
     if (result)
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
-    if (r_u8(object + 8u))
+        return draft_scratch_result(native_stack_mark, result);
+    if (r_u8(object + 8))
     {
-        // TODO Bind original indirect object speed callback
-        result = (sint32)draft_call_adapter(r_u32(r_u32(target + 16u))) < 8193;
+        callback = r_u32(target + 16);
+        callback = r_u32(callback);
+        result = (sint32)draft_call_adapter(callback, target) < 8193;
         if (!result)
-            return draft_scratch_result(native_stack_mark, (uint64)(result));
+            return draft_scratch_result(native_stack_mark, result);
     }
-    // TODO Bind original activation target
-    return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80046004u, object, r_u16(target + 70u) == 1u)));
-
-    draft_scratch_release(native_stack_mark);
+    slot = r_s16(object + 34);
+    table = r_u32(0x800A851C);
+    target = r_u32(table + 4 * (uint32)slot);
+    return draft_scratch_result(native_stack_mark, sub_80046004(object, r_s16(target + 70) == 1));
 }
 
 // FUNCTION_MARKER sub_800725D0
 uint32 sub_800725D0(uint32 row)
 {
     uint32 native_stack_mark = draft_scratch_mark();
+    uint32 scratch = draft_scratch_adapter(16), selection = scratch + 8;
+    uint32 x, y, kind, which, keys, result, first, second;
+    sint32 index;
 
-    uint32 scratch = draft_scratch_adapter(16u), selection = scratch + 8u, x = r_u32(0x800A75C8u) + 46u, y = 12u * (sub_8006F818(row) + 1u) + 30u, kind = (sint16)sub_80037BB8() == 2, which = 0x800A6458u + kind * 2u, keys, result;
-    sint32 index, next;
-    w_u32(scratch, 0x34333231u);
-    w_u8(scratch + 4u, 0);
-    w_u16(selection, r_u16(0x800A64F4u));
-    sub_80070D6C(x - 7u, y - 2u, 60, 15, 101);
-    sub_80043820(scratch, 0x4f4f4fu, x, y, 98, 1);
-    // TODO Bind original pad target
-    keys = (uint32)(sint32)(sint16)draft_call_adapter(0x80038970u, 0xffff8000u);
-    keys |= (uint32)(sint32)(sint16)draft_call_adapter(0x80038970u, 8192u);
-    index = (sint16)r_u16(which);
+    first = r_u32(0x800A64EC);
+    second = (uint32)r_s8(0x800A64F0);
+    w_u32(scratch, first);
+    w_u8(scratch + 4, second);
+    first = (uint32)r_s8(0x800A64F4);
+    second = (uint32)r_s8(0x800A64F5);
+    w_u8(selection, first);
+    w_u8(selection + 1, second);
+    y = 12 * (sub_8006F818(row) + 1);
+    x = r_u32(0x800A75C8) + 46;
+    sub_80070D6C(x - 7, y + 28, 60, 15, 101);
+    y += 30;
+    sub_80043820(scratch, 0x4F4F4F, x, y, 98, 1);
+    kind = (sint16)sub_80037BB8() == 2;
+    keys = (uint32)(sint32)(sint16)sub_80038970(0xFFFF8000);
+    keys |= (uint32)(sint32)(sint16)sub_80038970(8192);
+    which = 0x800A6458 + kind * 2;
+    index = r_s16(which);
     w_u8(selection, r_u8(scratch + (uint32)index));
-    sub_80043820(selection, 0x7f7f7fu, x + 15u * (uint32)index, y, 98, 1);
-    result = keys & 0x8000u;
-    if (r_u32(0x800A6460u) == row)
+    sub_80043820(selection, 0x7F7F7F, x + 15 * (uint32)index, y, 98, 1);
+    result = keys & 0x8000;
+    if (r_u32(0x800A6460) == row)
     {
         if (result)
             --index;
-        next = (keys & 8192u) ? index + 1 : index;
-        result = sub_80071960((uint32)next, 3);
-        index = (sint16)result;
-        if (index != (sint16)r_u16(which))
-        {
-            // TODO Bind original sound target
-            result = (uint32)draft_call_adapter(0x80035A08u, 29u, 2048u, 255u, 0u);
-        }
+        if (keys & 8192)
+            ++index;
+        result = sub_80071960((uint32)index, 3);
+        index = (sint32)result;
+        if (index != r_s16(which))
+            result = (uint32)draft_call_adapter(0x80035A08, 29, 2048, 255, 0);
         w_u16(which, (uint32)index);
     }
-    return draft_scratch_result(native_stack_mark, (uint64)(result));
-
-    draft_scratch_release(native_stack_mark);
+    return draft_scratch_result(native_stack_mark, result);
 }
 
 // FUNCTION_MARKER sub_8002A5DC
@@ -1029,9 +1085,9 @@ uint32 sub_8002A5DC(uint32 object, uint32 type)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 sound = 0, volume = 0, size = 0, index, address, result;
+    uint32 sound = 0, volume = 0, size = 0, index, address, result, voice;
+    IMPACT_SOUND fallback;
     type &= 255u;
-    // TODO Bind original effect initialization and sound targets
     if (type == 1)
     {
         size = 512;
@@ -1048,25 +1104,62 @@ uint32 sub_8002A5DC(uint32 object, uint32 type)
         draft_call_adapter(0x80061418u, object, (uint32)(sint32)(sint16)r_u16(r_u32(0x800A62ECu) + 60u));
         sub_8002289C(object);
     }
+    else if (type == 3)
+    {
+        size = 2048;
+        draft_call_adapter(0x8005F69C, object);
+        sub_8002289C(object);
+        draft_call_adapter(0x80035A08, 61, 2048, 255, object + 20, 1);
+        sound = 13;
+        volume = 2048;
+    }
+    else if (type == 4)
+    {
+        size = 3072;
+        draft_call_adapter(0x8005F920, object);
+        sub_8002289C(object);
+        draft_call_adapter(0x80035A08, 63, 1024, 255, object + 20, 1);
+        draft_call_adapter(0x80035A08, 61, 2048, 255, object + 20, 1);
+        sound = 13;
+        volume = 1536;
+    }
+    else if (type == 6)
+    {
+        size = 3072;
+        draft_call_adapter(0x8006108C, object);
+        draft_call_adapter(0x8005F69C, object);
+        sub_8002289C(object);
+        draft_call_adapter(0x80035A08, 63, 1024, 255, object + 20, 1);
+        draft_call_adapter(0x80035A08, 61, 1536, 255, object + 20, 1);
+        draft_call_adapter(0x80035A08, 13, 2048, 255, object + 20, 1);
+        sound = 14;
+        volume = 2048;
+    }
     if (type != 10)
         draft_call_adapter(0x8006DF90u, object + 20u);
-    draft_call_adapter(0x80035A08u, sound, volume, 128u, object + 20u);
+    voice = (uint32)draft_call_adapter(0x80035A08u, sound, volume, 128u, object + 20u, 1);
     if (sound == 0)
     {
+        fallback.sample = r_u8(0x800A7E34 + (uint32)(sint32)(sint16)voice) != 0;
+        fallback.pitch = ((1u << (voice & 31)) & 0xFFFFFF) >> 16;
         if (type == 8)
-            sub_800623F8(object + 20u, r_u16(r_u32(0x800A62ECu) + 76u), 32768, 10);
+            sub_800623F8(object + 20u, (uint32)r_s16(r_u32(0x800A62ECu) + 76u), 32768, 10, &fallback);
         else if (type == 9)
         {
             size = 512;
             draft_call_adapter(0x8005F568u, object);
+            native_impact_allocated_sound(&fallback);
         }
         else if (type == 10)
+        {
             draft_call_adapter(0x8005EEC0u, object);
+            native_impact_allocated_sound(&fallback);
+        }
         else if (type == 7)
-            draft_call_adapter(0x80060320u, object);
+            sub_80060320(object, &fallback);
         if (type >= 7 && type <= 10)
             sub_8002289C(object);
-        sub_8003CCE0(object + 20u, (uint32)(sint32)(sint16)r_u16(object + 58u));
+        sub_8003CCE0(object + 20u, (uint32)(sint32)(sint16)r_u16(object + 58u), fallback.sample, fallback.pitch);
     }
     index = r_u32(0x800A5770u);
     result = (sint32)index < 16;
@@ -1075,10 +1168,13 @@ uint32 sub_8002A5DC(uint32 object, uint32 type)
         address = 0x800A8828u + 16u * index;
         w_u32(address, r_u32(object + 20u));
         w_u32(address + 4u, r_u32(object + 24u));
-        w_u32(address + 8u, r_u32(object + 28u));
-        w_u32(address + 12u, size);
-        result = index + 1u;
-        w_u32(0x800A5770u, result);
+        {
+            uint32 z = r_u32(object + 28u);
+            result = index + 1u;
+            w_u32(0x800A5770u, result);
+            w_u32(address + 12u, size);
+            w_u32(address + 8u, z);
+        }
     }
     return draft_scratch_result(native_stack_mark, (uint64)(result));
 

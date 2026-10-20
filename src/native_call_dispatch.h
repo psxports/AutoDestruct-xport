@@ -5,6 +5,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+uint32 decrement_weapon_stock(uint32 weapon);
+uint32 build_scaled_yaw_matrix(uint32 angle, uint32 matrix, uint32 scale);
+void scale_rotation_columns(uint32 matrix, uint32 scale);
+
 uint32 sub_80014A68(uint32 object_address, uint32 view_address, uint32 clip_address, uint32 render_context, uint32 output_cursor);
 uint32 sub_8007B7B4(uint32 sector, uint32 position);
 uint32 sub_8007B4A0(uint32 command, uint32 argument);
@@ -22,7 +26,7 @@ uint32 sub_80080294(uint32 rectangle, uint32 buffer);
 void sub_800557C0(uint32 destination, uint32 source, uint32 step);
 uint32 sub_8005E200(uint32 mode);
 uint32 sub_80049D98(uint32 wrapper);
-uint32 sub_8005B434(uint32 position, uint32 offset_x, uint32 offset_z);
+uint32 sub_8005B434(uint32 position, uint32 offset_x, uint32 offset_z, uint32 query_y);
 uint32 sub_80048D30(uint32 object, uint32 position, uint32 target, uint32 velocity, uint32 direction, uint32 drive, uint32 turn_step);
 uint32 sub_8002CBD8(uint32 object, uint32 first_index, uint32 target, uint32 second_index);
 uint32 sub_80061418(uint32 object, uint32 parameter);
@@ -30,7 +34,7 @@ uint32 sub_80061500(uint32 object);
 uint32 sub_8006108C(uint32 object);
 uint32 sub_8005EEC0(uint32 object);
 uint32 sub_8005F69C(uint32 object);
-uint32 sub_80060320(uint32 object);
+uint32 sub_80060320(uint32 object, IMPACT_SOUND *sound);
 uint32 sub_80061628(uint32 object);
 uint32 sub_80061174(uint32 object);
 uint32 sub_8005EFBC(uint32 object);
@@ -349,7 +353,7 @@ uint32 sub_8007A53C(uint32 mode, uint32 result);
 uint32 sub_8007CE2C(uint32 destination, uint32 words);
 uint32 sub_80080230(uint32 rectangle, uint32 buffer);
 uint32 sub_80080474(uint32 ordering, uint32 count);
-void sub_8008056C(uint32 ordering);
+uint32 sub_8008056C(uint32 ordering);
 void sub_80083868(uint32 matrix);
 void sub_800643EC(GameRenderCallContext *context);
 void sub_80083898(uint32 distance, uint32 projection);

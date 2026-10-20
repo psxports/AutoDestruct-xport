@@ -48,6 +48,10 @@ typedef struct GameGeometryCallContext
     uint32 caller_s6;
     uint32 caller_s7;
     uint32 caller_fp;
+    uint32 terrain_candidate;
+    uint32 terrain_corner_x;
+    uint32 terrain_candidate_valid;
+    uint32 terrain_corner_valid;
 } GameGeometryCallContext;
 
 // Required InitGeom binding with guest CPU, BIOS, GTE and memory effects

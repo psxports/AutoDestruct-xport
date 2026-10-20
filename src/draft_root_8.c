@@ -321,7 +321,7 @@ uint32 sub_8005B5D8(uint32 a0, uint32 a1)
 
     uint32 value;
     FUNCTION_MARKER(0x8005B5D8u, "1.EXE");
-    value = sub_8005B47C(a0) - a1;
+    value = sub_8005B47C(a0, a0) - a1;
     w_u32(a0 + 4u, value);
     return draft_scratch_result(native_stack_mark, (uint64)(value));
 

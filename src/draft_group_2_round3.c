@@ -153,15 +153,16 @@ uint32 sub_80043DF4(uint32 a1)
     int32 x = -160;
     if (!result)
         return draft_scratch_result(native_stack_mark, (uint64)(result));
-    for (iteration = 0; (int32)iteration < (int32)r_u32(0x800A902Cu); ++iteration)
+    sint32 limit = r_s32(0x800A902C);
+    for (iteration = 0; (int32)iteration < limit; ++iteration)
     {
-        uint32 control = 0u, font = r_u32(0x800A5F68u);
+        uint32 control = 0u, font;
         if (!code)
             break;
         code = r_u8(0x800BC4FCu + offset);
         if (!code)
         {
-            w_u32(0x800A9744u, 1u);
+            w_u16(0x800A9744u, 1u);
             control = 1u;
         }
         if (code == 1u)
@@ -197,15 +198,20 @@ uint32 sub_80043DF4(uint32 a1)
         if (!control)
         {
             uint32 depth = offset + 100u, type;
+            font = r_u32(0x800A5F68u);
             draft_call_adapter(0x8004328Cu, font, 0x54000040u, code, 8421504u, (uint32)x, a1, depth);
+            font = r_u32(0x800A5F68u);
             type = r_u8(font + code * 5u + 4u);
             ++offset;
             if (type != 1u && type != 6u)
                 draft_call_adapter(0x8004328Cu, font, 0x64000040u, code, 8421504u, (uint32)x + 1u, a1 + 1u, depth);
         }
-        x = (int32)((uint32)x + r_u8(font + code * 5u + 2u));
+        font = r_u32(0x800A5F68u);
+        uint32 advance = r_u8(font + code * 5u + 2u);
+        limit = r_s32(0x800A902C);
+        x = (int32)((uint32)x + advance);
     }
-    result = r_u32(0x800A9744u);
+    result = (uint32)r_s16(0x800A9744u);
     if (!result)
     {
         result = (uint32)((int32)r_u32(0x800A9010u) / 2) + r_u32(0x800A902Cu);
@@ -223,8 +229,9 @@ uint32 sub_80033200(void)
 
     uint32 result;
     int32 y = -104;
+    sint32 stage = r_s16(0x800A6CEC);
     w_u32(0x800A7BE0u, 0);
-    if ((int16)r_u16(0x800A6CECu) < 16)
+    if (stage < 16)
     {
         w_u32(0x800A902Cu, 1);
         w_u32(0x800A7FB8u, 1);
@@ -245,7 +252,7 @@ uint32 sub_80033200(void)
     if ((int16)r_u16(0x800A6CF0u) >= 30)
     {
         sub_80033400();
-        w_u16(0x800A973Cu, 2);
+        w_u32(0x800A973Cu, 2);
         w_u16(0x800A6CECu, 0);
         w_u16(0x800A6CF0u, 0);
         return draft_scratch_result(native_stack_mark, (uint64)(2));
@@ -271,51 +278,68 @@ uint32 sub_80033200(void)
 uint32 sub_8003B3B0(void)
 {
     uint32 native_stack_mark = draft_scratch_mark();
+    uint32 entry, object, objects, message, cooldown;
+    sint32 index, sound;
 
-    uint32 entry, object;
-    if (!r_u16(0x800A8B34u) && r_u16(0x800A9A64u) == 1)
+    if (!r_s16(0x800A8B34) && r_s16(0x800A9A64) == 1)
     {
-        if ((int32)r_u32(0x800A9A48u) > 0)
-            w_u32(0x800A9A48u, r_u32(0x800A9A48u) - 1u);
+        cooldown = r_u32(0x800A9A48);
+        if ((sint32)cooldown > 0)
+            w_u32(0x800A9A48, cooldown - 1);
         else
         {
-            if (r_u16(0x800A9D70u))
+            if (r_s16(0x800A9D70))
             {
-                w_u16(0x800A9D70u, 0);
-                return draft_scratch_result(native_stack_mark, (uint64)(0));
+                w_u16(0x800A9D70, 0);
+                return draft_scratch_result(native_stack_mark, 0);
             }
             entry = sub_80030E18(0);
-            w_u32(0x800A6D7Cu, entry);
+            w_u32(0x800A6D7C, entry);
             if (!entry)
-                return draft_scratch_result(native_stack_mark, (uint64)(0));
-            object = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(entry) * 4u);
-            w_u32(0x800A6D78u, entry);
-            if (!r_u8(object + 17u))
+                return draft_scratch_result(native_stack_mark, 0);
+            index = r_s16(entry);
+            objects = r_u32(0x800A851C);
+            object = r_u32(objects + (uint32)index * 4);
+            w_u32(0x800A6D78, entry);
+            if (!r_u8(object + 17))
             {
                 sub_800331D8();
-                w_u32(0x800A8568u, r_u32(0x800A7FB0u) == 1 ? object + 19u : 0x8008FD9Cu);
-                w_u32(0x800A9A68u, (uint32)(int32)(int16)r_u16(object + 8u));
-                if (r_u16(0x800A5C04u))
+                if (r_u32(0x800A7FB0) == 1)
+                {
+                    entry = r_u32(0x800A6D7C);
+                    index = r_s16(entry);
+                    objects = r_u32(0x800A851C);
+                    object = r_u32(objects + (uint32)index * 4);
+                    message = object + 19;
+                }
+                else
+                    message = 0x8008FD9C;
+                w_u32(0x800A8568, message);
+                entry = r_u32(0x800A6D7C);
+                index = r_s16(entry);
+                objects = r_u32(0x800A851C);
+                object = r_u32(objects + (uint32)index * 4);
+                sound = r_s16(0x800A5C04);
+                w_u32(0x800A9A68, (uint32)r_s16(object + 8));
+                if (sound)
                     sub_800313EC(entry);
-                w_u16(0x800A8B34u, 2);
-                w_u32(0x800A9A48u, 10);
-                w_u16(0x800A973Cu, 1);
+                w_u16(0x800A8B34, 2);
+                w_u32(0x800A9A48, 10);
+                w_u32(0x800A973C, 1);
             }
             else
             {
-                w_u16(0x800A8B34u, 1);
-                w_u32(0x800A9A48u, 10);
+                w_u16(0x800A8B34, 1);
+                w_u32(0x800A9A48, 10);
             }
         }
     }
-    if (r_u16(0x800A8B34u) == 2 && r_u16(0x800A973Cu) == 2)
+    if (r_s16(0x800A8B34) == 2 && r_u32(0x800A973C) == 2)
     {
-        w_u16(0x800A973Cu, 0);
-        w_u16(0x800A8B34u, 0);
+        w_u32(0x800A973C, 0);
+        w_u16(0x800A8B34, 0);
     }
-    return draft_scratch_result(native_stack_mark, (uint64)(r_u16(0x800A8B34u) == 1 ? (uint32) - (r_u8(0x800A7BDFu) != 0) : 0));
-
-    draft_scratch_release(native_stack_mark);
+    return draft_scratch_result(native_stack_mark, r_s16(0x800A8B34) == 1 ? (uint32) - (r_u8(0x800A7BDF) != 0) : 0);
 }
 
 /* FUNCTION_MARKER: sub_8005FA24 */
@@ -535,15 +559,15 @@ uint32 sub_80042598(void)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 result = 0, i;
+    uint32 result = 0, i, paused;
     sub_80036E10();
     sub_80037490();
     sub_80036EDC(0);
     sub_800379BC();
     w_u16(0x800A9A64u, 1);
-    w_u16(0x800A8398u, 0);
+    w_u32(0x800A8398u, 0);
     sub_80038964(2112);
-    if (r_u16(0x800A9760u))
+    if (r_u32(0x800A9760u))
     { /* TODO: Bridge the alternate audio resume routine */
         draft_call_adapter(0x80070484u);
     }
@@ -552,12 +576,14 @@ uint32 sub_80042598(void)
     do
     {
         sub_800697BC();
-        w_u16(0x800A98F4u, sub_800389DC() & 0xF6FFu);
-        w_u16(0x800A98F4u, r_u16(0x800A98F4u));
-        w_u16(0x800A98F4u, r_u16(0x800A98F4u) | sub_80038970(256));
-        w_u16(0x800A98F4u, r_u16(0x800A98F4u) | sub_80038970(2048));
-        if (r_u16(0x800A98F4u) & 2048u)
-            w_u16(0x800A8B30u, 0);
+        w_u32(0x800A98F4, sub_800389DC() & 0xF6FF);
+        uint32 pressed = (uint32)(sint32)(sint16)sub_80038970(256);
+        w_u32(0x800A98F4, r_u32(0x800A98F4) | pressed);
+        pressed = (uint32)(sint32)(sint16)sub_80038970(2048);
+        pressed |= r_u32(0x800A98F4);
+        w_u32(0x800A98F4, pressed);
+        if (pressed & 2048)
+            w_u32(0x800A8B30, 0);
         sub_8002DC94();
         result = r_u32(0x800A7E04u);
         if (!result)
@@ -580,13 +606,14 @@ uint32 sub_80042598(void)
         draft_call_adapter(0x8001FF7Cu, 1u);
         sub_8005A944();
         draft_call_adapter(0x8001F850u);
+        paused = r_u32(0x800A8B30);
         w_u32(0x800A7E04u, 0);
-    } while (r_u16(0x800A8B30u));
+    } while (paused);
     sub_800375F0();
-    w_u16(0x800A9A64u, r_u16(0x800A9670u));
-    if (r_u16(0x800A9670u) || r_u32(0x800A5C50u) != 1)
+    uint32 resume = r_u16(0x800A9670);
+    w_u16(0x800A9A64, resume);
+    if (resume || r_u32(0x800A5C50u) != 1)
     {
-        uint32 resume = r_u16(0x800A9670u) != 0;
         sub_800379FC();
         for (i = 0; i < 10; ++i)
         { /* TODO: Bridge the sound status and frame delay SDK routines */
@@ -596,7 +623,7 @@ uint32 sub_80042598(void)
                 break;
             draft_call_adapter(0x8007F8C8u, 3u);
         }
-        result = sub_80036EDC((uint32)(int32)(int16)r_u16(resume ? 0x800A9CD0u : 0x800A975Cu));
+        result = sub_80036EDC(r_u32(resume ? 0x800A9CD0u : 0x800A975Cu));
     }
     else
     {
@@ -614,7 +641,7 @@ uint32 sub_80042598(void)
             result = i + 1u < 10u;
         }
     }
-    w_u16(0x800A966Cu, 60);
+    w_u32(0x800A966Cu, 60);
     w_u32(0x800A5C50u, 0);
     return draft_scratch_result(native_stack_mark, (uint64)(result));
 
@@ -625,23 +652,27 @@ uint32 sub_80042598(void)
 uint32 sub_80046A58(uint32 object)
 {
     uint32 native_stack_mark = draft_scratch_mark();
-
-    int32 kind = (int16)r_u16(object + 58u), amount = (int16)r_u16(object + 80u), level = (int16)r_u16(object + 82u);
-    uint32 owner, result;
+    sint32 kind = r_s16(object + 58), level = r_s16(object + 82);
+    sint32 amount, high, low, next, role, reference;
+    uint32 result, owner, table, index, flags;
     sub_800595F0((uint32)kind, (uint32)level);
-    /* TODO: Bridge the existing upgrade and equipment routines */
+    kind = r_s16(object + 58);
     switch (kind)
     {
         case 0:
-            if (r_u16(0x800A7F48u))
+            if (r_s16(0x800A7F48))
             {
-                uint32 player = r_u32(0x800A9018u);
-                w_u32(player + 8u, r_u32(player + 8u) + (uint32)amount);
+                owner = r_u32(0x800A9018);
+                amount = r_s16(object + 80);
+                w_u32(owner + 8, r_u32(owner + 8) + (uint32)amount);
             }
             break;
         case 3:
-        {
-            int32 high = r_u8(0x800A8515u), low = r_u8(0x800A8514u), next = low;
+            high = r_u8(0x800A8515);
+            low = r_u8(0x800A8514);
+            level = r_s16(object + 82);
+            next = low;
+            amount = r_s16(object + 80);
             if (level - 1 < high)
             {
                 next = amount;
@@ -654,78 +685,113 @@ uint32 sub_80046A58(uint32 object)
                 if (low < amount)
                     next = amount;
             }
-            if ((int16)next >= 256)
+            if ((sint16)next >= 256)
                 next = 255;
-            result = ((uint32)high << 8 & 0xFF00u) | ((uint32)next & 255u);
-            w_u32(0x800A8514u, result);
-            draft_call_adapter(0x8003D27Cu, (uint32)(int32)(int16)result);
+            result = (((uint32)high << 8) & 0xFF00) | ((uint32)next & 255);
+            w_u32(0x800A8514, result);
+            draft_call_adapter(0x8003D27C, (uint32)r_s16(0x800A8514));
             break;
-        }
         case 4:
-            draft_call_adapter(0x8003D5DCu, (uint32)level);
-            draft_call_adapter(0x8003D02Cu, (uint32)level, (uint32)amount);
+            level = r_s16(object + 82);
+            draft_call_adapter(0x8003D5DC, (uint32)level);
+            level = r_s16(object + 82);
+            amount = r_s16(object + 80);
+            draft_call_adapter(0x8003D02C, (uint32)level, (uint32)amount);
             break;
         case 7:
-            draft_call_adapter(0x8003D02Cu, (uint32)level, (uint32)amount);
+            level = r_s16(object + 82);
+            amount = r_s16(object + 80);
+            draft_call_adapter(0x8003D02C, (uint32)level, (uint32)amount);
             break;
         case 6:
-            draft_call_adapter(0x8003D6C4u);
+            draft_call_adapter(0x8003D6C4);
             break;
         case 12:
-            if ((int16)(uint32)draft_call_adapter(0x8003D67Cu) < level - 1)
+            level = r_s16(object + 82) - 1;
+            if ((sint16)draft_call_adapter(0x8003D67C) < level)
             {
-                draft_call_adapter(0x8003D694u, (uint32)(int32)(int16)(level - 1));
-                result = (uint32)(int32)(int16)(uint32)draft_call_adapter(0x8003D654u);
-                result *= 18140u;
-                w_u32(0x800A8538u, result);
-                w_u32(0x800A56C4u, result);
+                level = (sint16)(r_u16(object + 82) - 1);
+                draft_call_adapter(0x8003D694, (uint32)level);
+                result = (uint32)(sint32)(sint16)draft_call_adapter(0x8003D654);
+                result *= 18204;
+                w_u32(0x800A8538, result);
+                w_u32(0x800A56C4, result);
             }
-            w_u32(0x800A7C6Cu, r_u32(0x800A7C6Cu) + (uint32)amount);
+            amount = r_s16(object + 80);
+            w_u32(0x800A7C6C, r_u32(0x800A7C6C) + (uint32)amount);
             break;
         case 13:
-            if ((int16)sub_8003D688() < level - 1)
-                sub_8003D6A0((uint32)(int32)(int16)(level - 1));
+            level = r_s16(object + 82) - 1;
+            if ((sint16)sub_8003D688() < level)
+            {
+                level = (sint16)(r_u16(object + 82) - 1);
+                sub_8003D6A0((uint32)level);
+            }
+            amount = r_s16(object + 80);
+            w_u32(0x800A7C6C, r_u32(0x800A7C6C) + (uint32)amount);
+            break;
         default:
-            w_u32(0x800A7C6Cu, r_u32(0x800A7C6Cu) + (uint32)amount);
+            amount = r_s16(object + 80);
+            w_u32(0x800A7C6C, r_u32(0x800A7C6C) + (uint32)amount);
             break;
     }
-    draft_call_adapter(0x80035A08u, r_u8(object + 14u) & 8u ? 40u : 47u, r_u8(object + 14u) & 8u ? 1024u : 2048u, 255u, 0u, 0u);
-    if (r_u8(object + 67u) && r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(0x800A9730u) * 4u) == object)
-        draft_call_adapter(0x8004525Cu);
-    if ((int8)r_u8(object + 67u) > 0 && (int8)r_u8(object + 67u) < 3)
+    flags = r_u8(object + 14);
+    if (flags & 8)
+        draft_call_adapter(0x80035A08, 40, 1024, 255, 0, 0);
+    else
+        draft_call_adapter(0x80035A08, 47, 2048, 255, 0, 0);
+    if (r_s8(object + 67))
     {
-        w_u16(0x800A7F4Cu, r_u16(0x800A7F4Cu) - 1u);
-        draft_call_adapter(0x80044F8Cu, 0u);
+        index = (uint32)r_s16(0x800A9730);
+        table = r_u32(0x800A851C);
+        if (r_u32(table + index * 4) == object)
+            sub_8004525C();
     }
-    w_u16(object + 56u, 0xFFFFu);
-    w_u8(object + 65u, 0);
-    w_u8(object + 64u, 0);
-    w_u8(object + 14u, r_u8(object + 14u) & 0xFDu);
-    if ((int16)r_u16(object + 84u) != -1)
+    role = r_s8(object + 67);
+    if (role > 0 && role < 3)
     {
-        owner = r_u32(r_u32(0x800A851Cu) + (uint32)(int32)(int16)r_u16(object + 84u) * 4u);
-        if (!r_u8(owner + 64u))
-            w_u8(owner + 66u, r_u8(owner + 66u) - 1u);
+        w_u16(0x800A7F4C, r_u16(0x800A7F4C) - 1);
+        draft_call_adapter(0x80044F8C, 0);
     }
-    owner = (uint32)(int32)(int16)r_u16(object + 74u);
-    amount = (int16)r_u16(object + 68u);
-    w_u16(object + 84u, 0xFFFFu);
-    result = sub_80030F08(owner, (uint32)amount, 1);
-    w_u16(object + 74u, 0xFFFFu);
-    w_u8(object + 67u, 0);
-    return draft_scratch_result(native_stack_mark, (uint64)(result));
-
-    draft_scratch_release(native_stack_mark);
+    flags = r_u8(object + 14);
+    w_u16(object + 56, 0xFFFF);
+    reference = r_s16(object + 84);
+    w_u8(object + 65, 0);
+    w_u8(object + 64, 0);
+    w_u8(object + 14, flags & 0xFD);
+    if (reference != -1)
+    {
+        table = r_u32(0x800A851C);
+        owner = r_u32(table + (uint32)reference * 4);
+        if (!r_u8(owner + 64))
+            w_u8(owner + 66, r_u8(owner + 66) - 1);
+    }
+    index = (uint32)r_s16(object + 74);
+    amount = r_s16(object + 68);
+    w_u16(object + 84, 0xFFFF);
+    result = sub_80030F08(index, (uint32)amount, 1);
+    w_u16(object + 74, 0xFFFF);
+    w_u8(object + 67, 0);
+    return draft_scratch_result(native_stack_mark, result);
 }
 
 static uint64 draft_round3_clock(void)
 {
-    return (uint64)r_u32(0x800A8928u) | (uint64)r_u32(0x800A892Cu) << 32;
+    uint32 low = r_u32(0x800A8928);
+    uint32 high = r_u32(0x800A892C);
+    return (uint64)low | (uint64)high << 32;
 }
 
-static uint64 draft_round3_deadline(uint32 address)
+static int draft_round3_deadline_due(uint32 address)
 {
-    return (uint64)r_u32(address) | (uint64)r_u32(address + 4u) << 32;
+    sint32 deadline_high = r_s32(address + 4);
+    sint32 clock_high = r_s32(0x800A892C);
+    if (clock_high < deadline_high)
+        return 0;
+    if (clock_high != deadline_high)
+        return 1;
+    uint32 deadline_low = r_u32(address);
+    return r_u32(0x800A8928) >= deadline_low;
 }
 
 static void draft_round3_set_deadline(uint32 address, uint64 value)
@@ -764,37 +830,46 @@ uint32 sub_80058600(void)
         w_u32(0x800A71C4u, 90);
     }
     value = (int32)r_u32(0x800A9A34u);
-    if (value >= 10 && value < 40 && r_u32(0x800A6258u) && r_u16(0x800A8B34u) != 2 && r_u16(0x800A9A64u) == 1)
+    if (value >= 10 && value < 40 && r_u32(0x800A6258u) && r_s16(0x800A8B34u) != 2 && r_s16(0x800A9A64u) == 1)
     {
         sub_800331D8();
         w_u32(0x800A8568u, r_u32(0x800A7FB0u) == 1 ? r_u32(value < 20 ? 0x800A8D88u : 0x800A8D8Cu) : 0x80090DF8u);
         w_u32(0x800A9A68u, value < 20 ? 400 : 401);
         w_u16(0x800A8B34u, 2);
-        w_u16(0x800A973Cu, 1);
+        w_u32(0x800A973Cu, 1);
         w_u32(0x800A6258u, 0);
     }
-    if (r_u16(0x800A8B34u) == 2 && !r_u32(0x800A625Cu))
+    if (r_s16(0x800A8B34u) == 2 && !r_u32(0x800A625Cu))
     {
-        draft_round3_set_deadline(0x800A71A8u, sub_8006984C(0, 0, 3, 0) + draft_round3_clock());
-        draft_round3_set_deadline(0x800A71B0u, sub_8006984C(0, 0, 0, 20) + draft_round3_clock());
+        uint64 delay = sub_8006984C(0, 0, 3, 0);
+        uint64 clock = draft_round3_clock();
+        draft_round3_set_deadline(0x800A71A8u, delay + clock);
+        delay = sub_8006984C(0, 0, 0, 20);
+        clock = draft_round3_clock();
         w_u32(0x800A625Cu, 1);
+        draft_round3_set_deadline(0x800A71B0u, delay + clock);
     }
-    if (r_u32(0x800A625Cu) == 3)
+    uint32 warning_state = r_u32(0x800A625C);
+    if (warning_state == 3)
     {
         sub_80044534(32896, r_u32(0x800A8D6Cu), 0, 55);
-        if (draft_round3_clock() >= draft_round3_deadline(0x800A71A8u))
+        if (draft_round3_deadline_due(0x800A71A8u))
         {
             w_u32(0x800A625Cu, 2);
             w_u32(0x800A6270u, 0);
         }
+        warning_state = r_u32(0x800A625C);
     }
-    if (r_u32(0x800A625Cu) == 1)
+    if (warning_state == 1)
     {
         sub_80044534(32896, r_u32(0x800A8D6Cu), 0, 55);
-        if (draft_round3_clock() >= draft_round3_deadline(0x800A71B0u))
+        if (draft_round3_deadline_due(0x800A71B0u))
         {
-            draft_round3_set_deadline(0x800A71B0u, sub_8006984C(0, 0, 0, 20) + draft_round3_clock());
-            if ((int32)r_u32(0x800A6270u) >= 3)
+            uint64 delay = sub_8006984C(0, 0, 0, 20);
+            uint64 clock = draft_round3_clock();
+            sint32 count = r_s32(0x800A6270);
+            draft_round3_set_deadline(0x800A71B0u, delay + clock);
+            if (count >= 3)
             {
                 w_u32(0x800A625Cu, 3);
                 w_u32(0x800A6270u, 0);
@@ -806,7 +881,7 @@ uint32 sub_80058600(void)
             }
         }
     }
-    if (!r_u16(0x800A8B34u) && r_u32(0x800A625Cu) == 2)
+    if (!r_s16(0x800A8B34u) && r_u32(0x800A625Cu) == 2)
     {
         w_u32(0x800A625Cu, 0);
         w_u32(0x800A6270u, 0);
@@ -816,10 +891,12 @@ uint32 sub_80058600(void)
         for (i = 0; i < 3; ++i)
         {
             value = (int32)(r_u32(timers[i]) - 1u);
-            w_u32(timers[i], value > 0 ? (uint32)value : 0);
+            w_u32(timers[i], (uint32)value);
+            if (value <= 0)
+                w_u32(timers[i], 0);
         }
     }
-    if (r_u32(0x800A9CD8u))
+    if (value > 0)
     {
         code = r_u16(0x80090DE8u + r_u32(0x800A84A0u) * 2u);
         sub_80044534(8388736, r_u32(0x800A8B38u + code * 4u), 0, 87);
@@ -831,31 +908,62 @@ uint32 sub_80058600(void)
     }
     else if (r_u32(0x800A71C4u))
     {
-        code = r_u16(0x80090D24u + r_u32(0x800A71B8u) * 2u);
-        if ((uint16)(code + 16u) < 4u)
+        static const uint32 tables[] = {0x80090D50, 0x80090D68, 0x80090D40, 0x80090D48};
+        for (uint32 kind = 0; kind < 4; ++kind)
         {
-            static const uint32 tables[] = {0x80090D50u, 0x80090D68u, 0x80090D40u, 0x80090D48u};
-            code = r_u16(tables[code - 65520u] + r_u32(0x800A71BCu) * 2u);
+            code = r_u16(0x80090D24 + 2 * r_u32(0x800A71B8));
+            if (code == 65520 + kind)
+            {
+                code = r_u16(tables[kind] + 2 * r_u32(0x800A71BC));
+                sub_80044534(32896, r_u32(0x800A8B38 + 4 * code), 0, 71);
+            }
         }
-        sub_80044534(32896, r_u32(0x800A8B38u + code * 4u), 0, 71);
+        pointer = 0x80090D24 + 2 * r_u32(0x800A71B8);
+        code = r_u16(pointer);
+        if ((uint16)(code + 16) >= 4)
+        {
+            code = r_u16(pointer);
+            sub_80044534(32896, r_u32(0x800A8B38 + 4 * code), 0, 71);
+        }
     }
-    if (r_u32(0x800A6260u) == 1 && (int32)r_u32(0x800A7E10u) < (int32)r_u32(0x800A9CD4u))
-        w_u32(0x800A6260u, 0);
-    if (r_u32(0x800A9CD4u) == r_u32(0x800A7E10u) && !r_u32(0x800A6260u))
+    sint32 threshold;
+    if (r_u32(0x800A6260) == 1)
+    {
+        sint32 fuel = r_s32(0x800A7E10);
+        threshold = r_s32(0x800A9CD4);
+        if (fuel < threshold)
+        {
+            w_u32(0x800A6260, 0);
+            threshold = r_s32(0x800A9CD4);
+        }
+    }
+    else
+        threshold = r_s32(0x800A9CD4);
+    if (threshold == r_s32(0x800A7E10) && !r_u32(0x800A6260))
     {
         draft_call_adapter(0x80035A08u, 40u, 2048u, 255u, 0u, 0u);
-        w_u32(0x800A6260u, 1);
+        w_u32(0x800A6260, 1);
     }
-    if (r_u32(0x800A6264u) == 1 && (int32)r_u32(0x800A86A0u) < (int32)r_u32(0x800A84A4u))
-        w_u32(0x800A6264u, 0);
-    if (r_u32(0x800A84A4u) == r_u32(0x800A86A0u) && !r_u32(0x800A6264u))
+    if (r_u32(0x800A6264) == 1)
+    {
+        sint32 health = r_s32(0x800A86A0);
+        threshold = r_s32(0x800A84A4);
+        if (health < threshold)
+        {
+            w_u32(0x800A6264, 0);
+            threshold = r_s32(0x800A84A4);
+        }
+    }
+    else
+        threshold = r_s32(0x800A84A4);
+    if (threshold == r_s32(0x800A86A0) && !r_u32(0x800A6264))
     {
         draft_call_adapter(0x80035A08u, 40u, 2048u, 255u, 0u, 0u);
-        w_u32(0x800A6264u, 1);
+        w_u32(0x800A6264, 1);
     }
     for (pointer = 0x80090BA8u; r_u32(pointer) != 0xFFFFFFFFu; pointer += 20u)
         sub_80057D14(pointer);
-    if (r_u16(0x800A9A38u) != 4 && ((int32)r_u32(0x800A86A0u) < 1025 || (int32)r_u32(0x800A7E10u) < 26))
+    if (r_u32(0x800A9A38u) != 4 && ((int32)r_u32(0x800A86A0u) < 1025 || (int32)r_u32(0x800A7E10u) < 26))
     {
         /* TODO: Bridge the warning texture selector */
         sub_80058508((uint32)draft_call_adapter(0x800582D4u, 17u), 8421504, 0x54000040u, 68, 10, 10, 64, 13, 992, 480, (uint32)-116, 49, 160);
@@ -863,10 +971,21 @@ uint32 sub_80058600(void)
     for (i = 0; i < 2; ++i)
         if (r_u32(0x800A70A8u + i * 24u) == 1)
             sub_80058430(r_u32(0x800A70B0u + i * 24u), 0x54000040u, 19, 19, 11, 159, 44, 848, 481, 97u + 21u * i, 29u + 21u * i, 180);
-    if ((int32)r_u32(0x800A86A0u) >= 121)
+    value = r_s32(0x800A86A0);
+    if (value >= 121)
     {
+        sint32 count = value / 107;
         w_u32(0x800A84A4u, 2048);
-        draft_round3_meter(0x80090CD4u, (int32)r_u32(0x800A86A0u), 107, 0);
+        if (count >= 20)
+            count = 19;
+        if (count <= 0)
+            count = 1;
+        if (value <= 0)
+            count = 0;
+        w_u8(0x80090CD9, (uint32)count);
+        w_u8(0x80090CE3, 19 - (uint32)count);
+        w_u8(0x80090CE2, 19 - (uint32)count + 29);
+        sub_80057D14(0x80090CD4);
         w_u32(0x800A84A4u, 255);
         /* TODO: Bridge the packed ammunition getter */
         if ((uint32)draft_call_adapter(0x8003D270u) & 0xFF00u)
@@ -884,20 +1003,26 @@ uint32 sub_80058600(void)
             sub_80057D14(0x80090CFCu);
         }
     }
-    if ((int16)r_u16(0x800A930Cu) > 0)
+    sint32 maximum = (sint16)r_u16(0x800A930C);
+    if (maximum > 0)
     {
-        value = (int16)r_u16(0x800A930Cu) / 19;
+        value = maximum / 19;
         if (value > 0)
             draft_round3_meter(0x80090CE8u, (int16)r_u16(0x800A930Eu), value, 0);
+        value = r_s16(0x800A9310);
         w_u32(0x800A84A4u, 255);
-        if ((int16)r_u16(0x800A9310u) > 0)
-            draft_round3_meter(0x80090D10u, (int16)r_u16(0x800A9310u), 13, 44);
+        if (value > 0)
+            draft_round3_meter(0x80090D10u, (uint8)value, 13, 44);
     }
     for (i = 0; i < 3; ++i)
         if (r_u32(0x800A9688u + i * 8u) || r_u32(0x800A968Cu + i * 8u))
         {
             /* TODO: Bridge the selected weapon texture getter */
-            sub_80058508((uint32)draft_call_adapter(0x80057CB8u, i), 8421504, 0x54000040u, 68, 10u - r_u8(0x800A6284u + i), 10, 64, r_u8(0x800A6280u + i) + 1u, 992, 480, (uint32)-116, 49, r_u8(0x800A627Cu + i));
+            uint32 texture = (uint32)draft_call_adapter(0x80057CB8u, i);
+            uint32 width = 10 - r_u8(0x800A6284u + i);
+            uint32 v = r_u8(0x800A6280u + i) + 1;
+            uint32 depth = r_u8(0x800A627Cu + i);
+            sub_80058508(texture, 8421504, 0x54000040u, 68, width, 10, 64, v, 992, 480, (uint32)-116, 49, depth);
         }
     return draft_scratch_result(native_stack_mark, (uint64)(0));
 

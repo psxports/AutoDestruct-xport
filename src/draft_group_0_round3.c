@@ -1,5 +1,4 @@
 #include "draft_signatures.h"
-#include <stdlib.h>
 
 static uint32 d03_call(uint32 target, uint32 a, uint32 b, uint32 c, uint32 d)
 {
@@ -9,8 +8,16 @@ static uint32 d03_call(uint32 target, uint32 a, uint32 b, uint32 c, uint32 d)
 
 static int32 d03_div(uint32 n, uint32 d)
 {
-    if (!d || (d == 0xFFFFFFFFu && n == 0x80000000u))
-        abort();
+    if (!d)
+    {
+        xport_mips_break(7);
+        return 0;
+    }
+    if (d == 0xFFFFFFFF && n == 0x80000000)
+    {
+        xport_mips_break(6);
+        return 0;
+    }
     return (int32)n / (int32)d;
 }
 
@@ -324,8 +331,13 @@ uint32 sub_80046E9C(uint32 object)
         w_u32(0x800A6138u, r_u32(0x800A6138u) + (uint32)(int32)(int16)r_u16(object + 80u));
     if (d03_call(0x80045E18u, object, object + 72u, 0u, 0u) || d03_call(0x80045DD4u, object, 0u, 0u, 0u))
     {
-        if (r_u8(object + 67u) && r_u32(r_u32(0x800A851Cu) + 4u * r_u32(0x800A9730u)) == object)
-            draft_call_adapter(0x8004525Cu);
+        if (r_s8(object + 67))
+        {
+            sint32 selected = r_s16(0x800A9730);
+            uint32 objects = r_u32(0x800A851C);
+            if (r_u32(objects + 4 * (uint32)selected) == object)
+                sub_8004525C();
+        }
         goto remove;
     }
     if (r_u8(object + 67u) && !r_u32(0x800A9760u))
@@ -333,8 +345,13 @@ uint32 sub_80046E9C(uint32 object)
     result = r_u8(object + 12u) < 5u;
     if (result)
         return draft_scratch_result(native_stack_mark, (uint64)(result));
-    w_u16(object + 70u, r_u16(object + 70u) + ((5120u * (r_u32(0x800A63D8u) >> 8)) >> 16));
-    draft_call_adapter(0x800551CCu, (uint32)(int32)(int16)r_u16(object + 70u), object + 104u);
+    {
+        uint32 tick = (uint32)(r_s32(0x800A63D8) >> 8);
+        uint32 step = (uint32)((sint32)(5120 * tick) >> 16);
+        uint32 angle = r_u16(object + 70) + step;
+        w_u16(object + 70, angle);
+        draft_call_adapter(0x800551CC, (uint32)(sint32)(sint16)angle, object + 104);
+    }
     sub_80031B20(object + 36u, object + 104u, object + 104u);
     player = r_u32(0x800A7BACu);
     dx = r_u32(object + 20u) - r_u32(player + 20u);
@@ -343,25 +360,37 @@ uint32 sub_80046E9C(uint32 object)
     result = (int32)dx < 501;
     if (!result)
         return draft_scratch_result(native_stack_mark, (uint64)(result));
+    player = r_u32(0x800A7BAC);
     dz = r_u32(object + 28u) - r_u32(player + 28u);
     if ((int32)dz < 0)
         dz = 0u - dz;
     result = (int32)dz < 501;
     if (!result)
         return draft_scratch_result(native_stack_mark, (uint64)(result));
-    dy = r_u32(object + 24u) - r_u32(player + 24u);
-    if ((int32)dy < 0)
-        dy = 0u - dy;
-    result = (int32)((uint32)(int32)(int16)r_u16(d03_model(object) + 32u) + 400u) < (int32)dy;
+    {
+        uint32 model = r_u16(object + 32);
+        uint32 mapping = r_u32(0x800A8548);
+        model = r_u8(mapping + model);
+        uint32 models = r_u32(0x800A90AC);
+        sint32 height = r_s16(models + 40 * model + 32) + 400;
+        player = r_u32(0x800A7BAC);
+        dy = r_u32(object + 24) - r_u32(player + 24);
+        if ((sint32)dy < 0)
+            dy = 0 - dy;
+        result = height < (sint32)dy;
+    }
     if (result)
         return draft_scratch_result(native_stack_mark, (uint64)(result));
     draft_call_adapter(0x80046A58u, object);
-    if (r_u16(object + 86u))
     {
-        result = (uint32)(int32)(int16)r_u16(object + 86u) * r_u32(0x800A6EE4u);
-        w_u32(object, 0x80046DD4u);
-        w_u16(object + 70u, (uint16)result);
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
+        sint32 timer = r_s16(object + 86);
+        if (timer)
+        {
+            result = (uint32)timer * r_u32(0x800A6EE4);
+            w_u32(object, 0x80046DD4);
+            w_u16(object + 70, result);
+            return draft_scratch_result(native_stack_mark, result);
+        }
     }
     if (r_u16(object + 58u) == 1u && (int16)r_u16(object + 80u) < 1001)
     {
@@ -379,86 +408,99 @@ remove:
 uint32 sub_800255FC(uint32 object)
 {
     uint32 native_stack_mark = draft_scratch_mark();
-
-    uint32 result, type = sub_80037BB8();
-    int32 angle = (int16)r_u16(object + 562u), step;
-    if ((int16)type == 2)
+    uint32 result, bits, buttons, numerator, divisor;
+    sint32 angle, speed, step, tick;
+    if ((sint16)sub_80037BB8() == 2)
     {
-        result = (uint32)(((int32)(uint8)draft_call_adapter(0x80037BD0u) - 128) * 4);
-        w_u16(object + 562u, (uint16)result);
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
+        result = (uint32)(((sint32)(uint8)draft_call_adapter(0x80037BD0) - 128) * 4);
+        w_u16(object + 562, result);
+        return draft_scratch_result(native_stack_mark, result);
     }
-    if ((int16)sub_80037BB8() == 3)
+    if ((sint16)sub_80037BB8() == 3)
     {
-        int32 v = (uint8)draft_call_adapter(0x80037BD0u) - 128;
-        result = (uint32)(v + v / 2);
-        w_u16(object + 562u, (uint16)result);
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
+        angle = (uint8)draft_call_adapter(0x80037BD0) - 128;
+        result = (uint32)(angle + angle / 2);
+        w_u16(object + 562, result);
+        return draft_scratch_result(native_stack_mark, result);
     }
-    step = d03_div(60u * ((1536u * (r_u32(0x800A63D8u) >> 8)) >> 16), r_u32(0x800A56C0u));
-    if (r_u32(0x800A8398u) & 16u)
+    tick = r_s32(0x800A63D8);
+    buttons = r_u32(0x800A8398);
+    bits = (uint32)(tick >> 8) * 1536;
+    numerator = 60 * (uint32)((sint32)bits >> 16);
+    divisor = r_u32(0x800A56C0);
+    if (!divisor)
     {
+        xport_mips_break(7);
+        return draft_scratch_result(native_stack_mark, 0);
+    }
+    if (divisor == 0xFFFFFFFF && numerator == 0x80000000)
+    {
+        xport_mips_break(6);
+        return draft_scratch_result(native_stack_mark, 0);
+    }
+    step = (sint32)numerator / (sint32)divisor;
+    if (buttons & 16)
+    {
+        angle = r_s16(object + 562);
         if (angle < 0)
+            w_u16(object + 562, 0);
+        speed = r_s32(object + 472);
+        bits = (uint32)step;
+        if (speed <= 0x3FFFF)
         {
-            angle = 0;
-            w_u16(object + 562u, 0u);
+            result = r_u32(0x800A5758);
+            bits <<= 2;
+            if (!result)
+                w_u32(object + 484, 0x40000 - (uint32)speed);
         }
-        if ((int32)r_u32(object + 472u) <= 0x3FFFF)
-        {
-            if (!r_u32(0x800A5758u))
-                w_u32(object + 484u, 0x40000u - r_u32(object + 472u));
-            angle += 4 * step;
-        }
-        else
-            angle += step;
-        w_u16(object + 562u, (uint16)angle);
-        result = (int16)angle > 512;
+        w_u16(object + 562, r_u16(object + 562) + bits);
+        angle = r_s16(object + 562);
+        result = angle > 512;
         if (result)
-            w_u16(object + 562u, 512u);
+            w_u16(object + 562, 512);
     }
-    else if (r_u32(0x800A8398u) & 8u)
+    else if (buttons & 8)
     {
+        angle = r_s16(object + 562);
         if (angle > 0)
+            w_u16(object + 562, 0);
+        speed = r_s32(object + 472);
+        bits = (uint32)step;
+        if (speed <= 0x3FFFF)
         {
-            angle = 0;
-            w_u16(object + 562u, 0u);
+            result = r_u32(0x800A5758);
+            bits <<= 2;
+            if (!result)
+                w_u32(object + 484, 0x40000 - (uint32)speed);
         }
-        if ((int32)r_u32(object + 472u) <= 0x3FFFF)
-        {
-            if (!r_u32(0x800A5758u))
-                w_u32(object + 484u, 0x40000u - r_u32(object + 472u));
-            angle -= 4 * step;
-        }
-        else
-            angle -= step;
-        w_u16(object + 562u, (uint16)angle);
+        w_u16(object + 562, r_u16(object + 562) - bits);
+        angle = r_s16(object + 562);
         result = (uint32)-512;
-        if ((int16)angle < -512)
-            w_u16(object + 562u, (uint16)-512);
+        if (angle < -512)
+            w_u16(object + 562, result);
     }
     else
     {
-        result = 4u * (uint32)step;
+        angle = r_s16(object + 562);
+        result = (uint32)step << 2;
         if (angle < 0)
         {
-            angle += (int32)result;
-            w_u16(object + 562u, (uint16)angle);
-            result = (uint32)angle << 16;
-            if ((int32)result > 0)
-                w_u16(object + 562u, 0u);
+            bits = (uint32)angle + result;
+            w_u16(object + 562, bits);
+            result = bits << 16;
+            if ((sint32)result > 0)
+                w_u16(object + 562, 0);
         }
         else if (angle > 0)
         {
-            angle -= (int32)result;
-            w_u16(object + 562u, (uint16)angle);
-            result = (uint32)angle << 16;
-            if ((int32)result < 0)
-                w_u16(object + 562u, 0u);
+            bits = (uint32)angle - result;
+            w_u16(object + 562, bits);
+            result = bits << 16;
+            if ((sint32)result < 0)
+                w_u16(object + 562, 0);
         }
     }
-    return draft_scratch_result(native_stack_mark, (uint64)(result));
-
-    draft_scratch_release(native_stack_mark);
+    return draft_scratch_result(native_stack_mark, result);
 }
 
 // FUNCTION_MARKER sub_800433D4
@@ -679,81 +721,111 @@ uint32 sub_80020300(uint32 object, uint32 parameter, uint32 detail, uint32 scree
     draft_scratch_release(native_stack_mark);
 }
 
+static uint32 d03_copy_rotation(uint32 destination, uint32 source)
+{
+    uint32 first = r_u32(source), second = r_u32(source + 4);
+    uint32 third = r_u32(source + 8), fourth = r_u32(source + 12);
+    w_u32(destination, first);
+    w_u32(destination + 4, second);
+    w_u32(destination + 8, third);
+    w_u32(destination + 12, fourth);
+    uint32 tail = (uint32)r_s16(source + 16);
+    w_u16(destination + 16, tail);
+    return tail;
+}
+
 // FUNCTION_MARKER sub_80026BC4
 uint32 sub_80026BC4(uint32 object)
 {
-    uint32 native_stack_mark = draft_scratch_mark();
-
-    uint32 result = r_u32(0x800A56C8u), scratch = draft_scratch_adapter(8u), i, j;
-    int32 velocity;
+    uint32 mark = draft_scratch_mark();
+    uint32 result = r_u32(0x800A56C8), scratch = draft_scratch_adapter(8);
     if (!result)
-        return draft_scratch_result(native_stack_mark, (uint64)(result));
-    velocity = (((int32)r_u32(object + 484u) >> 31) | 1) * ((int32)r_u32(object + 472u) >> 10);
-    if (r_u32(object + 580u) & 0x1000000u)
-        velocity = (int16)(velocity + 253);
-    if ((!r_u32(0x800A8B30u) && !r_u32(0x800A967Cu)) || r_u32(0x800A9760u))
+        return draft_scratch_result(mark, result);
+    sint32 force = r_s32(object + 484), speed = r_s32(object + 472);
+    sint32 velocity = ((force >> 31) | 1) * (speed >> 10);
+    if (r_u32(object + 580) & 0x1000000)
+        velocity = (sint32)((uint32)velocity + 253);
+    if ((!r_u32(0x800A8B30) && !r_s16(0x800A967C)) || r_u32(0x800A9760))
     {
-        w_u16(object + 558u, (r_u16(object + 558u) + (uint32)((d03_trig(0x80010AE0u, r_u16(object + 566u)) >> 15) | 1) * (uint32)velocity) & 4095u);
-        if ((int32)r_u32(object + 472u) < (int32)r_u32(object + 484u))
+        uint32 angle = (uint32)r_s16(object + 566);
+        sint32 direction = (d03_trig(0x80010AE0, angle) >> 15) | 1;
+        uint32 rotation = r_u16(object + 558);
+        w_u16(object + 558, (rotation + (uint32)direction * (uint32)velocity) & 4095);
+        speed = r_s32(object + 472);
+        force = r_s32(object + 484);
+        if (speed < force)
         {
-            velocity = (int32)r_u32(object + 484u) >> 10;
+            velocity = force >> 10;
             if (velocity < 0)
                 velocity = -velocity;
         }
-        w_u16(object + 556u, (r_u16(object + 556u) + (uint32)((d03_trig(0x80010AE0u, r_u16(object + 564u)) >> 15) | 1) * (uint32)velocity) & 4095u);
+        angle = (uint32)r_s16(object + 564);
+        direction = (d03_trig(0x80010AE0, angle) >> 15) | 1;
+        rotation = r_u16(object + 556);
+        w_u16(object + 556, (rotation + (uint32)direction * (uint32)velocity) & 4095);
     }
-    for (i = 0; i < 5u; ++i)
-        xport_gte_write_control(i, r_u32(object + 36u + 4u * i));
-    for (i = 0; i < 3u; ++i)
-        xport_gte_write_control(5u + i, r_u32(object + 20u + 4u * i));
-    for (i = 0; i < 4u; ++i)
+    uint32 first = r_u32(object + 36), second = r_u32(object + 40);
+    xport_gte_write_control(0, first);
+    xport_gte_write_control(1, second);
+    first = r_u32(object + 44);
+    second = r_u32(object + 48);
+    uint32 third = r_u32(object + 52);
+    xport_gte_write_control(2, first);
+    xport_gte_write_control(3, second);
+    xport_gte_write_control(4, third);
+    first = r_u32(object + 20);
+    second = r_u32(object + 24);
+    third = r_u32(object + 28);
+    xport_gte_write_control(5, first);
+    xport_gte_write_control(6, second);
+    xport_gte_write_control(7, third);
+    for (uint32 i = 0; i < 4; ++i)
     {
-        uint32 p = 0x800A5720u + 8u * i;
-        int32 limit = (int16)r_u16(p + 6u), value = (int16)r_u16(0x800A8688u + 2u * i);
-        w_u32(scratch, r_u32(p));
-        w_u32(scratch + 4u, r_u32(p + 4u));
-        if (limit < value)
-            value = limit;
-        if (value < -limit)
-            value = -limit;
-        w_u16(0x800A8688u + 2u * i, (uint16)value);
-        draft_call_adapter(0x80031CC0u, scratch, object + 256u + 36u * i);
+        uint32 p = 0x800A5720 + 8 * i, suspension = 0x800A8688 + 2 * i;
+        first = r_u32(p);
+        second = r_u32(p + 4);
+        w_u32(scratch, first);
+        w_u32(scratch + 4, second);
+        sint32 limit = r_s16(scratch + 6), displacement = r_s16(suspension);
+        if (limit < displacement)
+            w_u16(suspension, (uint32)limit);
+        limit = r_s16(scratch + 6);
+        displacement = r_s16(suspension);
+        if (displacement < -limit)
+            w_u16(suspension, (uint32)-limit);
+        uint32 height = r_u16(scratch + 2);
+        height += r_u16(suspension);
+        w_u16(scratch + 2, height);
+        draft_call_adapter(0x80031CC0, scratch, object + 256 + 36 * i);
     }
-    for (i = 0; i < 2u; ++i)
+    w_u16(scratch + 2, 0);
+    for (uint32 i = 0; i < 2; ++i)
     {
-        uint32 p = object + 256u + 72u * i, q = object + 292u + 72u * i;
-        w_u16(scratch, r_u16(object + 556u + 2u * i) & 4095u);
-        draft_call_adapter(0x80055288u, scratch, p + 16u);
-        draft_call_adapter(0x80031A54u, p + 16u, p + 16u);
-        for (j = 0; j < 4u; ++j)
-            w_u32(q + 16u + 4u * j, r_u32(p + 16u + 4u * j));
-        w_u16(q + 32u, r_u16(p + 32u));
+        uint32 p = object + 256 + 72 * i, q = object + 292 + 72 * i;
+        w_u16(scratch, r_u16(object + 556 + 2 * i) & 4095);
+        draft_call_adapter(0x80055288, scratch, p + 16);
+        draft_call_adapter(0x80031A54, p + 16, p + 16);
+        d03_copy_rotation(q + 16, p + 16);
+        w_u16(scratch + 2, r_u16(object + 562));
     }
-    if (r_u32(object + 504u))
+    if (r_u32(object + 504))
     {
-        w_u32(object + 8u, (r_u32(object + 8u) & 0xFFFF0FFFu) | 0x6000u);
-        w_u16(scratch, 70u);
-        w_u16(scratch + 4u, 315u);
-        draft_call_adapter(0x80031CC0u, scratch, object + 400u);
-        w_u16(scratch, (uint16)-70);
-        draft_call_adapter(0x80031CC0u, scratch, object + 436u);
-        for (i = 0; i < 2u; ++i)
-        {
-            uint32 p = object + 416u + 36u * i;
-            for (j = 0; j < 4u; ++j)
-                w_u32(p + 4u * j, r_u32(object + 36u + 4u * j));
-            w_u16(p + 16u, r_u16(object + 52u));
-        }
-        result = (uint32)(int32)(int16)r_u16(object + 52u);
+        w_u32(object + 8, (r_u32(object + 8) & 0xFFFF0FFF) | 0x6000);
+        w_u16(scratch, 70);
+        w_u16(scratch + 2, (uint32)-25);
+        w_u16(scratch + 4, 315);
+        draft_call_adapter(0x80031CC0, scratch, object + 400);
+        w_u16(scratch, (uint32)-70);
+        draft_call_adapter(0x80031CC0, scratch, object + 436);
+        d03_copy_rotation(object + 416, object + 36);
+        result = d03_copy_rotation(object + 452, object + 36);
     }
     else
     {
-        result = (r_u32(object + 8u) & 0xFFFF0FFFu) | 0x4000u;
-        w_u32(object + 8u, result);
+        result = (r_u32(object + 8) & 0xFFFF0FFF) | 0x4000;
+        w_u32(object + 8, result);
     }
-    return draft_scratch_result(native_stack_mark, (uint64)(result));
-
-    draft_scratch_release(native_stack_mark);
+    return draft_scratch_result(mark, result);
 }
 
 // FUNCTION_MARKER sub_8002D348
@@ -853,32 +925,41 @@ uint32 sub_800784F4(uint32 text, uint32 top, uint32 baseline)
     uint32 native_stack_mark = draft_scratch_mark();
 
     // Keep the eight-byte RECT beside the complete 92-byte DRAWENV
-    uint32 scratch = draft_scratch_adapter(100u), cursor, ot, result, index = 0u, glyph, control, width;
+    uint32 scratch = draft_scratch_adapter(100u), cursor, ot, result, index = 0u, glyph, control, width, first, second, rect_y, rect_height;
     int32 x = -144;
-    uint16 y = (uint16)baseline;
-    if ((int32)r_u32(0x800A84E0u) >= 2048)
+    uint32 y = baseline;
+    uint32 phase = r_u32(0x800A84E0);
+    if ((int32)phase >= 2048)
         w_u32(0x800A84E0u, 2048u);
     else
     {
-        int32 value = d03_trig(0x800102E0u, r_u32(0x800A84E0u));
-        if (value >= 4001)
-            value = 4000;
+        int32 value = d03_trig(0x800102E0u, phase);
         w_u32(0x800A8200u, (uint32)value);
+        if (value >= 4001)
+            w_u32(0x800A8200, 4000);
     }
     w_u32(0x800A84E0u, 1024u);
     draft_call_adapter(0x80080800u, scratch + 8u);
-    w_u32(scratch, r_u32(scratch + 8u) ^ 0x01000000u);
-    w_u32(scratch + 4u, r_u32(scratch + 12u));
+    first = r_u32(scratch + 8);
+    second = r_u32(scratch + 12);
+    w_u32(scratch, first);
+    w_u32(scratch + 4, second);
+    rect_y = r_u16(scratch + 2);
     cursor = r_u32(0x800A865Cu);
+    w_u16(scratch + 2, rect_y ^ 256);
     w_u32(0x800A7AB4u, cursor);
     draft_call_adapter(0x80080D84u, cursor, scratch);
+    cursor = r_u32(0x800A7AB4);
     ot = r_u32(0x800A9A74u);
     w_u32(cursor, (r_u32(cursor) & 0xFF000000u) | (r_u32(ot + 580u) & 0xFFFFFFu));
-    w_u32(ot + 580u, (r_u32(ot + 580u) & 0xFF000000u) | (cursor & 0xFFFFFFu));
+    result = r_u32(ot + 580);
     w_u32(0x800A7AB4u, cursor + 12u);
     w_u32(0x800A865Cu, cursor + 12u);
-    w_u32(scratch, r_u32(scratch + 8u));
-    w_u32(scratch + 4u, r_u32(scratch + 12u));
+    w_u32(ot + 580, (result & 0xFF000000) | (cursor & 0xFFFFFF));
+    first = r_u32(scratch + 8);
+    second = r_u32(scratch + 12);
+    w_u32(scratch, first);
+    w_u32(scratch + 4, second);
     draft_call_adapter(0x80077AC0u, text, 1u, 2u, 210u);
     w_u32(0x800A9D64u, 304u);
     do
@@ -900,8 +981,8 @@ uint32 sub_800784F4(uint32 text, uint32 top, uint32 baseline)
         {
             ++index;
             control = 1u;
-            width = r_u32(0x800A9D64u);
-            x = ((int32)((width > 0u) - width) >> 1) + 16;
+            width = 0 - r_u32(0x800A9D64);
+            x = ((int32)(width + (width >> 31)) >> 1) + 16;
         }
         if (glyph == 3u)
         {
@@ -925,26 +1006,30 @@ uint32 sub_800784F4(uint32 text, uint32 top, uint32 baseline)
         if (!control)
         {
             w_u32(0x800A9A70u, 0u);
-            sub_800782D8(glyph, (uint32)x, (uint32)(int32)(int16)y, 150u, 0u);
+            sub_800782D8(glyph, (uint32)x, y, 150u, 0u);
             ++index;
             x += r_u8(r_u32(0x800A5F68u) + 5u * glyph + 2u);
         }
     } while (glyph);
     w_u32(0x800A8664u, 218u);
     w_u16(scratch + 4u, 304u);
-    width = r_u32(0x800A9D64u);
-    w_u16(scratch, (uint16)(((int32)((width > 0u) - width) >> 1) + 160));
-    w_u16(scratch + 2u, (r_u16(scratch + 2u) ^ 256u) + (uint16)top + 136u);
-    w_u16(scratch + 6u, r_u32(0x800A9D68u) - 20u);
-    cursor = r_u32(0x800A865Cu);
-    w_u32(0x800A7AB4u, cursor);
+    width = r_u32(0x800A9D64);
+    cursor = r_u32(0x800A865C);
+    width = 0 - width;
+    rect_y = r_u16(scratch + 2);
+    w_u16(scratch, (uint32)((int32)(width + (width >> 31)) >> 1) + 160);
+    rect_height = r_u16(0x800A9D68);
+    w_u32(0x800A7AB4, cursor);
+    w_u16(scratch + 2, (rect_y ^ 256) + top + 136);
+    w_u16(scratch + 6, rect_height - 20);
     draft_call_adapter(0x80080D84u, cursor, scratch);
+    cursor = r_u32(0x800A7AB4);
     ot = r_u32(0x800A9A74u);
     w_u32(cursor, (r_u32(cursor) & 0xFF000000u) | (r_u32(ot + 600u) & 0xFFFFFFu));
     result = (r_u32(ot + 600u) & 0xFF000000u) | (cursor & 0xFFFFFFu);
-    w_u32(ot + 600u, result);
     w_u32(0x800A7AB4u, cursor + 12u);
     w_u32(0x800A865Cu, cursor + 12u);
+    w_u32(ot + 600u, result);
     return draft_scratch_result(native_stack_mark, (uint64)(result));
 
     draft_scratch_release(native_stack_mark);
@@ -953,6 +1038,17 @@ uint32 sub_800784F4(uint32 text, uint32 top, uint32 baseline)
 static int32 d03_mul(int32 a, int32 b)
 {
     return (int32)((uint32)a * (uint32)b);
+}
+
+// Preserve ADDU and SUBU results before signed branches and shifts
+static int32 d03_add(int32 first, int32 second)
+{
+    return (int32)((uint32)first + (uint32)second);
+}
+
+static int32 d03_sub(int32 first, int32 second)
+{
+    return (int32)((uint32)first - (uint32)second);
 }
 
 static int32 d03_abs(int32 value)
@@ -964,8 +1060,8 @@ static int32 d03_clamp(int32 value, int32 limit)
 {
     if (value > limit)
         value = limit;
-    if (value < -limit)
-        value = -limit;
+    if (value < d03_sub(0, limit))
+        value = d03_sub(0, limit);
     return value;
 }
 
@@ -974,14 +1070,16 @@ uint32 sub_80025924(uint32 object)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    int32 step = d03_div(r_u32(0x800A63D8u), (uint32)((int32)r_u32(0x800A56C0u) / 5));
+    int32 tick = r_s32(0x800A63D8u), step;
     int32 speed = (int32)r_u32(object + 472u), quarter = speed >> 2, steer = 0, pitch = 0, roll = 0;
     int32 cos_heading, sin_heading, cos_steer, sin_steer, sin_front, sin_rear, slope, energy, front_load, rear_load, transfer, front_total, rear_total;
     int32 front_drag, rear_drag, front_lateral, rear_lateral, front_limit, rear_limit, front_brake = 0, rear_brake = 0, fx = 0, fz = 0, rx = 0, rz = 0;
-    int32 damping, coefficient, front_grip, rear_grip, old_x = (int32)r_u32(object + 476u), old_z = (int32)r_u32(object + 480u), value, x, z, y, yaw, angle;
-    uint32 kind = r_u8(object + 67u), heading = r_u16(object + 560u), terrain = r_u32(0x800A575Cu), i, result, model;
+    int32 damping, coefficient, front_grip, rear_grip, old_x, old_z, value, x, z, y, yaw, angle;
+    uint32 kind = r_u8(object + 67u), heading, terrain, i, result, model;
     if (kind < 4u)
         steer = (int16)r_u16(object + 562u);
+    step = d03_div((uint32)tick, (uint32)(r_s32(0x800A56C0u) / 5));
+    heading = r_u16(object + 560u);
     cos_heading = 16 * d03_trig(0x80010AE0u, heading);
     sin_heading = 16 * d03_trig(0x800102E0u, heading);
     cos_steer = 16 * d03_trig(0x80010AE0u, heading + (uint32)steer);
@@ -997,17 +1095,24 @@ uint32 sub_80025924(uint32 object)
         if (d03_abs(roll) >= 64)
             roll = roll < 0 ? -64 : 64;
     }
+    old_x = r_s32(object + 476u);
+    old_z = r_s32(object + 480u);
     draft_call_adapter(0x80024B28u, object);
     slope = d03_mul(d03_trig(0x80010AE0u, (uint32)pitch) >> 4, d03_trig(0x80010AE0u, (uint32)roll) >> 4);
+    speed = r_s32(object + 472u);
     energy = d03_mul(d03_mul(589, speed >> 8) >> 16, speed >> 8) >> 1;
-    front_load = d03_div((uint32)d03_mul(energy, (int32)r_u32(object + 524u)), r_u32(object + 508u));
-    rear_load = d03_div((uint32)d03_mul(energy, (int32)r_u32(object + 528u)), r_u32(object + 508u));
+    front_load = r_s32(object + 524u);
+    value = r_s32(object + 508u);
+    front_load = d03_div((uint32)d03_mul(energy, front_load), (uint32)value);
+    rear_load = d03_div((uint32)d03_mul(energy, (int32)r_u32(object + 528u)), (uint32)value);
     model = r_u32(0x800A9750u) + 40u * r_u8(r_u32(0x800A8548u) + r_u16(object + 32u));
-    transfer = d03_div((uint32)d03_mul((int16)r_u16(model + 32u) >> 1, (int32)r_u32(object + 536u)), r_u32(object + 508u));
-    front_total = d03_div((uint32)d03_mul(d03_mul(slope >> 8, 2511), (int32)r_u32(object + 524u)), r_u32(object + 508u)) + transfer + rear_load;
-    rear_total = d03_div((uint32)d03_mul(d03_mul(slope >> 8, 2511), (int32)r_u32(object + 528u)), r_u32(object + 508u)) + front_load - transfer;
-    front_drag = 15 * (front_total >> 8) + (int32)r_u32(object + 504u);
-    rear_drag = 15 * (rear_total >> 8) + (int32)r_u32(object + 504u);
+    transfer = d03_div((uint32)d03_mul((int16)r_u16(model + 32u) >> 1, (int32)r_u32(object + 536u)), (uint32)value);
+    front_total = d03_add(d03_div((uint32)d03_mul(d03_mul(slope >> 8, 2511), r_s32(object + 524u)), (uint32)value), d03_add(transfer, rear_load));
+    rear_total = d03_add(d03_div((uint32)d03_mul(d03_mul(slope >> 8, 2511), r_s32(object + 528u)), (uint32)value), d03_sub(front_load, transfer));
+    value = r_s32(object + 504u);
+    terrain = r_u32(0x800A575Cu);
+    front_drag = d03_add(d03_mul(15, front_total >> 8), value);
+    rear_drag = d03_add(d03_mul(15, rear_total >> 8), value);
     value = r_u32(0x800A9760u) ? 1 : (int16)draft_call_adapter(0x8003D688u);
     w_u32(0x800A5698u, (uint32)value);
     for (i = 0; i < 4u; ++i)
@@ -1016,7 +1121,7 @@ uint32 sub_80025924(uint32 object)
         if (byte < 10u)
             terrain = (terrain & ~(255u << (8u * i))) | (byte << (8u * i));
     }
-    if ((int16)r_u16(object + 594u) <= 0 || speed < 16385)
+    if ((int16)r_u16(object + 594u) <= 0 || r_s32(object + 472u) < 16385)
     {
         front_grip = (int32)(r_u32(0x800A56E0u + 4u * (terrain & 255u)) + r_u32(0x800A56E0u + 4u * ((terrain >> 8) & 255u))) >> 1;
         rear_grip = (int32)(r_u32(0x800A56E0u + 4u * ((terrain >> 16) & 255u)) + r_u32(0x800A56E0u + 4u * (terrain >> 24))) >> 1;
@@ -1027,10 +1132,10 @@ uint32 sub_80025924(uint32 object)
         int32 b = r_u8(object + 585u) ? 8192 : (int32)r_u32(0x800A56E0u + 4u * ((terrain >> 8) & 255u));
         int32 c = r_u8(object + 586u) ? 8192 : (int32)r_u32(0x800A56E0u + 4u * ((terrain >> 16) & 255u));
         int32 d = r_u8(object + 587u) ? 8192 : (int32)r_u32(0x800A56E0u + 4u * (terrain >> 24));
-        front_grip = (a + b) / 2;
-        rear_grip = (c + d) / 2;
+        front_grip = d03_add(a, b) / 2;
+        rear_grip = d03_add(c, d) / 2;
     }
-    coefficient = (int32)r_u32(0x800A56D4u + 4u * (uint32)value) >> 8;
+    coefficient = (int32)r_u32(0x800A56D4u + 4u * r_u32(0x800A5698u)) >> 8;
     damping = d03_mul(d03_mul(rear_grip >> 8, coefficient) >> 8, rear_total >> 8);
     rear_lateral = d03_mul(sin_rear >> 4, damping >> 8);
     rear_limit = d03_abs(d03_mul(d03_trig(0x80010AE0u, r_u16(object + 566u)) >> 4, damping >> 8));
@@ -1040,21 +1145,21 @@ uint32 sub_80025924(uint32 object)
     if ((int16)r_u16(object + 594u) <= 0)
     {
         w_u16(object + 594u, 0u);
-        for (i = 0; i < 4u; ++i)
-            w_u8(object + 584u + i, 0u);
+        for (i = 4; i != 0; --i)
+            w_u8(object + 583u + i, 0);
     }
     else
         w_u16(object + 594u, r_u16(object + 594u) - r_u16(0x800A63DAu));
     if (d03_trig(0x80010AE0u, r_u16(object + 564u)) >= 0)
-        front_drag = -front_drag;
+        front_drag = d03_sub(0, front_drag);
     if (d03_trig(0x80010AE0u, r_u16(object + 566u)) >= 0)
-        rear_drag = -rear_drag;
+        rear_drag = d03_sub(0, rear_drag);
     if (!r_u32(object + 504u))
     {
         int32 distribution = (int32)r_u32(object + 548u);
-        value = (d03_mul(d03_mul(2511, slope >> 8) >> 8, (int16)r_u16(0x80010AE0u + 2u * ((uint32)pitch & 4095u) - 2048u) >> 4) + (int32)r_u32(object + 484u)) >> 8;
+        value = d03_add(d03_mul(d03_mul(2511, slope >> 8) >> 8, r_s16(0x80010AE0u + 2u * ((uint32)pitch & 4095u) - 2048u) >> 4), r_s32(object + 484u)) >> 8;
         front_brake = d03_mul(distribution >> 8, value);
-        rear_brake = d03_mul((65536 - distribution) >> 8, value);
+        rear_brake = d03_mul(d03_sub(65536, distribution) >> 8, value);
         if (d03_abs(front_brake) < 3000)
             front_brake = 0;
         if (d03_abs(rear_brake) < 3000)
@@ -1062,7 +1167,7 @@ uint32 sub_80025924(uint32 object)
     }
     front_brake = d03_clamp(front_brake, front_limit);
     rear_brake = d03_clamp(rear_brake, rear_limit);
-    if (kind == 15u)
+    if (r_u8(object + 67u) == 15)
     {
         front_brake = 0;
         front_lateral = 0;
@@ -1071,7 +1176,7 @@ uint32 sub_80025924(uint32 object)
         rear_lateral = 0;
         rear_drag = 0;
     }
-    if (speed <= 0x3FFFF)
+    if (r_s32(object + 472u) <= 0x3FFFF)
     {
         rear_lateral = d03_mul(quarter >> 8, rear_lateral >> 8);
         front_lateral = d03_mul(quarter >> 8, front_lateral >> 8);
@@ -1082,10 +1187,12 @@ uint32 sub_80025924(uint32 object)
     {
         front_brake = 0;
         rear_brake = 0;
-        w_u32(object + 520u, !r_u32(object + 504u) && r_u16(object + 32u) == r_u16(r_u32(0x800A62ECu) + 26u) ? 32u * (uint32)(int32)(int16)r_u16(object + 562u) : 0u);
+        w_u32(object + 520u, !r_u32(object + 504u) && (int32)r_u16(object + 32u) == r_s16(r_u32(0x800A62ECu) + 26u) ? 32u * (uint32)(int32)(int16)r_u16(object + 562u) : 0u);
         if (r_u16(0x800A6C04u))
         {
-            uint32 sound = speed > 1820400 ? 25u : speed > 1456320 ? 23u : speed > 910200 ? 48u : 0u;
+            uint32 sound;
+            speed = r_s32(object + 472u);
+            sound = speed > 1820400 ? 25u : speed > 1456320 ? 23u : speed > 910200 ? 48u : 0u;
             if (sound)
                 draft_call_adapter(0x80035A08u, sound, 2048u, 128u, 0u);
             sub_80023C20(object, 0x800A6BA4u, (uint32)old_x, (uint32)old_z, 0x4000u, 4096u);
@@ -1101,18 +1208,18 @@ uint32 sub_80025924(uint32 object)
     }
     else
     {
-        rx = d03_mul(rear_lateral >> 8, cos_steer >> 8) + d03_mul((rear_brake + rear_drag) >> 8, sin_steer >> 8);
-        rz = d03_mul((rear_brake + rear_drag) >> 8, cos_steer >> 8) - d03_mul(rear_lateral >> 8, sin_steer >> 8);
-        fx = d03_mul(front_lateral >> 8, cos_heading >> 8) + d03_mul((front_brake + front_drag) >> 8, sin_heading >> 8);
-        fz = d03_mul((front_brake + front_drag) >> 8, cos_heading >> 8) - d03_mul(front_lateral >> 8, sin_heading >> 8);
-        w_u32(object + 476u, r_u32(object + 476u) + (uint32)d03_mul((rx + fx) >> 8, step >> 8));
-        w_u32(object + 480u, r_u32(object + 480u) + (uint32)d03_mul((rz + fz) >> 8, step >> 8));
+        rx = d03_add(d03_mul(rear_lateral >> 8, cos_steer >> 8), d03_mul(d03_add(rear_brake, rear_drag) >> 8, sin_steer >> 8));
+        rz = d03_sub(d03_mul(d03_add(rear_brake, rear_drag) >> 8, cos_steer >> 8), d03_mul(rear_lateral >> 8, sin_steer >> 8));
+        fx = d03_add(d03_mul(front_lateral >> 8, cos_heading >> 8), d03_mul(d03_add(front_brake, front_drag) >> 8, sin_heading >> 8));
+        fz = d03_sub(d03_mul(d03_add(front_brake, front_drag) >> 8, cos_heading >> 8), d03_mul(front_lateral >> 8, sin_heading >> 8));
+        w_u32(object + 476u, r_u32(object + 476u) + (uint32)d03_mul(d03_add(rx, fx) >> 8, step >> 8));
+        w_u32(object + 480u, r_u32(object + 480u) + (uint32)d03_mul(d03_add(rz, fz) >> 8, step >> 8));
     }
-    if ((int32)r_u32(object + 472u) >= 0x4000 || d03_abs(rear_drag) + d03_abs(front_drag) < d03_abs(front_brake) + d03_abs(rear_brake))
+    if ((int32)r_u32(object + 472u) >= 0x4000 || d03_add(d03_abs(rear_drag), d03_abs(front_drag)) < d03_add(d03_abs(front_brake), d03_abs(rear_brake)))
     {
-        value = d03_mul(d03_mul(rx >> 8, cos_heading >> 8) - d03_mul(rz >> 8, sin_heading >> 8), (int32)r_u32(object + 524u)) - d03_mul(d03_mul(fx >> 8, cos_heading >> 8) - d03_mul(fz >> 8, sin_heading >> 8), (int32)r_u32(object + 528u));
+        value = d03_sub(d03_mul(d03_sub(d03_mul(rx >> 8, cos_heading >> 8), d03_mul(rz >> 8, sin_heading >> 8)), r_s32(object + 524u)), d03_mul(d03_sub(d03_mul(fx >> 8, cos_heading >> 8), d03_mul(fz >> 8, sin_heading >> 8)), r_s32(object + 528u)));
         yaw = d03_mul(d03_div((uint32)value, r_u32(object + 512u)) >> 8, step >> 8) >> 1;
-        yaw += (int32)r_u32(object + 520u);
+        yaw = d03_add(yaw, r_s32(object + 520u));
         w_u32(object + 520u, (uint32)yaw);
         if (!r_u32(object + 484u) && !r_u32(object + 504u))
         {
@@ -1124,27 +1231,27 @@ uint32 sub_80025924(uint32 object)
     }
     else
     {
-        w_u32(object + 520u, !r_u32(object + 504u) && r_u16(object + 32u) == r_u16(r_u32(0x800A62ECu) + 26u) ? 32u * (uint32)(int32)(int16)r_u16(object + 562u) : 0u);
+        w_u32(object + 520u, !r_u32(object + 504u) && (int32)r_u16(object + 32u) == r_s16(r_u32(0x800A62ECu) + 26u) ? 32u * (uint32)(int32)(int16)r_u16(object + 562u) : 0u);
         w_u32(object + 476u, 0u);
         w_u32(object + 480u, 0u);
     }
-    angle = d03_mul((int32)r_u32(object + 520u) >> 8, step >> 8) + (int32)r_u32(object + 516u);
+    angle = d03_add(d03_mul(r_s32(object + 520u) >> 8, step >> 8), r_s32(object + 516u));
     w_u32(object + 516u, (uint32)angle);
     if (angle > 205886)
-        w_u32(object + 516u, (uint32)(angle - 411775));
+        w_u32(object + 516u, (uint32)d03_sub(angle, 411775));
     angle = (int32)r_u32(object + 516u);
     if (angle < -205887)
-        w_u32(object + 516u, (uint32)(angle + 411775));
+        w_u32(object + 516u, (uint32)d03_add(angle, 411775));
     value = d03_div((uint32)d03_mul((int32)r_u32(object + 520u), (int32)r_u32(object + 524u)), 136u) >> 8;
-    x = (d03_mul(value, cos_heading >> 8) + (int32)r_u32(object + 476u)) >> 8;
-    z = ((int32)r_u32(object + 480u) - d03_mul(value, sin_heading >> 8)) >> 8;
+    x = d03_add(d03_mul(value, cos_heading >> 8), r_s32(object + 476u)) >> 8;
+    z = d03_sub(r_s32(object + 480u), d03_mul(value, sin_heading >> 8)) >> 8;
     w_u16(object + 560u, (uint16)((163u * r_u32(object + 516u)) >> 14));
     w_u16(object + 568u, (uint16)sub_80055A9C((uint32)x, (uint32)z));
     if (!x && !z)
         w_u16(object + 568u, r_u16(object + 560u));
     value = d03_div((uint32)d03_mul((int32)r_u32(object + 520u), (int32)r_u32(object + 528u)), 136u) >> 8;
-    x = ((int32)r_u32(object + 476u) - d03_mul(value, cos_heading >> 8)) >> 8;
-    z = (d03_mul(value, sin_heading >> 8) + (int32)r_u32(object + 480u)) >> 8;
+    x = d03_sub(r_s32(object + 476u), d03_mul(value, cos_heading >> 8)) >> 8;
+    z = d03_add(d03_mul(value, sin_heading >> 8), r_s32(object + 480u)) >> 8;
     w_u16(object + 570u, (uint16)sub_80055A9C((uint32)x, (uint32)z));
     if (!x && !z)
         w_u16(object + 570u, r_u16(object + 560u));
@@ -1158,12 +1265,12 @@ uint32 sub_80025924(uint32 object)
     y = d03_mul(z, d03_trig(0x800102E0u, (uint32)pitch) >> 4);
     w_u32(object + 492u, (uint32)y);
     x = (int32)r_u32(object + 488u) >> 8;
-    w_u32(object + 488u, (uint32)(d03_mul(x, d03_trig(0x80010AE0u, (uint32)roll) >> 4) - d03_mul(y >> 8, d03_trig(0x800102E0u, (uint32)roll) >> 4)));
-    w_u32(object + 492u, (uint32)(d03_mul(x, d03_trig(0x800102E0u, (uint32)roll) >> 4) + d03_mul(y >> 8, d03_trig(0x80010AE0u, (uint32)roll) >> 4)));
+    w_u32(object + 488u, (uint32)d03_sub(d03_mul(x, d03_trig(0x80010AE0u, (uint32)roll) >> 4), d03_mul(y >> 8, d03_trig(0x800102E0u, (uint32)roll) >> 4)));
+    w_u32(object + 492u, (uint32)d03_add(d03_mul(x, d03_trig(0x800102E0u, (uint32)roll) >> 4), d03_mul(y >> 8, d03_trig(0x80010AE0u, (uint32)roll) >> 4)));
     x = ((int32)(r_u32(object + 476u) - (uint32)old_x)) >> 8;
     z = ((int32)(r_u32(object + 480u) - (uint32)old_z)) >> 8;
-    w_u32(object + 532u, (uint32)(d03_mul(x, cos_heading >> 8) - d03_mul(z, sin_heading >> 8)));
-    w_u32(object + 536u, 4u * (uint32)(d03_mul(x, sin_heading >> 8) + d03_mul(z, cos_heading >> 8)));
+    w_u32(object + 532u, (uint32)d03_sub(d03_mul(x, cos_heading >> 8), d03_mul(z, sin_heading >> 8)));
+    w_u32(object + 536u, 4u * (uint32)d03_add(d03_mul(x, sin_heading >> 8), d03_mul(z, cos_heading >> 8)));
     w_u32(object + 232u, r_u32(object + 232u) - (uint32)(d03_mul(27, d03_mul((int32)r_u32(object + 488u) >> 8, step >> 8)) >> 16));
     w_u32(object + 240u, r_u32(object + 240u) - (uint32)(d03_mul(d03_mul(27, (int32)r_u32(object + 496u) >> 8), step >> 8) >> 16));
     if ((int32)r_u32(object + 472u) > 99999)

@@ -145,7 +145,7 @@ void sub_80055818(uint32 a0, uint32 a1, uint32 a2)
     magnitude = (uint32)draft_call_adapter(0x80069BE0u, x, z);
     pitch = sub_80055A9C(y, magnitude);
     yaw = sub_80055A9C(x, z) + 2048u;
-    // TODO Addressable scalar helper buffers
+    // Keep angles, displacement and matrix in separate temporary spans
     storage = draft_scratch_adapter(48u);
     w_u16(storage, (uint16)pitch);
     w_u16(storage + 2u, (uint16)yaw);

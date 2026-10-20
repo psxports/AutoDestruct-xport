@@ -792,59 +792,105 @@ uint32 sub_800570DC(uint32 a1, uint32 a2)
     draft_scratch_release(native_stack_mark);
 }
 
+static uint32 draft_actor_route_distance(uint32 object)
+{
+    uint32 target_x = r_u32(object + 68), object_x = r_u32(object + 20);
+    uint32 target_z = r_u32(object + 72), object_z = r_u32(object + 28);
+    return (uint32)draft_call_adapter(0x80069BE0, target_x - object_x, target_z - object_z);
+}
+
 /* FUNCTION_MARKER: sub_80056AA8 */
 uint32 sub_80056AA8(uint32 a1)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 state = r_u8(a1 + 90u), node, record, other, distance, result, seed;
-    w_u8(a1 + 91u, (uint8)(r_u8(a1 + 91u) & 0x80u));
+    uint32 flags = r_u8(a1 + 91);
+    uint32 state = r_u8(a1 + 90), node, record, other, distance, result, seed;
+    w_u8(a1 + 91, flags & 0x80);
     switch (state)
     {
         case 3u:
+        {
             draft_call_adapter(0x8005612Cu, a1, r_u16(a1 + 64u), r_u16(a1 + 66u));
-            w_u32(a1 + 80u, (uint32)draft_call_adapter(0x80069BE0u, r_u32(a1 + 68u) - r_u32(a1 + 20u), r_u32(a1 + 72u) - r_u32(a1 + 28u)));
-            record = r_u32(0x800A7E2Cu) + 4u * ((uint32)((int32)r_u32(r_u32(0x800A84FCu) + 8u * r_u16(a1 + 64u) + 4u) >> 11) + r_u8(a1 + 88u));
-            if ((r_u32(record) >> 12) + r_u32(0x800A8738u) == a1)
-                w_u32(record, r_u32(record) | 0xFFFFF000u);
+            w_u32(a1 + 80, draft_actor_route_distance(a1));
+            node = r_u16(a1 + 64);
+            uint32 node_table = r_u32(0x800A84FC);
+            uint32 header = r_u32(node_table + 8 * node + 4);
+            uint32 lane = r_u8(a1 + 88);
+            record = r_u32(0x800A7E2C) + 4 * ((uint32)((sint32)header >> 11) + lane);
+            uint32 packed = r_u32(record);
+            if ((packed >> 12) + r_u32(0x800A8738) == a1)
+                w_u32(record, packed | 0xFFFFF000);
             w_u8(a1 + 90u, 2u);
             break;
+        }
         case 4u:
             node = r_u32(r_u32(0x800A84FCu) + 8u * r_u16(a1 + 64u) + 4u);
             if ((node & 0x300u) && (node & 15u) >= 3u)
                 w_u8(a1 + 91u, (uint8)(r_u8(a1 + 91u) | 1u));
             else
             {
-                w_u8(a1 + 88u, r_u8(a1 + 89u));
-                w_u8(a1 + 89u, (uint8)sub_80069EFC(r_u16(a1 + 64u), r_u16(a1 + 66u)));
-                record = r_u32(0x800A7E2Cu) + 4u * ((uint32)((int32)r_u32(r_u32(0x800A84FCu) + 8u * r_u16(a1 + 66u) + 4u) >> 11) + r_u8(a1 + 89u));
+                uint32 lane = r_u8(a1 + 89);
+                uint32 current_node = r_u16(a1 + 64), next_node = r_u16(a1 + 66);
+                w_u8(a1 + 88, lane);
+                w_u8(a1 + 89, sub_80069EFC(current_node, next_node));
+                next_node = r_u16(a1 + 66);
+                uint32 node_table = r_u32(0x800A84FC);
+                uint32 header = r_u32(node_table + 8 * next_node + 4);
+                lane = r_u8(a1 + 89);
+                record = r_u32(0x800A7E2C) + 4 * ((uint32)((sint32)header >> 11) + lane);
                 other = r_u32(record) >> 12;
-                w_u32(a1 + 84u, other == 0xFFFFFu || other + r_u32(0x800A8738u) == a1 ? 0u : other + r_u32(0x800A8738u));
-                record = r_u32(0x800A7E2Cu) + 4u * ((uint32)((int32)r_u32(r_u32(0x800A84FCu) + 8u * r_u16(a1 + 66u) + 4u) >> 11) + r_u8(a1 + 89u));
-                w_u32(record, (r_u32(record) & 0xFFFu) | ((a1 - r_u32(0x800A8738u)) << 12));
-                node = r_u32(0x800A84FCu) + 8u * r_u16(a1 + 64u);
-                w_u32(node + 4u, r_u32(node + 4u) | 0x100u);
-                w_u32(a1 + 80u, (uint32)draft_call_adapter(0x80069BE0u, r_u32(a1 + 68u) - r_u32(a1 + 20u), r_u32(a1 + 72u) - r_u32(a1 + 28u)));
-                w_u16(a1 + 90u, 6u);
+                if (other != 0xFFFFF)
+                {
+                    other += r_u32(0x800A8738);
+                    if (other == a1)
+                        other = 0;
+                }
+                else
+                    other = 0;
+                w_u32(a1 + 84, other);
+                next_node = r_u16(a1 + 66);
+                node_table = r_u32(0x800A84FC);
+                header = r_u32(node_table + 8 * next_node + 4);
+                lane = r_u8(a1 + 89);
+                record = r_u32(0x800A7E2C) + 4 * ((uint32)((sint32)header >> 11) + lane);
+                uint32 packed = r_u32(record);
+                uint32 base = r_u32(0x800A8738);
+                w_u32(record, (packed & 0xFFF) | ((a1 - base) << 12));
+                node = node_table + 8 * r_u16(a1 + 64);
+                w_u32(node + 4, r_u32(node + 4) | 0x100);
+                w_u32(a1 + 80, draft_actor_route_distance(a1));
+                w_u8(a1 + 90, 6);
+                w_u8(a1 + 91, 0);
             }
             break;
         case 5u:
+        {
             sub_8005603C(a1, r_u16(a1 + 66u));
             node = r_u32(0x800A84FCu) + 8u * r_u16(a1 + 64u);
             w_u32(node + 4u, r_u32(node + 4u) & ~0x100u);
-            node = r_u16(a1 + 64u);
-            w_u16(a1 + 64u, r_u16(a1 + 66u));
-            w_u16(a1 + 66u, (uint16)sub_8006A0A0(r_u16(a1 + 64u), node));
-            w_u32(a1 + 80u, (uint32)draft_call_adapter(0x80069BE0u, r_u32(a1 + 68u) - r_u32(a1 + 20u), r_u32(a1 + 72u) - r_u32(a1 + 28u)) - 1000u);
+            uint32 next_node = r_u16(a1 + 66);
+            node = r_u16(a1 + 64);
+            w_u16(a1 + 64, next_node);
+            next_node = sub_8006A0A0(r_u16(a1 + 64), node);
+            uint32 target_x = r_u32(a1 + 68), object_x = r_u32(a1 + 20);
+            w_u16(a1 + 66, next_node);
+            uint32 target_z = r_u32(a1 + 72), object_z = r_u32(a1 + 28);
+            w_u32(a1 + 80, (uint32)draft_call_adapter(0x80069BE0, target_x - object_x, target_z - object_z) - 1000);
             w_u8(a1 + 90u, 1u);
             break;
+        }
         case 7u:
         case 8u:
             if (r_u8(a1 + 12u) >= 4u)
             {
-                node = r_u32(0x800A8548u) + r_u16(a1 + 32u);
-                w_u32(a1 + 80u, r_u32(a1 + 80u) - r_u32(0x800A9010u));
-                draft_call_adapter(0x80029970u, a1, r_u16(r_u32(0x800A90ACu) + 40u * r_u8(node) + 32u), 1u, 1u, a1 + 20u);
+                uint32 countdown = r_u32(a1 + 80), step = r_u32(0x800A9010);
+                uint32 model = r_u16(a1 + 32);
+                node = r_u32(0x800A8548) + model;
+                w_u32(a1 + 80, countdown - step);
+                model = r_u8(node);
+                sint32 height = r_s16(r_u32(0x800A90AC) + 40 * model + 32);
+                draft_call_adapter(0x80029970, a1, (uint32)height, 1, 1, a1 + 20);
             }
             if (r_u8(a1 + 12u))
             {
@@ -861,13 +907,24 @@ uint32 sub_80056AA8(uint32 a1)
     other = r_u32(a1 + 84u);
     if (other)
     {
-        uint32 dx = r_u32(other + 20u) - r_u32(a1 + 20u), dz = r_u32(other + 28u) - r_u32(a1 + 28u), abs_x = (int32)dx < 0 ? 0u - dx : dx, abs_z = (int32)dz < 0 ? 0u - dz : dz;
-        int32 radius = (int16)r_u16(r_u32(0x800A90ACu) + 40u * r_u8(r_u32(0x800A8548u) + r_u16(other + 32u)) + 34u);
-        radius += (int16)r_u16(r_u32(0x800A90ACu) + 40u * r_u8(r_u32(0x800A8548u) + r_u16(a1 + 32u)) + 34u);
+        uint32 other_x = r_u32(other + 20), object_x = r_u32(a1 + 20);
+        uint32 other_z = r_u32(other + 28), object_z = r_u32(a1 + 28);
+        uint32 dx = other_x - object_x, dz = other_z - object_z;
+        uint32 abs_x = (sint32)dx < 0 ? 0 - dx : dx, abs_z = (sint32)dz < 0 ? 0 - dz : dz;
+        uint32 other_model = r_u16(other + 32), translation = r_u32(0x800A8548);
+        other_model = r_u8(translation + other_model);
+        uint32 models = r_u32(0x800A90AC), own_model = r_u16(a1 + 32);
+        own_model = r_u8(translation + own_model);
+        sint32 radius = r_s16(models + 40 * other_model + 34);
+        radius += r_s16(models + 40 * own_model + 34);
         distance = (int32)abs_x < (int32)abs_z ? abs_z : abs_x;
         if ((radius >> 1) + 500 >= (int32)distance)
         {
-            uint32 difference = (r_u16(other + 78u) - r_u16(a1 + 78u)) & 0xFFFu, bearing = (sub_80055A9C(dx, dz) - r_u16(a1 + 78u)) & 0xFFFu;
+            uint32 other_yaw = r_u16(other + 78), own_yaw = r_u16(a1 + 78);
+            uint32 difference = (other_yaw - own_yaw) & 4095;
+            uint32 bearing = sub_80055A9C(dx, dz);
+            own_yaw = r_u16(a1 + 78);
+            bearing = (bearing - own_yaw) & 4095;
             int32 signed_difference, signed_bearing;
             if (difference >= 2049u)
                 difference |= 0xF000u;
@@ -889,22 +946,28 @@ uint32 sub_80056AA8(uint32 a1)
     sub_800563AC(a1);
     if ((int32)r_u32(a1 + 80u) < 49)
     {
-        state = r_u8(0x8001376Cu + r_u8(a1 + 90u));
-        w_u8(a1 + 91u, (uint8)(r_u8(a1 + 91u) & ~0x80u));
+        state = r_u8(a1 + 90);
+        flags = r_u8(a1 + 91);
+        state = r_u8(0x8001376C + state);
+        w_u8(a1 + 91, flags & 0x7F);
         w_u8(a1 + 90u, (uint8)state);
     }
-    if ((r_u8(a1 + 91u) & 1u) && r_u16(a1 + 92u))
+    if (r_u8(a1 + 91) & 1)
     {
-        uint32 timer = (uint32)(int32)(int16)r_u16(a1 + 92u) - 1u;
-        w_u16(a1 + 92u, (uint16)timer);
-        if (!(timer << 16))
+        sint32 timer = r_s16(a1 + 92);
+        if (timer)
         {
-            seed = 5u * r_u32(0x800A63DCu) + 1u;
-            w_u32(0x800A63DCu, seed);
-            draft_call_adapter(0x80035A08u, 60u, (seed & 127u) | 1024u, 0u, a1 + 20u);
-            seed = 5u * r_u32(0x800A63DCu) + 1u;
-            w_u32(0x800A63DCu, seed);
-            w_u16(a1 + 92u, (uint16)(seed % 80u));
+            uint32 next_timer = (uint32)timer - 1;
+            w_u16(a1 + 92, next_timer);
+            if (!(next_timer << 16))
+            {
+                seed = 5u * r_u32(0x800A63DCu) + 1u;
+                w_u32(0x800A63DCu, seed);
+                draft_call_adapter(0x80035A08u, 60u, (seed & 127u) | 1024u, 0u, a1 + 20u, 0);
+                seed = 5u * r_u32(0x800A63DCu) + 1u;
+                w_u32(0x800A63DCu, seed);
+                w_u16(a1 + 92u, (uint16)(seed % 80u));
+            }
         }
     }
     result = r_u8(a1 + 12u);

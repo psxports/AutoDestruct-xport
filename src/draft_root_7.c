@@ -126,7 +126,7 @@ uint32 sub_80064784(uint32 a0, uint32 a1)
     xport_gte_write_data(0u, saved_xy);
     xport_gte_write_data(1u, saved_z);
     draft_gte_command_adapter(0x180001u);
-    // TODO Unsupported screen/depth GTE outputs retain fail-fast boundaries
+    // Store projected screen coordinates and depth from the GTE FIFO
     w_u32(a1, xport_gte_read_data(14u));
     w_u32(a1 + 4u, xport_gte_read_data(19u));
     return draft_scratch_result(native_stack_mark, (uint64)(result));

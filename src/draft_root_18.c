@@ -3,8 +3,16 @@
 
 static int32 draft18_div(int32 a, int32 b)
 {
-    if (!b || (b == -1 && (uint32)a == 0x80000000u))
-        abort();
+    if (!b)
+    {
+        xport_mips_break(7);
+        return 0;
+    }
+    if (b == -1 && (uint32)a == 0x80000000)
+    {
+        xport_mips_break(6);
+        return 0;
+    }
     return a / b;
 }
 
@@ -17,13 +25,15 @@ uint32 sub_80024C9C(uint32 object)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    int32 sign = r_s8(object + 581), speed = (int32)r_u32(object + 472), maximum = (int32)r_u32(0x800A8538u), difference = draft18_wrapsub(maximum, speed), segment = maximum / 6, input = 0, value, temp, divisor;
-    uint32 index, target, counter;
+    int32 maximum = r_s32(0x800A8538);
+    int32 sign = r_s8(object + 581), speed = r_s32(object + 472);
+    int32 difference = draft18_wrapsub(maximum, speed), segment = maximum / 6, input = 0, value, temp, divisor, biased;
+    uint32 index, target, counter, flags, boost, sound;
     FUNCTION_MARKER(0x80024C9Cu, "1.EXE");
     w_u32(0x800A5758u, 0);
     w_u8(object + 580, 1);
     if (segment)
-        w_u8(object + 580, draft18_div(speed, segment) + 1);
+        w_u8(object + 580, draft18_div(r_s32(object + 472), segment) + 1);
     if (sign == -1)
         w_u8(object + 580, 255);
     if (sub_80037D50() << 16)
@@ -47,18 +57,19 @@ uint32 sub_80024C9C(uint32 object)
         }
         if (sign == -1)
             w_u8(object + 580, 255);
-        // TODO Keep switch destinations from the original table where pseudocode lost cases
+        // Use the original gear tables where pseudocode omits cases
         index = (uint32)(int32)(int8)(r_u8(object + 580) + 1);
         target = index < 7 ? r_u32(0x80010028u + 4 * index) : 0x80025020u;
-        speed = (int32)r_u32(object + 472);
         switch (target)
         {
             case 0x80024E90u:
+                speed = r_s32(object + 472);
                 value = (int32)(4u * (uint32)segment);
                 value = value >= speed ? draft18_wrapsub(value, speed) : draft18_wrapsub(speed, (int32)(3u * (uint32)segment));
                 w_u32(object + 484, (uint32)(value >> 2));
                 break;
             case 0x80024EC0u:
+                speed = r_s32(object + 472);
                 value = draft18_wrapsub((int32)(2u * (uint32)segment), speed) / 2;
                 w_u32(object + 484, (uint32)input << 16);
                 if (value < (input << 16))
@@ -73,6 +84,7 @@ uint32 sub_80024C9C(uint32 object)
                 }
                 break;
             case 0x80024F24u:
+                speed = r_s32(object + 472);
                 temp = (int32)((uint32)(draft18_wrapsub((int32)(3u * (uint32)segment), speed) / 3) * (uint32)input);
                 value = temp / 256;
                 w_u32(object + 484, (uint32)input << 16);
@@ -83,8 +95,8 @@ uint32 sub_80024C9C(uint32 object)
                     {
                         w_u32(object + 504, 131072);
                         w_u32(object + 580, r_u32(object + 580) | 0x01000000);
-                        // TODO MIPS subtracts the pre-shift product sign after its signed multiply-high
-                        value = (int32)(((int64)value * 0x55555556LL) >> 32) - (temp >> 31);
+                        biased = temp < 0 ? temp + 255 : temp;
+                        value = (int32)(((int64)value * 0x55555556) >> 32) - (biased >> 31);
                         w_u32(object + 484, value);
                     }
                 }
@@ -194,11 +206,13 @@ uint32 sub_80024C9C(uint32 object)
                 if ((int32)r_u32(object + 484) > 100000 || r_u32(0x800A56D0u) - 1 < 7)
                 {
                     w_u32(object + 504, 65536);
-                    w_u32(object + 580, r_u32(object + 580) | 0x02000000);
-                    counter = r_u32(0x800A56D0u);
-                    w_u32(0x800A56D0u, counter + 1);
-                    if (!r_u32(0x800A56BCu) && (int32)(counter + 1) >= 8)
-                        w_u32(0x800A56D0u, counter + 2);
+                    flags = r_u32(object + 580);
+                    counter = r_u32(0x800A56D0);
+                    w_u32(object + 580, flags | 0x02000000);
+                    boost = r_u32(0x800A56BC);
+                    w_u32(0x800A56D0, counter + 1);
+                    if (!boost && (int32)(counter + 1) >= 8)
+                        w_u32(0x800A56D0, counter + 2);
                 }
             }
         }
@@ -208,14 +222,17 @@ uint32 sub_80024C9C(uint32 object)
     value = (int32)r_u32(object + 484);
     speed = (int32)r_u32(object + 472);
     temp = value < 0 ? (((speed / 14) >> 5) & 16383) + 1536 : (value ? 3584 - ((value >> 7) & 16383) : 1664) + (((speed / 14) >> 6) & 16383);
-    if ((int32)r_u32(0x800A8538u) < speed)
+    speed = r_s32(object + 472);
+    maximum = r_s32(0x800A8538);
+    if (maximum < speed)
     {
         w_u32(object + 484, 0);
         return draft_scratch_result(native_stack_mark, (uint64)(1));
     }
     value = (int32)(5u * r_u32(object + 484)) / 3;
+    sound = (uint32)r_s16(0x800A56AE);
     w_u32(object + 484, value);
-    sub_80036188((uint32)r_s16(0x800A56AEu), (uint32)(int16)temp);
+    sub_80036188(sound, (uint32)(int16)temp);
     return draft_scratch_result(native_stack_mark, (uint64)(sub_800361FC((uint32)r_s16(0x800A5C44u), (uint32)(((int32)r_u32(object + 472) / 14) >> 10))));
 
     draft_scratch_release(native_stack_mark);

@@ -899,7 +899,7 @@ uint32 sub_80059C2C(GameGeometryCallContext *context);
 void sub_800643EC(GameRenderCallContext *context);
 uint32 sub_80020C60(uint32 index, uint32 table, uint32 color, uint32 mode, GameGeometryCallContext *context);
 
-uint32 sub_80035CD0(uint32 mode, GameGeometryCallContext *context);
+uint32 sub_80035CD0(uint32 position, uint32 voice);
 
 uint32 sub_8005A4D8(uint32 filename, GameSceneCallContext *context);
 uint32 sub_8005A0D8(uint32 filename, uint32 destination, uint32 length, GameGeometryCallContext *context);
@@ -1364,7 +1364,7 @@ uint32 sub_80035A08(uint32 channel, uint32 pitch, uint32 volume, uint32 mode, Ga
         w_u16(0x800BBF06u + offset, 0u);
         child.stack_pointer = frame;
         child.return_address = 0x80035B1Cu;
-        sub_80035CD0(mode, &child);
+        sub_80035CD0(mode, index);
         offset = (uint32)(sint32)(sint16)r_u16(0x800A5C54u) << 6;
         value = (uint32)(sint32)(sint16)r_u16(0x800BBF04u + offset);
         w_u16(0x800BBF04u + offset, (sint32)value < 0x4000 ? value * 3u : 0x3FFFu);

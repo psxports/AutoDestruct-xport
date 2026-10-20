@@ -19,7 +19,7 @@ void sub_8003D324(uint32 value);
 void sub_8003D27C(uint32 value);
 void sub_8003D694(uint32 value);
 uint32 sub_8002912C(uint32 object, uint32 mode, GameGeometryCallContext *context);
-uint32 sub_8006E490(uint32 object, GameGeometryCallContext *context);
+uint32 sub_8006E490(uint32 object);
 uint32 sub_800535DC(uint32 object, uint32 first, uint32 second, uint32 third, GameGeometryCallContext *context);
 uint32 sub_8003D67C(void);
 uint32 sub_80044E68(void);
@@ -47,11 +47,11 @@ uint32 sub_8004F47C(uint32 source, uint32 mode, GameGeometryCallContext *context
 uint32 sub_800226E4(uint32 size, GameGeometryCallContext *context);
 uint32 sub_8004F340(uint32 destination, uint32 source, GameGeometryCallContext *context);
 uint32 sub_80064B04(uint32 size, GameGeometryCallContext *context);
-uint32 sub_80055A70(uint32 matrix, GameGeometryCallContext *context);
+uint32 sub_80055A70(uint32 matrix);
 uint32 sub_80022908(uint32 object, uint32 entries, uint32 count);
-uint32 sub_80055A9C(uint32 x, uint32 z, GameGeometryCallContext *context);
-uint32 sub_80055D54(uint32 object, uint32 destination, uint32 rotation, GameGeometryCallContext *context);
-uint32 sub_8004ED64(uint32 object, GameGeometryCallContext *context);
+uint32 sub_80055A9C(uint32 x, uint32 z);
+uint32 sub_80055D54(uint32 object, uint32 animation, uint32 angle);
+uint32 sub_8004ED64(uint32 object);
 uint32 sub_8002E310(uint32 position, uint32 normal, uint32 tag, GameGeometryCallContext *context);
 uint32 sub_8004E4F4(uint32 object, uint32 height);
 uint32 sub_8004E6A4(uint32 object, uint32 mode, GameGeometryCallContext *context);
@@ -203,7 +203,7 @@ next_record:
                     ++index;
                 } while ((sint16)index < 9);
                 child.return_address = 0x8004FBF0u;
-                sub_80055A70(object + 428u, &child);
+                sub_80055A70(object + 428u);
                 value = r_u16(r_u32(0x800A62ECu) + 0xAAu);
                 w_u8(object + 426u, child.caller_s5);
                 w_u16(object + 452u, 2u);
@@ -242,9 +242,9 @@ next_record:
                 value2 = r_u32(object + 20u);
                 value3 = r_u32(object + 28u);
                 child.return_address = 0x8004FD64u;
-                result = sub_80055A9C(r_u32(value + 20u) - value2, r_u32(value + 28u) - value3, &child);
+                result = sub_80055A9C(r_u32(value + 20u) - value2, r_u32(value + 28u) - value3);
                 child.return_address = 0x8004FD7Cu;
-                sub_80055D54(object, object + 88u, (uint32)(sint32)(sint16)(0u - result), &child);
+                sub_80055D54(object, object + 88u, (uint32)(sint32)(sint16)(0u - result));
                 value = (uint32)r_s16(object + 452u);
                 value2 = (uint32)r_s16(object + 458u);
                 value = (uint32)r_s16(r_u32(0x8008FCFCu + (value << 2u)) + (value2 << 6u));
@@ -457,7 +457,7 @@ next_record:
                     child.return_address = 0x80050524u;
                     sub_80022908(object, object + 324u, 1u);
                     child.return_address = 0x8005052Cu;
-                    sub_8004ED64(object, &child);
+                    sub_8004ED64(object);
                     goto type5_bind;
                 case 8:
                 case 9:
@@ -534,7 +534,7 @@ next_record:
                         ++index;
                     } while ((sint16)index < 9);
                     child.return_address = 0x800507C0u;
-                    sub_80055A70(object + 540u, &child);
+                    sub_80055A70(object + 540u);
                     value = r_u16(r_u32(0x800A62ECu) + 0xAAu);
                     w_u8(object + 538u, child.caller_s5);
                     w_u32(object, 0x8004E3F0u);
@@ -553,7 +553,7 @@ next_record:
                     value = (uint32)r_s16(r_u32(0x8008FCFCu + (value << 2u)) + (value2 << 6u));
                     w_u32(object + 24u, r_u32(object + 24u) - value);
                     child.return_address = 0x80050878u;
-                    sub_80055D54(object, child.caller_s1, 0u, &child);
+                    sub_80055D54(object, child.caller_s1, 0u);
                     w_u16(child.caller_s7 + 24u, 22u);
                     goto type5_common;
                 default:
@@ -1041,7 +1041,7 @@ uint32 sub_8004F47C(uint32 first_argument, uint32 second_argument, GameGeometryC
     if (r_u32(0x800A8690u) == 0u)
     {
         child.return_address = 0x8004F87Cu;
-        sub_8006E490(child.caller_s0, &child);
+        sub_8006E490(child.caller_s0);
     }
     if ((sint16)r_u16(frame + 0x74u) == 16)
     {
@@ -1183,6 +1183,8 @@ next_face:
     face_flag = r_u16(cursor);
     face_offset = (face_flag & 0x7FFFu) * 28u;
     face = faces + face_offset;
+    context->terrain_candidate = face;
+    context->terrain_candidate_valid = 1;
     z0 = (uint32)(sint32)(sint16)r_u16(face + 4u) + origin_z;
     z1 = (uint32)(sint32)(sint16)r_u16(face + 8u) + origin_z;
     x1 = (uint32)(sint32)(sint16)r_u16(face + 6u) + origin_x;
@@ -1193,6 +1195,8 @@ next_face:
         goto rejected_face;
     z2 = (uint32)(sint32)(sint16)r_u16(face + 0xCu) + origin_z;
     x2 = (uint32)(sint32)(sint16)r_u16(face + 0xAu) + origin_x;
+    context->terrain_corner_x = x2;
+    context->terrain_corner_valid = 1;
     value = (z1 - z2) * (x - x2) + (x2 - x1) * (z - z2);
     if ((sint32)value < 0)
         goto rejected_face;

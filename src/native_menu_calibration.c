@@ -157,7 +157,7 @@ uint32 sub_80073330(void)
     w_u16(0x800B58A4, values[4]);
     w_u16(0x800B58A6, values[5]);
     w_u16(0x800B58AA, values[6]);
-    w_u16(0x800B58A8, (uint32)draft_call_adapter(0x8007233C));
+    w_u16(0x800B58A8, sub_8007233C());
     sub_8003CA68(0x800B58AC);
     destination = 0x800B5900;
     source = 0x800A9760;

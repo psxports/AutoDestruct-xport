@@ -1,4 +1,4 @@
-#include "draft_signatures.h"
+#include "native_call_dispatch.h"
 
 uint32 sub_8005F7F0(uint32 object)
 {
@@ -117,12 +117,12 @@ uint32 sub_8005EEC0(uint32 object)
     return result;
 }
 
-uint32 sub_80060320(uint32 object)
+uint32 sub_80060320(uint32 object, IMPACT_SOUND *sound)
 {
     uint32 mark = draft_scratch_mark(), temporary = draft_scratch_adapter(16u);
     uint32 result, ground, effect;
     FUNCTION_MARKER(0x80060320u, "1.EXE");
-    result = (uint32)draft_call_adapter(0x8002E310u, object + 20u, temporary, temporary + 8u);
+    result = native_impact_ground(object + 20, temporary, temporary + 8, sound);
     ground = 0u - result;
     if (ground != 0u)
     {
@@ -133,6 +133,7 @@ uint32 sub_80060320(uint32 object)
             if (result != 0u)
             {
                 effect = sub_800227C4(40u);
+                native_impact_allocated_sound(sound);
                 result = effect;
                 w_u16(effect + 36u, 288u);
                 w_u16(effect + 38u, 0u);
@@ -151,4 +152,29 @@ uint32 sub_80060320(uint32 object)
         }
     }
     return draft_scratch_result(mark, result);
+}
+
+uint32 native_impact_ground(uint32 position, uint32 normal, uint32 tag, IMPACT_SOUND *sound)
+{
+    GameGeometryCallContext query = {0};
+    uint32 mark, result;
+    if (!sound)
+        return (uint32)draft_call_adapter(0x8002E310, position, normal, tag);
+    mark = draft_scratch_mark();
+    query.stack_pointer = draft_scratch_adapter(56) + 40;
+    result = sub_8002E310(position, normal, tag, &query);
+    if (query.terrain_candidate_valid)
+        sound->pitch = query.terrain_candidate;
+    if (query.terrain_corner_valid)
+        sound->sample = query.terrain_corner_x;
+    return draft_scratch_result(mark, result);
+}
+
+void native_impact_allocated_sound(IMPACT_SOUND *sound)
+{
+    if (sound)
+    {
+        sound->sample = r_u32(0x800A748C) << 3;
+        sound->pitch = 0;
+    }
 }

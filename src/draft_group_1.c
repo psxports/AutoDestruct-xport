@@ -68,7 +68,7 @@ uint32 sub_8005C560(uint32 a1)
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 index = r_u8(a1 + 47u), value;
-    w_u32(a1 + 28u, 0u);
+    w_u16(a1 + 28u, 0u);
     w_u16(a1 + 30u, r_u16(0x80091044u + index * 2u));
     value = r_u16(0x8009104Cu + index * 2u);
     w_u16(a1 + 32u, value);
@@ -197,7 +197,7 @@ uint32 sub_8005C270(uint32 a1, uint32 a2, uint32 a3)
 }
 
 // FUNCTION_MARKER sub_8005B47C
-uint32 sub_8005B47C(uint32 a1)
+uint32 sub_8005B47C(uint32 a1, uint32 fallback_y)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
@@ -214,9 +214,9 @@ uint32 sub_8005B47C(uint32 a1)
         return draft_scratch_result(native_stack_mark, (uint64)((uint32)height));
     }
     reference = (sint32)(sint16)r_u16(0x800A7ECEu);
-    samples[0] = (sint32)draft_call_adapter(0x8005B434u, a1, 128u, 128u);
-    samples[1] = (sint32)draft_call_adapter(0x8005B434u, a1, 47u, (uint32)-175);
-    samples[2] = (sint32)draft_call_adapter(0x8005B434u, a1, (uint32)-175, 47u);
+    samples[0] = (sint32)draft_call_adapter(0x8005B434u, a1, 128u, 128u, fallback_y);
+    samples[1] = (sint32)draft_call_adapter(0x8005B434u, a1, 47u, (uint32)-175, fallback_y);
+    samples[2] = (sint32)draft_call_adapter(0x8005B434u, a1, (uint32)-175, 47u, fallback_y);
     for (sint32 index = 2; index >= 0; --index)
     {
         uint32 delta = (uint32)samples[index] - (uint32)reference;
@@ -320,38 +320,57 @@ uint32 sub_800314A8(void)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 chosen[2] = {r_u32(0x800A5B70u), r_u32(0x800A5B74u)};
+    sint32 timer = r_s16(0x800A9014);
+    uint32 chosen[2] = {r_u32(0x800A5B70), r_u32(0x800A5B74)};
     sint32 nearest[2] = {655360, 655360};
-    uint32 result;
-    if ((sint32)r_u32(0x800A9014u) >= 0 || r_u32(0x800A9730u) == 0u || r_u32(0x800A9A78u) == 0u)
+    uint32 result, target;
+    if (timer < 0)
     {
-        uint32 target = r_u32(0x800A9730u);
-        if (target == 0u)
-            target = r_u32(0x800A9A78u);
-        if (target == 0u)
+        target = (uint32)r_s16(0x800A9730);
+        if (target)
         {
-            w_u32(0x800A9688u, 0u);
-            w_u32(0x800A968Cu, 0u);
+            if (r_s16(0x800A9A78))
+                goto find_nearest;
+            target = (uint32)r_s16(0x800A9730);
         }
         else
         {
-            w_u32(0x800A9688u, r_u32(r_u32(r_u32(0x800A851Cu) + 4u * target) + 20u));
-            w_u32(0x800A968Cu, r_u32(r_u32(r_u32(0x800A851Cu) + 4u * target) + 28u));
+            target = (uint32)r_s16(0x800A9A78);
+            goto update_target;
         }
-        if ((sint32)r_u32(0x800A9014u) > 0)
-            w_u32(0x800A9014u, r_u32(0x800A9014u) - 1u);
     }
+    else
+        target = (uint32)r_s16(0x800A9730);
+    if (!target)
+        target = (uint32)r_s16(0x800A9A78);
+update_target:
+    if (!target)
+    {
+        w_u32(0x800A9688, 0);
+        w_u32(0x800A968C, 0);
+    }
+    else
+    {
+        uint32 slot = r_u32(0x800A851C) + 4 * target;
+        w_u32(0x800A9688, r_u32(r_u32(slot) + 20));
+        w_u32(0x800A968C, r_u32(r_u32(slot) + 28));
+    }
+    timer = r_s16(0x800A9014);
+    if (timer > 0)
+        w_u16(0x800A9014, (uint32)timer - 1);
+find_nearest:
     for (sint32 index = 1; index < (sint32)(sint16)r_u16(0x800A6094u); ++index)
     {
         uint32 object = r_u32(0x800A8934u + 4u * (uint32)(index - 1));
         if (r_u8(object + 64u) != 0u && (r_u8(object + 14u) & 1u) != 0u)
         {
             uint32 player = r_u32(0x800A7BACu);
-            // TODO Bind original target 0x80069BE0
-            sint32 distance = (sint32)(uint32)draft_call_adapter(0x80069BE0u, r_u32(player + 20u) - r_u32(object + 20u), r_u32(player + 28u) - r_u32(object + 28u));
+            uint32 object_x = r_u32(object + 20), object_z = r_u32(object + 28);
+            uint32 player_x = r_u32(player + 20), player_z = r_u32(player + 28);
+            sint32 distance = (sint32)(uint32)draft_call_adapter(0x80069BE0u, player_x - object_x, player_z - object_z);
             if ((r_u8(object + 14u) & 8u) != 0u)
             {
-                uint32 group = r_u16(object + 70u) == 1u ? 0u : 1u;
+                uint32 group = r_s16(object + 70u) == 1 ? 0u : 1u;
                 if (distance < nearest[group])
                 {
                     chosen[group] = object;
@@ -365,13 +384,14 @@ uint32 sub_800314A8(void)
         w_u32(0x800A9690u + 8u * index, chosen[index] != 0u ? r_u32(chosen[index] + 20u) : 0u);
         w_u32(0x800A9694u + 8u * index, chosen[index] != 0u ? r_u32(chosen[index] + 28u) : 0u);
     }
-    if ((sint32)r_u32(0x800A5FA4u) > 0)
-        w_u32(0x800A5FA4u, r_u32(0x800A5FA4u) - 1u);
+    sint32 countdown = r_s32(0x800A5FA4);
+    if (countdown > 0)
+        w_u32(0x800A5FA4, (uint32)countdown - 1);
     result = r_u32(0x800A5FA4u);
     if (result == 0u)
     {
-        w_u32(0x800A5FA4u, 0xFFFFFFFFu);
         result = r_u32(0x800A5FA0u) + 1u;
+        w_u32(0x800A5FA4u, 0xFFFFFFFFu);
         w_u32(0x800A5FA0u, result);
     }
     return draft_scratch_result(native_stack_mark, (uint64)(result));
@@ -450,7 +470,7 @@ uint32 sub_80045AD8(uint32 a1, uint32 a2)
         link = (sint32)(sint16)r_u16(a1 + 158u);
         if (link == -1)
         {
-            uint32 index = (uint32)(sint32)(sint16)r_u16(a1 + 72u), type = r_u16(a1 + 68u), flags = r_u8(a1 + 14u);
+            uint32 index = (uint32)(sint32)(sint16)r_u16(a1 + 72u), type = (uint32)r_s16(a1 + 68u), flags = r_u8(a1 + 14u);
             w_u8(a1 + 64u, 1u);
             w_u16(a1 + 160u, 0xFFFFu);
             w_u8(a1 + 66u, 1u);
@@ -503,17 +523,18 @@ uint32 sub_80045AD8(uint32 a1, uint32 a2)
         w_u32(current, 0x80045510u);
         return draft_scratch_result(native_stack_mark, (uint64)(1u));
     }
-    if ((sint16)r_u16(a1 + 158u) == -1 && r_u32(0x800A9734u) != 0u)
+    if ((sint16)r_u16(a1 + 158u) == -1 && r_s16(0x800A9734u) != 0u)
     {
         w_u8(a1 + 14u, r_u8(a1 + 14u) | 2u);
-        if (r_u32(0x800A9734u) == 1u)
+        sint32 mission_state = r_s16(0x800A9734u);
+        if (mission_state == 1)
         {
-            sub_80030F08((uint32)(sint32)(sint16)r_u16(a1 + 76u), r_u16(a1 + 68u), 2u);
+            sub_80030F08((uint32)(sint32)(sint16)r_u16(a1 + 76u), (uint32)r_s16(a1 + 68u), 2u);
             w_u16(current + 76u, 0xFFFFu);
         }
-        else if (r_u32(0x800A9734u) == 2u)
+        else if (mission_state == 2)
         {
-            sub_80030F08((uint32)(sint32)(sint16)r_u16(a1 + 78u), r_u16(a1 + 68u), 3u);
+            sub_80030F08((uint32)(sint32)(sint16)r_u16(a1 + 78u), (uint32)r_s16(a1 + 68u), 3u);
             w_u16(current + 78u, 0xFFFFu);
         }
     }

@@ -328,7 +328,6 @@ uint32 sub_80059420(void)
     if (r_u32(0x800A9760u) == 1)
     {
         draft_call_adapter(0x80031770u);
-        // TODO Recover SDK argument outputs of the preceding call during integration
         return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80044618u)));
     }
     draft_call_adapter(0x80058600u);

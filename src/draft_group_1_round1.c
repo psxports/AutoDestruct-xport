@@ -359,8 +359,10 @@ uint32 sub_8006A0A0(uint32 a1, uint32 a2)
                 uint32 flags = r_u32(r_u32(0x800A84FCu) + candidate * 8u + 4u);
                 if ((flags & 0x400u) == 0u)
                 {
+                    uint32 link = (uint32)((sint32)flags >> 11) + index;
+                    uint32 connection = r_u32(r_u32(0x800A7E2Cu) + (link << 2));
                     selected = candidate;
-                    if ((r_u32(r_u32(0x800A7E2Cu) + 4u * ((flags >> 11) + index)) >> 12) == 0xFFFFFu && (flags & 0x300u) == 0u)
+                    if ((connection >> 12) == 0xFFFFFu && (flags & 0x300u) == 0u)
                         return draft_scratch_result(native_stack_mark, (uint64)(candidate));
                 }
             }
@@ -476,10 +478,12 @@ uint32 sub_8004E53C(uint32 object, uint32 a2, uint32 a3, uint32 enabled)
             result = distance < 10240;
             if (enabled)
                 return draft_scratch_result(native_stack_mark, (uint64)(result));
-            factor = distance >= 10240 ? 32 : 16 * distance / 10240 + 16;
+            factor = distance >= 10240 ? 32 : (sint32)((uint32)distance << 4) / 10240 + 16;
         }
         // TODO Bind original target 0x8006B198
-        result = (uint32)draft_call_adapter(0x8006B198u, object + 280u, (uint32)((((sint32)(r_u32(0x800A63D8u) + 512u) >> 10) * factor + 32) >> 6));
+        uint32 tick = (uint32)((sint32)(r_u32(0x800A63D8u) + 512u) >> 10);
+        uint32 step = tick * (uint32)factor + 32;
+        result = (uint32)draft_call_adapter(0x8006B198u, object + 280u, (uint32)((sint32)step >> 6));
         w_u32(object + 24u, result);
     }
     return draft_scratch_result(native_stack_mark, (uint64)(result));
@@ -494,7 +498,7 @@ uint32 sub_800369E0(uint32 position, uint32 status, uint32 volume, uint32 sample
 
     sint32 voice = -1, index;
     uint32 record, hardware, mask, value;
-    if (r_u32(0x800A7BECu) != 1u || (sint8)r_u8(status) >= 0)
+    if (r_s16(0x800A7BECu) != 1u || (sint8)r_u8(status) >= 0)
         return draft_scratch_result(native_stack_mark, (uint64)(0xffffffffu));
     // TODO Bind original target 0x80086EE4
     for (index = 14; index < 24; ++index)
@@ -514,14 +518,15 @@ uint32 sub_800369E0(uint32 position, uint32 status, uint32 volume, uint32 sample
     w_u32(record + 8u, position);
     w_u32(record + 12u, status);
     w_u8(status, (uint32)voice);
-    mask = 1u << voice;
-    w_u32(hardware, mask);
     w_u32(hardware + 4u, 147u);
-    w_u16(hardware + 8u, 0);
-    w_u16(hardware + 10u, 0);
     w_u16(hardware + 20u, volume);
     value = r_u32(0x800A7FC0u + (uint32)(sint32)(sint16)sample * 8u);
     w_u32(hardware + 32u, value);
+    value = r_u32(0x800A7FC0u + (uint32)(sint32)(sint16)sample * 8u);
+    mask = 1u << voice;
+    w_u32(hardware, mask);
+    w_u16(hardware + 8u, 0);
+    w_u16(hardware + 10u, 0);
     w_u32(hardware + 28u, value);
     if ((sint16)sub_80036434(r_u32(record + 8u), (uint32)voice) == -1)
     {
@@ -536,6 +541,8 @@ uint32 sub_800369E0(uint32 position, uint32 status, uint32 volume, uint32 sample
 
     draft_scratch_release(native_stack_mark);
 }
+
+static sint32 draft11_div(sint32 n, sint32 d);
 
 static uint32 draft11_image(uint32 rect, uint32 x, uint32 width, uint32 source)
 {
@@ -559,8 +566,9 @@ uint32 sub_80057DD8(void)
     amount = (sint32)r_u32(0x800A7E10u);
     if (amount > 0)
     {
+        numerator = (sint32)((uint32)amount << 24) / 800;
         w_u32(0x800A9CD4u, 100);
-        length = ((sint32)((uint32)amount << 24) / 800) >> 16;
+        length = numerator >> 16;
         if (length < 4)
             length = 4;
         if (length > 32)
@@ -576,10 +584,8 @@ uint32 sub_80057DD8(void)
         numerator = (sint32)r_u32(0x800A8538u);
         numerator = numerator > 2184479 ? (sint32)(409u * (uint32)(numerator >> 8)) >> 16 : 53;
         denominator = (sint32)(((uint32)numerator << 24) + ((numerator & 128) ? 8191u : 0u)) >> 21;
-        // TODO Preserve original division break boundary
-        if (denominator == 0 || (denominator == -1 && ((uint32)amount << 24) == 0x80000000u))
-            return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80057DD8u, denominator)));
-        length = ((sint32)((uint32)amount << 24) / denominator) >> 16;
+        amount = r_s32(0x800A84AC);
+        length = draft11_div((sint32)((uint32)amount << 24), denominator) >> 16;
         if (length < 4)
             length = 4;
         if (length > 32)
@@ -1004,7 +1010,7 @@ uint32 sub_80036584(uint32 position, uint32 voice_input)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 scratch = draft_scratch_adapter(20u), vector = scratch + 12u, record, hardware;
+    uint32 scratch = draft_scratch_adapter(20u), vector = scratch + 12u, record, hardware, factor;
     sint32 voice = (sint16)voice_input, left, right, angle, distance, change, level, pan, value;
     sint64 product;
     w_u32(vector, r_u32(0x800A5C58u));
@@ -1021,46 +1027,51 @@ uint32 sub_80036584(uint32 position, uint32 voice_input)
     distance = (sint32)draft_call_adapter(0x80069BE0u, r_u32(0x800A7EE4u) - r_u32(position), r_u32(0x800A7EECu) - r_u32(position + 8u));
     record = 0x800A7C78u + (uint32)voice * 16u;
     hardware = 0x800BBEFCu + (uint32)voice * 64u;
-    change = (distance - (sint32)r_u32(record + 4u)) >> 1;
+    change = (sint32)((uint32)distance - r_u32(record + 4u)) >> 1;
     if (change >= 128)
         change = 127;
     if (change < -127)
         change = -127;
-    level = (right + left) >> 7;
+    level = (sint32)((uint32)right + (uint32)left) >> 7;
+    factor = r_u8(0x8008B97C + (uint32)(r_s16(record) >> 8));
     if (level == 0)
         level = 1;
     // TODO Bind original voice status SDK target
-    if (draft_call_adapter(0x80086EE4u, 1u << voice) != 1u || (uint32)(level + 126) >= 253u)
+    if (draft_call_adapter(0x80086EE4u, 1u << ((uint32)voice & 31)) != 1u || (uint32)level + 126 >= 253u)
         return draft_scratch_result(native_stack_mark, (uint64)(0xffffffffu));
-    w_u16(hardware + 20u, r_u16(record) - (sint16)r_u16(0x800A956Cu + (uint32)change * 2u) * r_u8(0x8008B97Cu + (uint32)((sint16)r_u16(record) >> 8)));
+    w_u16(hardware + 20u, r_u16(record) - (uint32)r_s16(0x800A956C + (uint32)change * 2) * factor);
     pan = r_u8(0x800A8234u + (uint32)(uint8)(angle >> 3));
     if (angle > 0)
         pan = -pan;
-    pan = (sint16)(pan << 7);
+    pan = (sint16)((uint32)pan << 7);
     level = (right >> 6) + 128;
     if (level < 0)
         level = 0;
     if (level > 255)
         level = 255;
     value = (((sint32)r_u8(0x800A83A0u + (uint32)level) << 7) + pan) >> 1;
-    value *= r_u32(0x800A9D6Cu);
-    product = (sint64)value * (sint32)0x80020008u;
-    value = (((sint32)(product >> 32) + value) >> 13) - (value >> 31);
-    w_u16(hardware + 8u, (value & 0x8000) ? 0 : (uint32)value);
+    value = (sint32)((uint32)value * (uint32)r_s16(0x800A9D6C));
+    product = (sint64)value * (sint32)0x80020009;
+    value = ((sint32)((uint32)(sint32)(product >> 32) + (uint32)value) >> 13) - (value >> 31);
+    w_u16(hardware + 8, (uint32)value);
+    if (value & 0x8000)
+        w_u16(hardware + 8, 0);
     pan = r_u8(0x800A8234u + (uint32)(uint8)(angle >> 3));
     if (angle < 0)
         pan = -pan;
-    pan = (sint16)(pan << 7);
+    pan = (sint16)((uint32)pan << 7);
     level = (left >> 6) + 128;
     if (level < 0)
         level = 0;
     if (level > 255)
         level = 255;
     value = (((sint32)r_u8(0x800A83A0u + (uint32)level) << 7) + pan) >> 1;
-    value *= r_u32(0x800A9D6Cu);
-    product = (sint64)value * (sint32)0x80020008u;
-    value = (((sint32)(product >> 32) + value) >> 13) - (value >> 31);
-    w_u16(hardware + 10u, (value & 0x8000) ? 0 : (uint32)value);
+    value = (sint32)((uint32)value * (uint32)r_s16(0x800A9D6C));
+    product = (sint64)value * (sint32)0x80020009;
+    value = ((sint32)((uint32)(sint32)(product >> 32) + (uint32)value) >> 13) - (value >> 31);
+    w_u16(hardware + 10, (uint32)value);
+    if (value & 0x8000)
+        w_u16(hardware + 10, 0);
     w_u32(record + 4u, (uint32)distance);
     return draft_scratch_result(native_stack_mark, (uint64)(r_u16(hardware + 10u) ? (uint32)voice : 0xffffffffu));
 
@@ -1264,13 +1275,24 @@ uint32 sub_80047CF0(uint32 parameters)
     return draft_scratch_result(native_stack_mark, object);
 }
 
+static uint32 draft11_actor_model(uint32 object)
+{
+    uint32 index = r_u16(object + 32);
+    uint32 map = r_u32(0x800A8548);
+    uint32 model = r_u8(map + index);
+    uint32 models = r_u32(0x800A90AC);
+    return models + model * 40;
+}
+
 // FUNCTION_MARKER sub_8004D184
 uint32 sub_8004D184(uint32 object)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 scratch = draft_scratch_adapter(76u), previous = scratch, motion = scratch + 12u, target = scratch + 24u, normal = scratch + 40u, tag = scratch + 48u, i, sum = 0, result, height_address;
-    sint32 ground, height, y, delta;
+    uint32 scratch = draft_scratch_adapter(76), previous = scratch, motion = scratch + 12, target = scratch + 24, normal = scratch + 40, tag = scratch + 48;
+    uint32 i, sum = 0, result, code, x, y_word, z, index, map, models, flags, record, parameter;
+    sint32 height, delta;
+    uint32 ground, y;
     result = sub_8004D04C(object);
     if (result)
     {
@@ -1281,8 +1303,12 @@ uint32 sub_8004D184(uint32 object)
         }
         w_u32(object, 0x8004D874u);
     }
-    for (i = 0; i < 12; i += 4)
-        w_u32(previous + i, r_u32(object + 128u + i));
+    x = r_u32(object + 128);
+    y_word = r_u32(object + 132);
+    z = r_u32(object + 136);
+    w_u32(previous, x);
+    w_u32(previous + 4, y_word);
+    w_u32(previous + 8, z);
     w_u32(0x800A6EF4u, previous);
     w_u32(0x800A6F9Cu, object);
     w_u16(0x800A6FB4u, 1);
@@ -1291,10 +1317,11 @@ uint32 sub_8004D184(uint32 object)
     w_u32(motion + 8u, r_u32(object + 104u));
     for (i = 0; i < 4; ++i)
         sum += r_u16(object + 210u + i * 16u) & 15u;
-    if (r_u8(object + 198u) == 12u || (r_u8(object + 12u) >= 4u && (sint16)sum == 4))
+    code = r_u8(object + 198);
+    if (code == 12 || (r_u8(object + 12u) >= 4u && (sint16)sum == 4))
     {
         // TODO Bind original target 0x80048F9C
-        draft_call_adapter(0x80048F9Cu, object + 20u, motion, object + 182u, r_u8(object + 198u));
+        draft_call_adapter(0x80048F9Cu, object + 20u, motion, object + 182u, code);
     }
     else
     {
@@ -1308,15 +1335,14 @@ uint32 sub_8004D184(uint32 object)
         else
         {
             w_u32(0x800A6FC4u, r_u16(object + 178u));
+            parameter = r_u16(object + 178);
             w_u32(0x800A6FC0u, motion);
             w_u32(0x800A6FB8u, object);
             w_u32(0x800A6FBCu, target);
-            w_u32(0x800A6FC8u, r_u16(object + 178u) >> 6);
+            w_u32(0x800A6FC8u, parameter >> 6);
             sub_80047CF0(0x800A6FB8u);
         }
     }
-    height_address = r_u32(0x800A90ACu) + 40u * r_u8(r_u32(0x800A8548u) + r_u16(object + 32u)) + 32u;
-    height = (sint16)r_u16(height_address) >> 1;
     if (r_u8(object + 12u) < 4u)
     {
         w_u32(object + 320u, 0);
@@ -1324,12 +1350,18 @@ uint32 sub_8004D184(uint32 object)
         {
             if (r_u8(object + 88u) == 0)
             {
-                for (i = 0; i < 12; i += 4)
-                    w_u32(object + 20u + i, r_u32(object + 128u + i));
+                x = r_u32(object + 128);
+                y_word = r_u32(object + 132);
+                z = r_u32(object + 136);
+                w_u32(object + 20, x);
+                w_u32(object + 24, y_word);
+                w_u32(object + 28, z);
                 w_u16(object + 114u, 120);
-                w_u8(object + 87u, 0u - r_u8(object + 87u));
-                if ((sint16)r_u16(object + 170u) > 0)
-                    w_u16(object + 170u, r_u16(object + 170u) - 1u);
+                code = (uint32)r_s8(object + 87);
+                parameter = (uint32)r_s16(object + 170);
+                w_u8(object + 87, 0 - code);
+                if ((sint32)parameter > 0)
+                    w_u16(object + 170, parameter - 1);
             }
             w_u32(motion, r_u32(motion) << 8);
             w_u32(motion + 8u, r_u32(motion + 8u) << 8);
@@ -1340,28 +1372,45 @@ uint32 sub_8004D184(uint32 object)
         }
         else
             w_u8(object + 88u, 0);
+        height = (sint16)r_u16(draft11_actor_model(object) + 32) >> 1;
         w_u32(object + 24u, r_u32(object + 24u) + (uint32)height);
         // TODO Bind original target 0x8002E310
         result = (uint32)draft_call_adapter(0x8002E310u, object + 20u, normal, tag);
-        y = (sint32)r_u32(object + 24u);
-        ground = -(sint32)result - height;
-        delta = y - ground;
+        height = (sint16)r_u16(draft11_actor_model(object) + 32) >> 1;
+        y = r_u32(object + 24);
+        ground = 0 - result - (uint32)height;
+        delta = (sint32)(y - ground);
         if (delta < 0)
-            delta = -delta;
+            delta = (sint32)(ground - y);
         if (delta >= 512)
-            ground = y - height;
-        w_u32(object + 24u, (uint32)ground);
+        {
+            height = (sint16)r_u16(draft11_actor_model(object) + 32) >> 1;
+            ground = r_u32(object + 24) - (uint32)height;
+        }
+        w_u32(object + 24, ground);
+        map = r_u32(0x800A8548);
+        models = r_u32(0x800A90AC);
         for (i = 0; i < 4; ++i)
         {
-            w_u16(object + 202u + i * 16u, (uint32)ground);
-            w_u16(object + 200u + i * 16u, (uint32)ground);
-            w_u16(object + 204u + i * 16u, (uint32)(ground + height));
-            w_u32(object + 208u + i * 16u, r_u32(object + 208u + i * 16u) & 0xfff0ffffu);
+            record = object + i * 16;
+            w_u16(record + 202, ground);
+            w_u16(record + 200, ground);
+            index = r_u16(object + 32);
+            code = r_u8(map + index);
+            flags = r_u32(record + 208);
+            height = (sint16)r_u16(models + code * 40 + 32) >> 1;
+            w_u32(record + 208, flags & 0xfff0ffff);
+            w_u16(record + 204, ground + (uint32)height);
         }
-        w_u8(object + 266u, 0);
-        w_u8(object + 267u, 0);
-        w_u16(object + 264u, (uint32)ground);
-        w_u32(object + 268u, (uint32)(ground + height));
+        index = r_u16(object + 32);
+        w_u8(object + 266, 0);
+        w_u8(object + 267, 0);
+        map = r_u32(0x800A8548);
+        w_u16(object + 264, ground);
+        code = r_u8(map + index);
+        models = r_u32(0x800A90AC);
+        height = (sint16)r_u16(models + code * 40 + 32) >> 1;
+        w_u32(object + 268, ground + (uint32)height);
         sub_80036CFC(object + 194u);
         sub_80036CFC(object + 324u);
     }
@@ -1372,19 +1421,28 @@ uint32 sub_8004D184(uint32 object)
             sub_800369E0(object + 20u, object + 324u, 1000, 56);
         else
             sub_80036CFC(object + 324u);
-        sub_80029970(object, (uint32)(sint32)(sint16)r_u16(height_address), 2, 1, previous);
-        sub_800369E0(object + 20u, object + 194u, r_u8(object + 197u) == 12 ? 1000u : 3000u, r_u8(object + 197u) == 12 ? 42u : 11u);
+        height = r_s16(draft11_actor_model(object) + 32);
+        sub_80029970(object, (uint32)height, 2, 1, previous);
+        code = r_u8(object + 197);
+        if (code == 12)
+            sub_800369E0(object + 20, object + 194, 1000, 42);
+        else
+            sub_800369E0(object + 20, object + 194, 3000, 11);
     }
     w_u32(object + 100u, r_u32(motion));
     w_u32(object + 104u, r_u32(motion + 8u));
-    for (i = 0; i < 12; i += 4)
-        w_u32(object + 128u + i, r_u32(object + 20u + i));
+    x = r_u32(object + 20);
+    y_word = r_u32(object + 24);
+    z = r_u32(object + 28);
+    w_u32(object + 128, x);
+    w_u32(object + 132, y_word);
+    w_u32(object + 136, z);
     result = (uint32)(sint32)(sint8)r_u8(object + 89u);
     if ((sint32)result <= 0)
         w_u8(object + 89u, 0);
     else
     {
-        result -= (uint32)((sint32)r_u32(0x800A63D8u) >> 16);
+        result -= (uint32)r_s16(0x800A63DA);
         w_u8(object + 89u, result);
     }
     return draft_scratch_result(native_stack_mark, (uint64)(result));

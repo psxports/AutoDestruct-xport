@@ -62,7 +62,7 @@ uint32 sub_80073B78(GameGeometryCallContext *context);
 uint32 sub_80080474(uint32 argument_0, uint32 argument_1);
 uint32 sub_8008056C(uint32 argument_0);
 void sub_80083868(uint32 argument_0);
-uint32 sub_80083898(uint32 argument_0, uint32 argument_1);
+void sub_80083898(uint32 argument_0, uint32 argument_1);
 
 uint32 sub_8003BE08(uint32 image, GameGeometryCallContext *context)
 {

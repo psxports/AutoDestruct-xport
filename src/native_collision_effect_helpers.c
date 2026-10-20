@@ -5,21 +5,23 @@ uint32 sub_80062B3C(uint32 position, uint32 material, uint32 scale, uint32 count
     sint32 remaining = (sint16)count;
     uint32 multiplier = (uint32)((sint32)scale >> 8), result;
     FUNCTION_MARKER(0x80062B3Cu, "1.EXE");
-    /* TODO Nonpositive count preserves an unspecified incoming v0 */
+    /* Adapter placeholder for the original path without a defined result */
     if (remaining <= 0)
-        abort();
+        return 0u;
     do
     {
         uint32 effect = sub_800227C4(40u), x, y, z;
+        uint32 flags = r_u8(effect + 14u);
         w_u8(effect + 34u, 11u);
         w_u16(effect + 32u, material);
-        w_u8(effect + 14u, r_u8(effect + 14u) | 2u);
+        w_u8(effect + 14u, flags | 2u);
         w_u32(effect + 20u, r_u32(position));
         result = r_u32(position + 4u);
         w_u32(effect + 24u, result);
         w_u16(effect + 18u, result);
+        z = r_u32(position + 8u);
         w_u16(effect + 36u, 200u);
-        w_u32(effect + 28u, r_u32(position + 8u));
+        w_u32(effect + 28u, z);
         w_u16(effect + 38u, sub_80069A50());
         w_u32(effect, 0x80062CA0u);
         x = (uint32)(sint32)(sint16)((sub_80069A50() & 255u) + 0xFF81u);

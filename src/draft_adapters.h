@@ -3,7 +3,7 @@
 
 #include "psx.h"
 
-// TODO Bind unavailable guest calls during integration
+// Dispatch translated game calls and existing SDK adapters
 uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...);
 
 // Count target plus up to 24 arguments without reading absent values
@@ -12,14 +12,14 @@ uint64 draft_call_adapter_counted(uint32 argument_count, uint32 target, ...);
 #define DRAFT_ADAPTER_ARG_COUNT(...) DRAFT_ADAPTER_ARG_COUNT_EXPAND((__VA_ARGS__, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
 #define draft_call_adapter(...) draft_call_adapter_counted(DRAFT_ADAPTER_ARG_COUNT(__VA_ARGS__) - 1u, __VA_ARGS__)
 
-// TODO Bind addressable temporary guest buffers during integration
+// Allocate scoped addressable temporary buffers
 uint32 draft_scratch_adapter(uint32 bytes);
 uint32 draft_scratch_mark(void);
 void draft_scratch_guest_frame(uint32 entry_sp, uint32 bytes);
 void draft_scratch_release(uint32 mark);
 uint64 draft_scratch_result(uint32 mark, uint64 value);
 
-// TODO Bind GTE commands and control registers during integration
+// Delegate GTE commands and expose the supported control registers
 void draft_gte_command_adapter(uint32 command);
 uint32 draft_gte_control_adapter(uint32 index);
 

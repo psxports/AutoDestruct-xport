@@ -461,7 +461,7 @@ uint32 sub_8003B990(uint32 a1)
     int32 number = (int16)(a1 + 50u), tens = number / 10;
     for (i = 0; i < 24u; ++i)
         w_u8(scratch + i, r_u8(0x800A5D58u + i));
-    w_u8(scratch + 10u, (uint8)(r_u32(0x800A8FD4u) + 48u));
+    w_u8(scratch + 10u, (uint8)(r_u8(0x800A8FD4u) + 48u));
     w_u8(scratch + 12u, (uint8)(tens + 48));
     w_u8(scratch + 14u, (uint8)(tens + 48));
     w_u8(scratch + 15u, (uint8)(number % 10 + 48));
@@ -1074,6 +1074,7 @@ uint32 sub_8002AA2C(uint32 a1, uint32 a2, uint32 a3)
     if (mode == 1)
     {
         scratch = draft_scratch_adapter(16u);
+        w_u16(scratch, 0u);
         damage = (uint32)draft_call_adapter(0x8003D338u, scratch, (uint32)(int32)(int16)r_u16(a1 + 58u));
         result = (uint32)(int32)(int16)r_u16(target + 58u);
         if (!result)
@@ -1087,14 +1088,14 @@ uint32 sub_8002AA2C(uint32 a1, uint32 a2, uint32 a3)
         if (r_u32(a1 + 16u) == r_u32(0x800A7BACu))
         {
             uint32 kills;
-            if (!r_u32(0x800A9734u))
+            if (!r_s16(0x800A9734u))
                 w_u32(0x800A9A34u, r_u32(0x800A9A34u) + 1u);
             kills = r_u32(0x800A9A34u);
             if (kills == 10u || kills == 20u || kills == 40u)
             {
                 w_u32(0x800A6258u, 90u);
                 if (kills == 40u)
-                    w_u32(0x800A9734u, 2u);
+                    w_u16(0x800A9734u, 2u);
             }
         }
     }
@@ -1106,9 +1107,9 @@ uint32 sub_8002AA2C(uint32 a1, uint32 a2, uint32 a3)
             if (r_u32(0x800A86A0u) && !r_u32(0x800A6450u))
             {
                 damage = (uint32)(int32)(int16)draft_call_adapter(0x8003D338u, 0x800A8514u, (uint32)(int32)(int16)r_u16(a1 + 58u));
-                draft_call_adapter(0x8003D27Cu, r_u32(0x800A8514u));
+                draft_call_adapter(0x8003D27Cu, (uint32)r_s16(0x800A8514u));
                 w_u32(0x800A86A0u, r_u32(0x800A86A0u) - damage);
-                draft_call_adapter(0x8003D324u, r_u32(0x800A86A0u));
+                draft_call_adapter(0x8003D324u, (uint32)r_s16(0x800A86A0u));
                 if ((int32)r_u32(0x800A86A0u) <= 0)
                 {
                     w_u32(0x800A86A0u, 0u);

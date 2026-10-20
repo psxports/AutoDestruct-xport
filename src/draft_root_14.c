@@ -58,12 +58,13 @@ uint32 sub_80045EB0(uint32 a0)
     draft_call_adapter(0x8004561Cu, target, a0);
     w_u32(target, r_u32(a0));
     index = r_s16(a0 + 0xA2u);
-    w_u8(a0 + 0xE1u, 0);
+    w_u8(a0 + 0xEu, 1);
     w_u8(a0 + 0x40u, 0);
     w_u8(a0 + 0x42u, 1);
     w_u8(a0 + 0x41u, 1);
     if (index != -1)
     {
+        table = r_u32(0x800A851C);
         other = r_u32(table + (uint32)index * 4u);
         if (!r_u8(other + 0x40u))
         {

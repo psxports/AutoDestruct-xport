@@ -55,13 +55,12 @@ uint32 sub_8004ED64(uint32 a0)
     draft_scratch_release(native_stack_mark);
 }
 
-uint32 sub_80057A90(uint32 a0, uint32 a1, uint32 a2, uint32 a3)
+uint32 sub_80057A90(void)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
     FUNCTION_MARKER(0x80057A90u, "1.EXE");
-    // TODO Omitted pseudocode inputs pass through to the unresolved callee contract
-    return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80057AB0u, a0, a1, a2, a3)));
+    return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80057AB0u)));
 
     draft_scratch_release(native_stack_mark);
 }

@@ -107,7 +107,7 @@ uint32 sub_8003CB54(uint32 a0, uint32 a1)
     FUNCTION_MARKER(0x8003CB54u, "1.EXE");
     a1 = (uint32)(sint16)a1;
     target = r_u32(0x800901E0u + a1 * 12u);
-    // TODO Indirect guest callback adapter
+    // Forward the owner and signed weapon index through the native dispatcher
     return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(target, a0, a1)));
 
     draft_scratch_release(native_stack_mark);

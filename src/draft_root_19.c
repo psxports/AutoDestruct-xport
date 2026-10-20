@@ -158,7 +158,7 @@ uint32 sub_8004AB4C(uint32 wrapper)
         case 0x8004B28Cu:
             sub_80049648(D19_O, D19_H(0xAC), D19_H(0xAE));
             w_u8(D19_O + 0xC6, 3);
-            goto normal;
+            return draft_scratch_result(native_stack_mark, 3);
         case 0x8004B2B4u:
             sub_800494F4(D19_O, D19_H(0xAE));
             point = sub_800476D8(D19_H(0xAC));
@@ -169,19 +169,20 @@ uint32 sub_8004AB4C(uint32 wrapper)
                 w_u16(D19_O + 0xAE, value);
             if (r_u8(D19_O + 0xC6) != 11)
                 w_u8(D19_O + 0xC6, 2);
-            goto normal;
+            return draft_scratch_result(native_stack_mark, 2);
         case 0x8004B350u:
             state = 7;
             goto activate;
         case 0x8004B3C8u:
             /* TODO Supply absent wrapper-route ABI adapter */
-            if (draft_call_adapter(0x80049D98u, wrapper))
+            value = (uint32)draft_call_adapter(0x80049D98u, wrapper);
+            if (value)
                 goto reset_route;
-            goto normal;
+            return draft_scratch_result(native_stack_mark, value);
         case 0x8004B3E0u:
             sub_80049FBC(wrapper);
             if (D19_H(0xBC) < r_u32(0x800A63E4u))
-                goto normal;
+                return draft_scratch_result(native_stack_mark, 1);
             w_u16(D19_O + 0x98, r_u16(D19_O + 0x98) + 1);
             if (r_s16(D19_O + 0xAA) < 0)
             {
@@ -193,7 +194,7 @@ uint32 sub_8004AB4C(uint32 wrapper)
                     w_u16(D19_O + 0x98, 0);
                     w_u16(D19_O + 0x9A, 0);
                     w_u8(D19_O + 0xC6, 26);
-                    goto normal;
+                    return draft_scratch_result(native_stack_mark, 26);
                 }
                 goto reset_route;
             }
@@ -212,7 +213,7 @@ uint32 sub_8004AB4C(uint32 wrapper)
             w_u8(D19_O + 0x57, 1);
             w_u16(D19_O + 0x72, 0);
             w_u8(D19_O + 0xC6, 20);
-            goto normal;
+            return draft_scratch_result(native_stack_mark, 20);
         case 0x8004B600u:
             sub_80049648(D19_O, D19_H(0xAC), D19_H(0xAE));
             w_u8(D19_O + 0xC6, 21);
@@ -264,7 +265,9 @@ activate:
     w_u16(D19_O + 0xAA, 5);
     w_u8(D19_O + 0xC7, 0);
     w_u8(D19_O + 0xC6, state);
-    sub_80044F50(wrapper);
+    value = sub_80044F50(wrapper);
+    if (state == 7)
+        return draft_scratch_result(native_stack_mark, value);
 normal:
     state = r_u8(D19_O + 0xC6);
     value = sub_800498D4(D19_O, D19_H(0xB6));

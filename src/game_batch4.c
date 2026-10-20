@@ -823,7 +823,7 @@ void sub_8006F150(GameMainCallContext *context)
 #include "game_scene.h"
 void sub_8005A934(void);
 uint32 sub_800649D4(uint32 value);
-uint32 sub_80064E78(GameGeometryCallContext *context);
+uint32 sub_80064E78(void);
 uint32 sub_80069E54(GameGeometryCallContext *context);
 uint32 sub_80064B04(uint32 size, GameGeometryCallContext *context);
 uint32 sub_80029C80(uint32 source, uint32 destination, uint32 scale_x, uint32 unused, uint32 entry_stack);
@@ -1075,7 +1075,7 @@ advance:
     w_u32(0x800A748Cu, 0xFFFFFFFFu);
 collect:
     child.return_address = 0x80064B94u;
-    result = sub_80064E78(&child);
+    result = sub_80064E78();
     if (result == child.caller_s3)
     {
         result = 0u;

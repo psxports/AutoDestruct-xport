@@ -674,7 +674,7 @@ uint32 sub_800418E4(uint32 position)
                 break;
             if ((tag & 0x7FFFu) == code)
             {
-                // TODO Preserve the original sixteen-entry candidate limit
+                // The original exits only the inner match loop at sixteen candidates
                 w_u16(candidates + 2u * found, (uint16)(id | (tag & 0x8000u)));
                 if (++found == 16u)
                     break;
