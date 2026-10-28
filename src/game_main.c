@@ -480,7 +480,6 @@ void xport_main(void)
 {
     PSX_EXE image = {"../orig/1.EXE", 0x80010000u, 0x800A6720u, 0x800C15E8u, 0x8009242Cu, 0x800C15E8u, 0x001FFBF8u - 0x000C15E8u};
     GameMainCallContext context = {0};
-    gpu_set_frame_skip(0);
     if (!xport_psx_exe_load(&image))
     {
         xport_message_error("Auto Destruct", "Cannot load ../orig/1.EXE");

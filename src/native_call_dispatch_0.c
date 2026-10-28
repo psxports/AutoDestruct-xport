@@ -1336,10 +1336,11 @@ uint64 native_dispatch_group_0(uint32 target, uint32 argument_count, va_list arg
         }
         case 0x8002C9D4u:
         {
-            native_dispatch_require(target, argument_count, 2u);
+            native_dispatch_require(target, argument_count, 3u);
             uint32 p0 = (uint32)va_arg(args, uint32);
             uint32 p1 = (uint32)va_arg(args, uint32);
-            result = (uint64)sub_8002C9D4(p0, p1);
+            uint32 p2 = (uint32)va_arg(args, uint32);
+            result = (uint64)sub_8002C9D4(p0, p1, p2);
             break;
         }
         case 0x8002CE90u:

@@ -397,7 +397,7 @@ uint32 sub_8006AFF4(uint32 a1)
 }
 
 /* FUNCTION_MARKER: sub_8002C9D4 */
-uint32 sub_8002C9D4(uint32 a1, uint32 a2)
+uint32 sub_8002C9D4(uint32 a1, uint32 ignored_index, uint32 a2)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 

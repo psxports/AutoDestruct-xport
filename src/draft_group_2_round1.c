@@ -72,18 +72,17 @@ uint32 sub_80041604(uint32 a1)
 {
     uint32 native_stack_mark = draft_scratch_mark();
 
-    uint32 flags, temporary;
+    uint32 flags, temporary = draft_scratch_adapter(8u);
+    w_u16(temporary, 0u);
     if (r_u8(a1 + 12u) < 5u)
         flags = r_u8(a1 + 14u) & 0x7Du;
     else
     {
-        temporary = draft_scratch_adapter(8u);
-        w_u16(temporary, 0u);
         draft_call_adapter(0x800410E4u, a1, temporary);
         flags = r_u8(a1 + 14u) | 0x82u;
     }
     w_u8(a1 + 14u, (uint8)flags);
-    if (r_u8(a1 + 12u) < 2u)
+    if (r_u8(a1 + 12u) < 2u || r_s16(temporary) == 6)
     {
         w_u32(0x800A5F18u, r_u32(0x800A5F18u) - 1u);
         return draft_scratch_result(native_stack_mark, (uint64)(sub_8002289C(a1)));
