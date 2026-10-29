@@ -139,9 +139,9 @@ uint32 sub_80070A0C(uint32 a1)
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 address;
-    // TODO Enable memory-card menu entries with the card implementation
+    // Native save actions bypass card management
     if (a1 == 259)
-        return draft_scratch_result(native_stack_mark, 0);
+        return draft_scratch_result(native_stack_mark, 1);
     if (a1 == 256u)
         return draft_scratch_result(native_stack_mark, (uint64)((int16)(uint32)draft_call_adapter(0x80037BB8u) == 2));
     if (a1 == 261u)

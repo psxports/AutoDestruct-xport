@@ -51,12 +51,9 @@ uint32 sub_800623B0(uint32 object)
 
 uint32 sub_8005A08C(uint32 filename)
 {
-    uint32 result;
     FUNCTION_MARKER(0x8005A08C, "1.EXE");
-    result = sub_8007D3F0(0x800A8670, 0x800A6290);
-    if (!result)
-        result = (uint32)draft_call_adapter(0x80059E4C, filename);
-    return result;
+    // Extracted DATA replaces the original SLUS disc-identity check
+    return 1u;
 }
 
 uint32 sub_80044074(uint32 y)

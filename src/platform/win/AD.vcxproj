@@ -94,6 +94,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\game_main.c" />
+    <ClCompile Include="..\..\native_data_cd.c" />
+    <ClCompile Include="..\..\..\..\xport\src\xport_fmv.c" />
+    <ClCompile Include="..\..\..\..\xport\src\psx_stream.c" />
     <ClCompile Include="..\..\render_frontier.c" />
     <ClCompile Include="..\..\..\..\xport\src\psx.c" />
     <ClCompile Include="..\..\..\..\xport\src\psx_gpu.c" />

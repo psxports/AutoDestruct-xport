@@ -1,3 +1,5 @@
+#include "native_game_save.h"
+#include "native_data_cd.h"
 #include "xport.h"
 #include "psx.h"
 #include "psx_gpu.h"
@@ -470,7 +472,6 @@ uint32 sub_80063C3C(uint32 destination, uint32 entry_sp)
 }
 
 // XPORT REVISION: 2026-09-29T20:00:00Z
-extern sint32 cd_mount_cue(const char *path);
 void native_spu_init_binding(void);
 void native_bios_init_callbacks(void);
 void native_debug_memory_init(void);
@@ -478,7 +479,13 @@ void sub_800394B8(GameMainCallContext *context);
 
 void xport_main(void)
 {
-    PSX_EXE image = {"../orig/1.EXE", 0x80010000u, 0x800A6720u, 0x800C15E8u, 0x8009242Cu, 0x800C15E8u, 0x001FFBF8u - 0x000C15E8u};
+#ifdef AP_WEB
+    const char *image_path = "BOOT/1.EXE";
+#else
+    const char *image_path = "../orig/1.EXE";
+#endif
+    PSX_EXE image = {image_path,
+        0x80010000u, 0x800A6720u, 0x800C15E8u, 0x8009242Cu, 0x800C15E8u, 0x001FFBF8u - 0x000C15E8u};
     GameMainCallContext context = {0};
     if (!xport_psx_exe_load(&image))
     {
@@ -486,11 +493,11 @@ void xport_main(void)
         xport_set_exit_code(1);
         return;
     }
+    ad_init_save_menu();
     native_debug_memory_init();
-    if (!cd_mount_cue("../iso/Auto Destruct (USA).cue"))
+    if (!ad_data_cd_install())
     {
-        xport_message_error("Auto Destruct", "Cannot mount Auto Destruct disc image");
-        xport_set_exit_code(1);
+        xport_message_error("Auto Destruct", "Cannot initialize extracted XA files");
         return;
     }
     context.stack_pointer = (r_u32(0x80092450u) - 8u) | 0x80000000u;
@@ -1472,6 +1479,7 @@ void sub_800394B8(GameMainCallContext *context)
                         w_u8(0x800A9878u, 1);
                         w_u16(0x800A906Cu, 1);
                     }
+                    ad_restore_loaded_game();
                     sub_800734C0();
                     w_u32(0x800A9758u, 3);
                 }
@@ -1479,6 +1487,8 @@ void sub_800394B8(GameMainCallContext *context)
                 while (1)
                 {
                     w_u32(0x800A563Cu, 0);
+                    if (ad_restore_loaded_game())
+                        sub_800734C0();
                     if (r_u32(0x800A9760u) == 1)
                     {
                         w_u32(0x800A8690u, 0);

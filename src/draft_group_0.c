@@ -1094,6 +1094,7 @@ static uint32 draft0_gt4(uint32 cursor, uint32 vertices, uint32 uv, uint32 color
 // FUNCTION_MARKER sub_8001E2C0
 uint32 sub_8001E2C0(uint32 screen, uint32 cursor, uint32 ordering_table, uint32 uv, uint32 vertices, uint32 clut, uint32 texture_page, uint32 depth_bias, uint32 colors)
 {
+    FUNCTION_MARKER(0x8001E2C0, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 base;
@@ -1162,6 +1163,7 @@ uint32 sub_8001E2C0(uint32 screen, uint32 cursor, uint32 ordering_table, uint32 
 // FUNCTION_MARKER sub_800170D0
 uint32 sub_800170D0(uint32 cursor, uint32 vertices, uint32 source, uint32 ordering_table, uint32 uv, uint32 depth_bias, uint32 count, uint32 next_source)
 {
+    FUNCTION_MARKER(0x800170D0, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     // Include the second subdivision vertices before the projected coordinates
@@ -1233,6 +1235,7 @@ uint32 sub_800170D0(uint32 cursor, uint32 vertices, uint32 source, uint32 orderi
 // FUNCTION_MARKER sub_8001998C
 uint32 sub_8001998C(uint32 cursor, uint32 vertices, uint32 source, uint32 ordering_table, uint32 uv, uint32 depth_bias, uint32 count, uint32 next_source)
 {
+    FUNCTION_MARKER(0x8001998C, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 temporary = draft_scratch_adapter(184u), screen = temporary + 112u, colors = temporary + 128u;
@@ -1311,6 +1314,7 @@ uint32 sub_8001998C(uint32 cursor, uint32 vertices, uint32 source, uint32 orderi
 // FUNCTION_MARKER sub_8001545C
 uint32 sub_8001545C(uint32 cursor, uint32 vertices, uint32 source, uint32 ordering_table, uint32 uv, uint32 depth_bias, uint32 count, uint32 next_source)
 {
+    FUNCTION_MARKER(0x8001545C, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 temporary = draft_scratch_adapter(128u), screen = temporary + 112u;

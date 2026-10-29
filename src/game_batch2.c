@@ -1211,34 +1211,8 @@ uint32 sub_800202B0(uint32 page)
 
 void sub_8005A5F8(uint32 value, GameGeometryCallContext *context)
 {
-    uint32 pending = r_u32(0x800A7408u);
-    uint32 frame = context->stack_pointer - 0x28u;
-    uint32 adjusted = value + 99u;
-    GameGeometryCallContext child = *context;
     FUNCTION_MARKER(0x8005A5F8u, "1.EXE");
-    w_u32(frame + 0x1Cu, context->caller_s1);
-    w_u32(frame + 0x20u, context->return_address);
-    w_u32(frame + 0x18u, context->caller_s0);
-    if (pending == 0u)
-        sub_80059E20();
-    child.stack_pointer = frame;
-    child.caller_s0 = 0x80090DFCu;
-    child.caller_s1 = adjusted;
-    child.return_address = 0x8005A62Cu;
-    sub_800598CC(0x80090DFCu, &child);
-    child.return_address = 0x8005A634u;
-    sub_800598CC(child.caller_s0 + 20u, &child);
-    w_u32(frame + 0x10u, 2u);
-    w_u32(frame + 0x14u, 150u);
-    child.return_address = 0x8005A65Cu;
-    sub_800439A4(0x808080u, child.caller_s1, 0u, 0xFFFFFFC3u, &child);
-    child.return_address = 0x8005A67Cu;
-    sub_8001FF7C(r_u32(0x800A9D60u) == 1u ? 2u : 0u, &child);
-    sub_8001F850();
-    context->caller_s2 = child.caller_s2;
-    context->return_address = r_u32(frame + 0x20u);
-    context->caller_s1 = r_u32(frame + 0x1Cu);
-    context->caller_s0 = r_u32(frame + 0x18u);
+    // Loading-resource discovery continues without the decorative countdown frame
 }
 
 void sub_80059E20(void)

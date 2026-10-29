@@ -1,4 +1,5 @@
 #include "psx.h"
+#include "native_data_cd.h"
 #include "draft_adapters.h"
 
 #include <stdlib.h>
@@ -212,35 +213,11 @@ uint32 sub_80059E2C(GameSceneCallContext *context)
 
 uint32 sub_8005A4D8(uint32 filename, GameSceneCallContext *context)
 {
-    uint32 stack_mark = draft_scratch_mark();
-    uint32 frame = context->stack_pointer - 0x30u;
-    uint32 result;
+    size_t size = 0;
     FUNCTION_MARKER(0x8005A4D8u, "1.EXE");
-    draft_scratch_guest_frame(context->stack_pointer, 0x30u);
-    w_u32(frame + 0x28u, context->caller_s0);
-    w_u32(frame + 0x2Cu, context->return_address);
-    for (;;)
-    {
-        if (sub_8007D3F0(frame + 0x10u, filename) != 0u)
-        {
-            sub_8007B368(2u, frame + 0x10u, 0u);
-            VSync(3);
-            if ((sub_8007A7AC(1u) & 2u) != 0u)
-                break;
-        }
-        {
-            GameGeometryCallContext error_context = {0};
-            error_context.stack_pointer = frame;
-            error_context.caller_s0 = filename;
-            sub_80059E4C(filename, &error_context);
-        }
-    }
-    result = r_u32(frame + 0x14u);
-    context->return_address = r_u32(frame + 0x2Cu);
-    context->caller_s0 = r_u32(frame + 0x28u);
-    draft_scratch_release(stack_mark);
-    return result;
+    return xport_cd_file_size(filename, "DATA", &size) ? (uint32)size : 0u;
 }
+
 
 uint32 sub_8004206C(uint32 destination, uint32 first, uint32 second, uint32 third, uint32 entry_sp)
 {
@@ -301,7 +278,7 @@ uint32 sub_8003C87C(GameGeometryCallContext *context)
     search.stack_pointer = frame;
     search.return_address = 0x8003C91Cu;
     search.caller_s0 = frame + 0x10u;
-    if ((sint32)sub_8005A4D8(frame + 0x10u, &search) > 0)
+    // The shared player resolves registered Web movies without opening a STR payload
     {
         playback.stack_pointer = frame;
         playback.return_address = 0x8003C92Cu;
@@ -321,119 +298,31 @@ uint32 sub_8003C87C(GameGeometryCallContext *context)
 
 uint32 sub_80041E24(uint32 filename, uint32 mode, GameGeometryCallContext *context)
 {
-    uint32 stack_mark = draft_scratch_mark();
-    uint32 frame = context->stack_pointer - 0x58u;
-    uint32 result = 0u;
-    uint32 buffer;
-    sint32 product;
-    sint32 scaled_width;
-    uint32 buttons;
-    GameSceneCallContext allocation;
-    GameGeometryCallContext decoder = *context;
-    GameMainCallContext input = {0};
-    uint32 live_s0 = mode;
-    uint32 live_s2 = context->caller_s2;
+    char path[260] = "DATA/";
+    uint32 index = 5u, offset = 0u;
+    sint32 result;
     FUNCTION_MARKER(0x80041E24u, "1.EXE");
-    draft_scratch_guest_frame(context->stack_pointer, 0x58u);
-    w_u32(frame + 0x4Cu, context->caller_s1);
-    w_u32(frame + 0x48u, context->caller_s0);
-    w_u32(frame + 0x54u, context->return_address);
-    w_u32(frame + 0x50u, context->caller_s2);
-    SetDispMask(0);
+    while (r_u8(filename + offset) == '\\' || r_u8(filename + offset) == '/')
+        ++offset;
+    while (index < sizeof(path) - 1u)
+    {
+        uint8 c = r_u8(filename + offset++);
+        if (c == 0u || c == ';')
+            break;
+        path[index++] = c == '\\' ? '/' : (char)c;
+    }
+    path[index] = 0;
     w_u32(0x800A6EC0u, mode);
-    while (sub_8007D3F0(frame + 0x30u, filename) == 0u)
+    // Preserve the game's source-frame end boundary
+    result = mode ? xport_fmv_play_range(path, mode, 0) : xport_fmv_play(path);
+    if (!ad_data_cd_mount())
+        result = -1;
+    if (result < 0)
     {
+        xport_message_error("Auto Destruct", "Cannot play movie");
+        return 0xFFFFFFFFu;
     }
-    allocation.stack_pointer = frame;
-    allocation.caller_s0 = mode;
-    allocation.return_address = 0x80041E6Cu;
-    buffer = sub_80069AD4(0x10000u, &allocation);
-    w_u32(0x800A6EA8u, buffer);
-    allocation.return_address = 0x80041E7Cu;
-    buffer = sub_80069AD4(0x28000u, &allocation);
-    w_u32(0x800A6EACu, buffer);
-    allocation.return_address = 0x80041E8Cu;
-    buffer = sub_80069AD4(0x28000u, &allocation);
-    w_u32(0x800A6EB0u, buffer);
-    allocation.return_address = 0x80041E98u;
-    buffer = sub_80069AD4(0x2D00u, &allocation);
-    w_u32(0x800A6EB4u, buffer);
-    allocation.return_address = 0x80041EA4u;
-    buffer = sub_80069AD4(0x2D00u, &allocation);
-    w_u32(0x800A6EB8u, buffer);
-    w_u32(frame + 0x10u, 0x108u);
-    sub_8004206C(0x800A6E70u, 0u, 24u, 0u, frame);
-    decoder.stack_pointer = frame;
-    decoder.return_address = 0x80041ED8u;
-    decoder.caller_s0 = live_s0;
-    decoder.caller_s1 = 0u;
-    decoder.caller_s2 = live_s2;
-    buffer = sub_800420C4(frame + 0x30u, 0x80042130u, &decoder);
-    live_s0 = 0xFFFFFFFFu;
-    if (buffer != 0xFFFFFFFFu)
-    {
-        decoder.return_address = 0x80041EF4u;
-        decoder.caller_s0 = live_s0;
-        buffer = sub_80042290(0x800A6E70u, &decoder);
-    }
-    if (buffer != 0xFFFFFFFFu)
-    {
-        w_u32(0x800A6EBCu, 0u);
-        live_s0 = 0x800A6E70u;
-        live_s2 = 1u;
-        for (;;)
-        {
-            buffer = r_u32(0x800A6E70u + (r_u32(0x800A6E78u) << 2u));
-            sub_80086530(buffer, 3u);
-            product = (sint32)(sint16)r_u16(0x800A6EA0u);
-            product *= (sint32)(sint16)r_u16(0x800A6EA2u);
-            buffer = r_u32(0x800A6E7Cu + (r_u32(0x800A6E84u) << 2u));
-            sub_800865AC(buffer, (uint32)(product / 2));
-            decoder.return_address = 0x80041F6Cu;
-            decoder.caller_s0 = live_s0;
-            decoder.caller_s1 = result;
-            decoder.caller_s2 = live_s2;
-            if (sub_80042290(0x800A6E70u, &decoder) == 0xFFFFFFFFu)
-                break;
-            sub_80042424(0x800A6E70u, frame);
-            VSync(0);
-            w_u32(frame + 0x10u, 240u);
-            SetDefDispEnv((DISPENV *)psx_addr(frame + 0x18u, sizeof(DISPENV)), 0, r_u32(0x800A6E98u) == 0u ? 240 : 0, 480, (sint32)r_u32(frame + 0x10u));
-            scaled_width = (sint32)(sint16)r_u16(frame + 0x1Cu) * 2;
-            w_u8(frame + 0x29u, 1u);
-            w_u16(frame + 0x1Cu, (uint32)(scaled_width / 3));
-            PutDispEnv((DISPENV *)psx_addr(frame + 0x18u, sizeof(DISPENV)));
-            SetDispMask(1);
-            if (r_u32(0x800A6EBCu) == 1u)
-                break;
-            input.stack_pointer = frame;
-            input.return_address = 0x80042004u;
-            input.caller_s0 = live_s0;
-            input.caller_s1 = result;
-            input.caller_s2 = live_s2;
-            buttons = (uint32)sub_8003893C(&input);
-            if ((buttons & 0x840u) != 0u)
-            {
-                result = 1u;
-                break;
-            }
-        }
-    }
-    SetDispMask(0);
-    sub_80086668(0u);
-    input.stack_pointer = frame;
-    input.return_address = 0x8004203Cu;
-    input.caller_s0 = live_s0;
-    input.caller_s1 = result;
-    input.caller_s2 = live_s2;
-    sub_8007D230(&input);
-    sub_8007B5CC(9u, 0u, 0u);
-    context->return_address = r_u32(frame + 0x54u);
-    context->caller_s2 = r_u32(frame + 0x50u);
-    context->caller_s1 = r_u32(frame + 0x4Cu);
-    context->caller_s0 = r_u32(frame + 0x48u);
-    draft_scratch_release(stack_mark);
-    return result;
+    return result == 2 ? 1u : 0u;
 }
 
 #include "game_scene.h"
@@ -552,48 +441,19 @@ uint32 sub_8005A040(GameGeometryCallContext *context)
 
 uint32 sub_8005A3E4(uint32 filename, uint32 destination, GameGeometryCallContext *context)
 {
-    uint32 frame = context->stack_pointer - 0x38u;
+    size_t size = 0;
     GameGeometryCallContext font = *context;
-    GameSceneCallContext read_context;
     FUNCTION_MARKER(0x8005A3E4u, "1.EXE");
-    w_u32(frame + 0x28u, context->caller_s0);
-    w_u32(frame + 0x2Cu, context->caller_s1);
-    w_u32(frame + 0x30u, context->caller_s2);
-    w_u32(frame + 0x34u, context->return_address);
-    font.stack_pointer = frame;
-    font.return_address = 0x8005A408u;
-    font.caller_s0 = filename;
-    font.caller_s1 = destination;
-    font.caller_s2 = 128u;
     sub_8005A040(&font);
-    for (;;)
+    if (!xport_cd_file_size(filename, "DATA", &size) ||
+        !xport_cd_file_read(filename, "DATA", destination, size, &size))
     {
-        if (sub_8007D3F0(frame + 0x10u, font.caller_s0) != 0u)
-        {
-            sub_8007B368(2u, frame + 0x10u, 0u);
-            VSync(3);
-            if ((sub_8007A7AC(1u) & 2u) != 0u)
-            {
-                read_context.stack_pointer = frame;
-                read_context.return_address = 0x8005A450u;
-                read_context.caller_s0 = font.caller_s0;
-                if (sub_8005A484(r_u32(frame + 0x14u), font.caller_s1, font.caller_s2, &read_context) == 0u)
-                    break;
-            }
-        }
-        {
-            GameGeometryCallContext error_context = {0};
-            error_context.stack_pointer = frame;
-            error_context.caller_s0 = font.caller_s0;
-            sub_80059E4C(font.caller_s0, &error_context);
-        }
+        xport_message_error("Auto Destruct", "Cannot read game data");
+        abort();
     }
-    context->return_address = r_u32(frame + 0x34u);
-    context->caller_s2 = r_u32(frame + 0x30u);
-    context->caller_s1 = r_u32(frame + 0x2Cu);
-    context->caller_s0 = r_u32(frame + 0x28u);
     return 0u;
 }
+
 
 uint32 sub_8003BEA8(uint32 filename, GameGeometryCallContext *context)
 {

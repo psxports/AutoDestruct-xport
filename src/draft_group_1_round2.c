@@ -1,3 +1,4 @@
+#include "native_game_save.h"
 #include "psx.h"
 #include "draft_signatures.h"
 #include "draft_adapters.h"
@@ -41,15 +42,9 @@ static sint32 draft12_div(sint32 n, sint32 d)
 // FUNCTION_MARKER sub_8005A54C
 uint32 sub_8005A54C(uint32 file)
 {
-    uint32 native_stack_mark = draft_scratch_mark();
-
-    uint32 buffer = draft_scratch_adapter(24u);
-    // TODO Bind original file and CD SDK targets
-    while (!draft_call_adapter(0x8007D3F0u, buffer, file))
-        draft_call_adapter(0x80059E4Cu, file);
-    return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x8007B8B8u, buffer)));
-
-    draft_scratch_release(native_stack_mark);
+    size_t size = 0u;
+    // The sole mission caller uses only the missing-file sentinel
+    return xport_cd_file_size(file, "DATA", &size) ? 1u : 0xFFFFFFFFu;
 }
 
 // FUNCTION_MARKER sub_80035664
@@ -390,6 +385,7 @@ uint32 sub_8003D338(uint32 state, uint32 kind)
 // FUNCTION_MARKER sub_80019220
 uint32 sub_80019220(uint32 packet, uint32 vertices, uint32 source, uint32 ot, uint32 ignored, uint32 bias, uint32 count, uint32 next)
 {
+    FUNCTION_MARKER(0x80019220, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 i, j, address, depth, entry;
@@ -1408,6 +1404,18 @@ uint32 sub_8006FCB4(void)
     sint32 setting = (sint16)r_u16(value);
     switch (type)
     {
+        case 33:
+        case 40:
+            result = (uint32)ad_load_game();
+            if ((sint32)result == 1)
+            {
+                w_u32(0x800A7F0Cu, 6u);
+                sub_8007040C();
+            }
+            return draft_scratch_result(native_stack_mark, result);
+        case 41:
+            result = (uint32)ad_save_game();
+            return draft_scratch_result(native_stack_mark, result);
         case 1:
             return draft_scratch_result(native_stack_mark, (uint64)(sub_800702D4()));
         case 2:
@@ -1522,7 +1530,6 @@ uint32 sub_8006FCB4(void)
         case 25:
         case 26:
         case 27:
-        case 33:
         {
             uint32 modes[5] = {5, 3, 2, 1, 4};
             sub_8007040C();

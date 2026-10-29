@@ -1,4 +1,5 @@
 #include "psx.h"
+#include "native_data_cd.h"
 #include "xport.h"
 #include <stdlib.h>
 #include <string.h>
@@ -221,11 +222,15 @@ uint32 sub_8007D3F0(uint32 destination, uint32 filename)
 
 uint32 sub_8007B368(uint32 command, uint32 argument, uint32 result)
 {
+    if (!ad_data_cd_prepare(command, argument))
+        return 0;
     return (uint32)CdControl((uint8)command, native_guest_pointer(argument, 8u), native_guest_pointer(result, 8u));
 }
 
 uint32 sub_8007B4A0(uint32 command, uint32 argument)
 {
+    if (!ad_data_cd_prepare(command, argument))
+        return 0;
     uint8 opcode = (uint8)command;
     uint8 *parameter = native_guest_pointer(argument, 8u);
     uint32 previous_callback = r_u32(0x800925C0u);
@@ -253,6 +258,8 @@ uint32 sub_8007B4A0(uint32 command, uint32 argument)
 
 uint32 sub_8007B5CC(uint32 command, uint32 argument, uint32 result)
 {
+    if (!ad_data_cd_prepare(command, argument))
+        return 0;
     return (uint32)CdControlB((uint8)command, native_guest_pointer(argument, 8u), native_guest_pointer(result, 8u));
 }
 

@@ -1,4 +1,5 @@
 #include "draft_signatures.h"
+#include "native_game_save.h"
 #include "native_debug_memory.h"
 #include <stdlib.h>
 
@@ -863,7 +864,17 @@ uint32 sub_8006F950(uint32 object)
         {
             uint32 color = r_u32(0x800A6460u) == index ? 0x7F7F7Fu : 0x4F4F4Fu;
             uint32 strings = r_u32(0x800A8B38u + 4u * r_u16(0x80091EDAu + 12u * object));
-            uint32 text = (uint32)draft_call_adapter(0x8006F554u, strings, index), width;
+            uint32 text, width;
+            uint32 action = r_u16(menu + 16u * index + 12u);
+            if (action == 33u || action == 40u || action == 41u)
+            {
+                const char *label = action == 41u ? "SAVE GAME" : "LOAD GAME";
+                text = draft_scratch_adapter(10u);
+                for (uint32 letter = 0u; letter < 10u; ++letter)
+                    w_u8(text + letter, label[letter]);
+            }
+            else
+                text = (uint32)draft_call_adapter(0x8006F554u, strings, index);
             row += entry == 265u ? 18u : 12u;
             width = sub_80043820(text, color, 30u, row, 100u, 0u);
             if ((int32)r_u32(0x800A75C8u) < (int32)width)
@@ -873,6 +884,17 @@ uint32 sub_8006F950(uint32 object)
         menu = r_u32(0x80091EE0u + 12u * object);
     }
     w_u32(0x800A75C4u, index);
+    const char *notice = ad_save_notice(object);
+    if (notice)
+    {
+        uint32 text = draft_scratch_adapter(32u), i = 0u;
+        do
+        {
+            w_u8(text + i, notice[i]);
+        } while (notice[i++] && i < 31u);
+        w_u8(text + 31u, 0u);
+        sub_80043820(text, 0x7F7F7Fu, 30u, row + 24u, 100u, 0u);
+    }
     draft_call_adapter(0x80020C60u, 199u, r_u32(0x800A9A74u), 0x3F3F3Fu, 2u, 0u - 140u, 0u - 120u, 50u, 240u);
     return draft_scratch_result(native_stack_mark, (uint64)((uint32)draft_call_adapter(0x80020C60u, 200u, r_u32(0x800A9A74u), r_u32(0x80092054u + 4u * r_u32(0x800A9A38u)), 2u, 0u - 160u, 0u - 120u, 320u, 240u)));
 

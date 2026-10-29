@@ -633,6 +633,7 @@ static void draft1_link(uint32 packet, uint32 ot, uint32 length)
 // FUNCTION_MARKER sub_80017550
 uint32 sub_80017550(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8)
 {
+    FUNCTION_MARKER(0x80017550, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 source = a3 + 12u;
@@ -1248,6 +1249,7 @@ uint32 sub_8001A110(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
 // FUNCTION_MARKER sub_80018D44
 uint32 sub_80018D44(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8)
 {
+    FUNCTION_MARKER(0x80018D44, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 source = a3 + 16u, grid = 0u, projected = 0u;
@@ -1573,6 +1575,7 @@ static uint32 draft1_textured_quads(uint32 cursor, uint32 vertices, uint32 sourc
 // FUNCTION_MARKER sub_80015E0C
 uint32 sub_80015E0C(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8)
 {
+    FUNCTION_MARKER(0x80015E0C, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     return draft_scratch_result(native_stack_mark, (uint64)(draft1_textured_quads(a1, a2, a3, a4, a5, a6, a7, a8, 0u)));
@@ -1583,6 +1586,7 @@ uint32 sub_80015E0C(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
 // FUNCTION_MARKER sub_80017FD0
 uint32 sub_80017FD0(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8)
 {
+    FUNCTION_MARKER(0x80017FD0, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     return draft_scratch_result(native_stack_mark, (uint64)(draft1_textured_quads(a1, a2, a3, a4, a5, a6, a7, a8, 1u)));

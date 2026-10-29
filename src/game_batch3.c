@@ -6,6 +6,8 @@ uint32 _SpuInit(uint32 mode);
 #include <string.h>
 #include "game_scene.h"
 
+uint32 sub_8005A3E4(uint32 filename, uint32 destination, GameGeometryCallContext *context);
+
 uint32 sub_80039224(void);
 uint32 sub_8005A59C(uint32 filename, GameGeometryCallContext *context);
 uint32 sub_8005A69C(uint32 count, GameGeometryCallContext *context);
@@ -126,22 +128,10 @@ uint32 sub_8005A69C(uint32 count, GameGeometryCallContext *context)
     child.caller_s0 = 0x800BB8B8u;
     do
     {
+        // Resolve XA positions without presenting a bomb-countdown frame per file
         child.return_address = 0x8005A700u;
         sub_8005A7B8((uint32)(sint32)(sint16)child.caller_s3, &child);
-        child.return_address = 0x8005A708u;
-        sub_800598CC(child.caller_s5, &child);
-        child.return_address = 0x8005A710u;
-        sub_800598CC(child.caller_s5 + 20u, &child);
-        w_u32(frame + 0x10u, 2u);
-        w_u32(frame + 0x14u, 150u);
-        child.return_address = 0x8005A738u;
-        sub_800439A4(0x808080u, child.caller_s6, child.caller_s1, 0xFFFFFFC3u, &child);
-        result = r_u32(0x800A9D60u) == 1u ? 2u : 0u;
         child.caller_s3 += 1u;
-        child.return_address = 0x8005A758u;
-        sub_8001FF7C(result, &child);
-        child.caller_s1 += 1u;
-        sub_8001F850();
         child.caller_s2 += 1u;
         result = sub_8007B8B8(0x800A7438u);
         w_u32(child.caller_s0, result);
@@ -329,51 +319,16 @@ uint32 sub_8005A0D8(uint32 filename, uint32 destination, uint32 size, GameGeomet
 
 uint32 sub_8005A130(uint32 filename, uint32 destination, GameGeometryCallContext *context)
 {
-    uint32 frame = context->stack_pointer - 0x38u;
-    uint32 first;
-    uint32 second;
-    uint32 third;
-    GameGeometryCallContext child = *context;
+    uint32 first, second, third;
     FUNCTION_MARKER(0x8005A130u, "1.EXE");
-    w_u32(frame + 0x28u, context->caller_s0);
-    child.caller_s0 = filename;
-    w_u32(frame + 0x2Cu, context->caller_s1);
-    child.caller_s1 = destination;
-    w_u32(frame + 0x30u, context->caller_s2);
-    child.caller_s2 = 128u;
-    w_u32(frame + 0x34u, context->return_address);
-    child.stack_pointer = frame;
-    for (;;)
-    {
-        if (CdSearchFileGuest(frame + 0x10u, child.caller_s0) != 0u)
-        {
-            CdControl(2, (uint8 *)psx_addr(frame + 0x10u, 1u), NULL);
-            VSync(3);
-            if ((CdDiskReady(1u) & 2u) != 0u)
-            {
-                first = r_u32(frame + 0x14u);
-                child.return_address = 0x8005A19Cu;
-                if (sub_8005A1EC(first, child.caller_s1, child.caller_s2, child.caller_s0, &child) == 0u)
-                    break;
-            }
-        }
-        child.return_address = 0x8005A1ACu;
-        sub_80059E4C(child.caller_s0, &child);
-    }
+    if (r_u32(0x800A7408u) == 0u)
+        sub_80059E20();
+    sub_8005A3E4(filename, destination, context);
     first = r_u32(0x800A7408u);
     second = r_u32(0x800A740Cu);
     third = r_u32(0x800A7404u);
     w_u32(0x800A7408u, first + second);
     w_u32(0x800A7404u, third + 1u);
-    context->caller_s3 = child.caller_s3;
-    context->caller_s4 = child.caller_s4;
-    context->caller_s5 = child.caller_s5;
-    context->caller_s6 = child.caller_s6;
-    context->caller_s7 = child.caller_s7;
-    context->return_address = r_u32(frame + 0x34u);
-    context->caller_s2 = r_u32(frame + 0x30u);
-    context->caller_s1 = r_u32(frame + 0x2Cu);
-    context->caller_s0 = r_u32(frame + 0x28u);
     return 0u;
 }
 
@@ -487,45 +442,9 @@ restore:
 
 uint32 sub_80059990(uint32 progress, GameGeometryCallContext *context)
 {
-    uint32 frame = context->stack_pointer - 0x28u;
-    uint32 result;
-    uint32 mode;
-    GameGeometryCallContext child = *context;
     FUNCTION_MARKER(0x80059990u, "1.EXE");
-    w_u32(frame + 0x20u, context->caller_s2);
-    child.caller_s2 = progress;
-    w_u32(frame + 0x1Cu, context->caller_s1);
-    child.caller_s1 = 0x80090DFCu;
-    w_u32(frame + 0x18u, context->caller_s0);
-    child.caller_s0 = 1u;
-    w_u32(frame + 0x24u, context->return_address);
-    child.stack_pointer = frame;
-    do
-    {
-        child.return_address = 0x800599BCu;
-        sub_800598CC(child.caller_s1, &child);
-        child.return_address = 0x800599C4u;
-        sub_800598CC(child.caller_s1 + 20u, &child);
-        w_u32(frame + 0x10u, 2u);
-        w_u32(frame + 0x14u, 150u);
-        child.return_address = 0x800599ECu;
-        sub_800439A4(0x808080u, 100u, child.caller_s2, 0xFFFFFFC3u, &child);
-        mode = r_u32(0x800A9D60u) == child.caller_s0 ? 2u : 0u;
-        child.return_address = 0x80059A0Cu;
-        sub_8001FF7C(mode, &child);
-        sub_8001F850();
-        result = r_u32(0x800A7410u);
-    } while (result != child.caller_s0 && result != 0u);
-    context->caller_s3 = child.caller_s3;
-    context->caller_s4 = child.caller_s4;
-    context->caller_s5 = child.caller_s5;
-    context->caller_s6 = child.caller_s6;
-    context->caller_s7 = child.caller_s7;
-    context->return_address = r_u32(frame + 0x24u);
-    context->caller_s2 = r_u32(frame + 0x20u);
-    context->caller_s1 = r_u32(frame + 0x1Cu);
-    context->caller_s0 = r_u32(frame + 0x18u);
-    return result;
+    // Loading progress no longer draws or waits for a presentation frame
+    return r_u32(0x800A7410u);
 }
 
 uint32 sub_8003D7F0(uint32 language, GameGeometryCallContext *context)
@@ -1193,68 +1112,9 @@ uint32 sub_80059A88(uint32 radius, uint32 angle)
 
 uint32 sub_80059CE4(uint32 progress, GameGeometryCallContext *context)
 {
-    uint32 frame = context->stack_pointer - 0x28u;
-    uint32 result, mode;
-    GameGeometryCallContext child = *context;
     FUNCTION_MARKER(0x80059CE4u, "1.EXE");
-    w_u32(frame + 0x18u, context->caller_s0);
-    w_u32(frame + 0x24u, context->return_address);
-    w_u32(frame + 0x20u, context->caller_s2);
-    w_u32(frame + 0x1Cu, context->caller_s1);
-    child.stack_pointer = frame;
-    child.caller_s0 = progress;
-    SetDispMask(1);
-    child.caller_s1 = 1u;
-    while ((sint32)child.caller_s0 < 102)
-    {
-        child.return_address = 0x80059D18u;
-        sub_80059990(child.caller_s0, &child);
-        VSync(2);
-        ++child.caller_s0;
-        child.caller_s1 = 1u;
-    }
-    w_u32(frame + 0x10u, 0u);
-    child.return_address = 0x80059D48u;
-    sub_80035A08(14u, 0x800u, 255u, 0u, &child);
-    SetDispMask(1);
-    child.caller_s2 = 0x80090DFCu;
-    do
-    {
-        result = r_u32(0x800A865Cu);
-        child.caller_s0 = 0u;
-        w_u32(0x800A7434u, result);
-        do
-        {
-            sub_80059A88(child.caller_s1, child.caller_s0);
-            ++child.caller_s0;
-        } while ((sint32)child.caller_s0 < 32);
-        w_u32(0x800A865Cu, r_u32(0x800A7434u));
-        child.return_address = 0x80059D98u;
-        sub_800598CC(child.caller_s2, &child);
-        child.return_address = 0x80059DA0u;
-        sub_800598CC(child.caller_s2 + 0x14u, &child);
-        w_u32(frame + 0x10u, 2u);
-        w_u32(frame + 0x14u, 150u);
-        child.return_address = 0x80059DC8u;
-        sub_800439A4(0x808080u, 100u, 100u, 0xFFFFFFC3u, &child);
-        mode = r_u32(0x800A9D60u) == 1u ? 2u : 0u;
-        child.caller_s1 += 16u;
-        child.return_address = 0x80059DE8u;
-        sub_8001FF7C(mode, &child);
-        sub_8001F850();
-    } while ((sint32)child.caller_s1 < 300);
-    child.return_address = 0x80059E04u;
-    result = sub_80059C2C(&child);
-    context->caller_s3 = child.caller_s3;
-    context->caller_s4 = child.caller_s4;
-    context->caller_s5 = child.caller_s5;
-    context->caller_s6 = child.caller_s6;
-    context->caller_s7 = child.caller_s7;
-    context->return_address = r_u32(frame + 0x24u);
-    context->caller_s2 = r_u32(frame + 0x20u);
-    context->caller_s1 = r_u32(frame + 0x1Cu);
-    context->caller_s0 = r_u32(frame + 0x18u);
-    return result;
+    // Skip the artificial countdown, explosion sound and white flash
+    return sub_80059C2C(context);
 }
 
 uint32 sub_80059C2C(GameGeometryCallContext *context)

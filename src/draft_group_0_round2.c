@@ -1247,6 +1247,7 @@ static void d02_packet(uint32 packet, uint32 table, uint32 bias, uint32 depth)
 // FUNCTION_MARKER sub_8001D870
 uint32 sub_8001D870(uint32 screen, uint32 packet, uint32 table, uint32 vertices, uint32 bias)
 {
+    FUNCTION_MARKER(0x8001D870, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 start = 0u, j;

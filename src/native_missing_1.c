@@ -197,7 +197,7 @@ uint32 sub_8003C958(GameGeometryCallContext *context)
     scene.stack_pointer = frame;
     scene.return_address = 0x8003C9F0;
     scene.caller_s0 = filename;
-    if ((sint32)sub_8005A4D8(filename, &scene) > 0)
+    // The shared player owns missing-movie errors on native and Web
     {
         child.stack_pointer = frame;
         child.return_address = 0x8003CA00;

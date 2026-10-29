@@ -344,6 +344,7 @@ uint32 sub_8001BF94(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
 /* FUNCTION_MARKER: sub_800176BC */
 uint32 sub_800176BC(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8)
 {
+    FUNCTION_MARKER(0x800176BC, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 temporary = a7 ? draft_scratch_adapter(128u) : 0u;
@@ -408,6 +409,7 @@ uint32 sub_800176BC(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
 /* FUNCTION_MARKER: sub_80016770 */
 uint32 sub_80016770(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8)
 {
+    FUNCTION_MARKER(0x80016770, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 temporary = a7 ? draft_scratch_adapter(128u) : 0u;
@@ -473,6 +475,7 @@ uint32 sub_80016770(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint3
 /* FUNCTION_MARKER: sub_800188E4 */
 uint32 sub_800188E4(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8)
 {
+    FUNCTION_MARKER(0x800188E4, "1.EXE");
     uint32 native_stack_mark = draft_scratch_mark();
 
     uint32 temporary = a7 ? draft_scratch_adapter(128u) : 0u;

@@ -1,4 +1,9 @@
+#include "native_game_save.h"
+#include "game_scene.h"
+#include <string.h>
 #include "native_call_dispatch.h"
+
+uint32 sub_80073574(GameGeometryCallContext *context);
 
 static uint32 calibration_menu_entry(uint32 menu, uint32 item)
 {
@@ -181,4 +186,91 @@ uint32 sub_80073330(void)
     w_u32(destination + 4, second);
     w_u32(destination + 8, third);
     return first;
+}
+
+// Keep the original packed progress without a card header
+static uint8 ad_pending_save[404];
+static sint32 ad_load_pending;
+static const char *ad_save_message;
+static uint32 ad_save_message_menu;
+
+static sint32 ad_save_notify(sint32 result, const char *message)
+{
+    ad_save_message = message;
+    ad_save_message_menu = r_u32(0x800A645Cu);
+    return result;
+}
+
+const char *ad_save_notice(uint32 menu)
+{
+    if (menu != ad_save_message_menu)
+        ad_save_message = NULL;
+    return ad_save_message;
+}
+
+static void ad_add_pause_save(uint32 menu, uint32 storage, uint32 entries)
+{
+    uint32 old = r_u32(0x80091EE0u + menu * 12u);
+    memcpy(psx_addr(storage, entries * 16u), psx_addr(old, entries * 16u), entries * 16u);
+    xport_guest_fill(storage + entries * 16u, 0u, 32u);
+    w_u32(storage + entries * 16u, 1u);
+    w_u16(storage + entries * 16u + 12u, 41u);
+    w_u32(0x80091EE0u + menu * 12u, storage);
+}
+
+void ad_init_save_menu(void)
+{
+    w_u16(0x800917D4u, 40u);
+    w_u16(0x800917D6u, 0u);
+    w_u16(0x80091C34u, 41u);
+    w_u16(0x80091C36u, 0u);
+    // Reuse obsolete card-menu storage while preserving every existing pause action
+    ad_add_pause_save(1u, 0x80091C68u, 7u);
+    ad_add_pause_save(5u, 0x80091CF8u, 4u);
+}
+
+sint32 ad_save_game(void)
+{
+    sub_80073330();
+    sub_800732C4(0x800B5898u);
+    sint32 result = xport_save(psx_addr(0x800B5898u, 404u), 404);
+    return ad_save_notify(result, result == 1 ? "GAME SAVED" : "SAVE FAILED");
+}
+
+static void ad_apply_saved_game(void)
+{
+    GameGeometryCallContext context = {0};
+    memcpy(psx_addr(0x800B5898u, 404u), ad_pending_save, 404u);
+    sub_80073574(&context);
+    memcpy(psx_addr(0x800A9760u, 300u), psx_addr(0x800B5900u, 300u), 300u);
+    if (r_u32(0x800A9760u))
+        w_u16(0x800A6DE0u, r_u16(0x800A9764u));
+}
+
+sint32 ad_restore_loaded_game(void)
+{
+    if (!ad_load_pending)
+        return 0;
+    ad_apply_saved_game();
+    ad_load_pending = 0;
+    return 1;
+}
+
+sint32 ad_load_game(void)
+{
+    uint8 data[404];
+    uint32 sum = 0u;
+    sint32 size = xport_load(data, sizeof(data));
+    if (size <= 0)
+        return ad_save_notify(size, size == 0 ? "NO SAVE DATA" : "LOAD FAILED");
+    if (size != sizeof(data))
+        return ad_save_notify(-1, "LOAD FAILED");
+    for (uint32 offset = 4u; offset < sizeof(data); offset += 4u)
+        sum += xport_load_le32(data + offset);
+    if (sum != xport_load_le32(data))
+        return ad_save_notify(-1, "LOAD FAILED");
+    memcpy(ad_pending_save, data, sizeof(data));
+    ad_apply_saved_game();
+    ad_load_pending = 1;
+    return ad_save_notify(1, "GAME LOADED");
 }
